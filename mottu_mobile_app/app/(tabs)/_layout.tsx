@@ -13,6 +13,7 @@ export default function TabLayout() {
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
       }}>
+      
       <Tabs.Screen
         name="index"
         options={{

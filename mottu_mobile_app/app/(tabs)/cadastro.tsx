@@ -39,7 +39,7 @@ export default function CadastroScreen() {
     try {
       const newMotorcycle: Motorcycle = {
         id: uuidv4(),
-        placa: placa.toUpperCase(),
+        placa: placa,
         modelo,
         cor,
         status,

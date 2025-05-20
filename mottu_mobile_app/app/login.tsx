@@ -19,8 +19,7 @@ export default function LoginScreen() {
   };
 
   const validatePassword = (password: string) => {
-    // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/;
     return passwordRegex.test(password);
   };
 
@@ -45,7 +44,7 @@ export default function LoginScreen() {
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
-      // For now, just redirect to the main app
+      
       router.replace('/(tabs)');
     }
   };
