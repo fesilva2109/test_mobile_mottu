@@ -94,6 +94,7 @@ export default function MapaScreen() {
   
   return (
     <SafeAreaView style={styles.container}>
+      
       <View style={styles.header}>
         <Text style={styles.title}>Mapa do Pátio</Text>
         <FilterMenu 
@@ -103,7 +104,7 @@ export default function MapaScreen() {
           onModelChange={setSelectedModel}
         />
       </View>
-      
+      <ScrollView>
       <Text style={styles.sectionTitle}>Grid do Pátio</Text>
       <ScrollView horizontal style={styles.gridContainer}>
         <GridComponent 
@@ -130,6 +131,7 @@ export default function MapaScreen() {
           onSelect={(moto) => console.log('Selected:', moto)}
         />
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -165,15 +167,12 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     marginHorizontal: 16,
   },
-  gridContainer: {
-    maxHeight: 300,
-  },
   waitingSection: {
     flex: 1,
     backgroundColor: colors.neutral.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    marginTop: 12,
+    marginTop: -20,
     padding: 16,
   },
   waitingHeader: {
@@ -189,5 +188,12 @@ const styles = StyleSheet.create({
   clearFilters: {
     color: colors.primary.main,
     fontWeight: '500',
-  }
+  },
+  gridContainer: {
+    marginBottom: 8, 
+    maxHeight: 550,
+  },
+  waitingAreaContainer: {
+    marginTop: 8, 
+  },
 });

@@ -15,8 +15,8 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
     const [selectedCell, setSelectedCell] = useState<{ x: number, y: number } | null>(null);
 
     // Calcular a dimensão do grid dinamicamente com base na largura da tela
-    const screenWidth = Dimensions.get('window').width - 32; // Margem de 16 de cada lado
-    const gridSize = gridPositions.length > 0 ? Math.ceil(Math.sqrt(gridPositions.length)) : 0;
+    const screenWidth = Dimensions.get('window').width - 36 ; // Margem de 16 de cada lado
+    const gridSize = gridPositions.length > 0 ? Math.ceil(Math.sqrt(gridPositions.length + 10)) : 0;
     const cellWidth = gridSize > 0 ? screenWidth / gridSize : 80;
     const cellHeight = cellWidth; // Manter as células quadradas
 

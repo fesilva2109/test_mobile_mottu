@@ -2,12 +2,18 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid'; // Remove this line
 import { QrCode, ChevronDown } from 'lucide-react-native';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { colors } from '@/theme/colors';
 import { Motorcycle } from '@/types';
+import * as Crypto from 'expo-crypto'; // Import expo-crypto
+
+// Function to generate UUID using expo-crypto
+const generateUUID = () => {
+  return Crypto.randomUUID();
+};
 
 export default function CadastroScreen() {
   const router = useRouter();
@@ -38,7 +44,7 @@ export default function CadastroScreen() {
     
     try {
       const newMotorcycle: Motorcycle = {
-        id: uuidv4(),
+        id: generateUUID(), // Use the function from expo-crypto
         placa: placa,
         modelo,
         cor,
@@ -304,3 +310,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
