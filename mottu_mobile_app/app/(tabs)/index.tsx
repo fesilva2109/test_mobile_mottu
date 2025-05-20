@@ -3,6 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { limparAsyncStorage } from '@/components/ResetAsync';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -79,7 +81,12 @@ export default function HomeScreen() {
         >
           <Text style={styles.dashboardButtonText}>Ver Dashboard Completo</Text>
         </TouchableOpacity>
-      </ScrollView>
+        <TouchableOpacity 
+          style={styles.dashboardButton}
+          onPress={() => limparAsyncStorage }>
+            <Text style={styles.dashboardButtonText}>Limpar AsyncStorage</Text>
+          </TouchableOpacity>
+     </ScrollView>
     </SafeAreaView>
   );
 }
