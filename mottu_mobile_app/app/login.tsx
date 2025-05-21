@@ -3,9 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useRouter } from 'expo-router';
 import { Mail, Lock, AlertCircle } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
