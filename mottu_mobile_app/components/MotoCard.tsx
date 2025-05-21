@@ -7,22 +7,24 @@ interface MotoCardProps {
   motorcycle: Motorcycle;
   onPress?: (motorcycle: Motorcycle) => void;
   isInWaitingArea?: boolean;
+  isSelected?: boolean;
 }
 
-export function MotoCard({ motorcycle, onPress, isInWaitingArea = false }: MotoCardProps) {
+export function MotoCard({ motorcycle, onPress, isInWaitingArea = false, isSelected = false }: MotoCardProps) {
   const statusColor = getStatusColor(motorcycle.status);
   const modelIcon = getModelIcon(motorcycle.modelo);
   
-  // Calculate time in yard in hours
+  
   const hoursInYard = (Date.now() - motorcycle.timestampEntrada) / (1000 * 60 * 60);
-  const isOldMotorcycle = hoursInYard > 48; // Over 48 hours in the yard
+  const isOldMotorcycle = hoursInYard > 48; 
   
   return (
     <TouchableOpacity
       style={[
         styles.container,
         isInWaitingArea && styles.waitingAreaCard,
-        isOldMotorcycle && styles.oldMotorcycleCard
+        isOldMotorcycle && styles.oldMotorcycleCard,
+        isSelected && styles.selectedCard,
       ]}
       onPress={() => onPress?.(motorcycle)}
       activeOpacity={0.8}
@@ -148,5 +150,10 @@ const styles = StyleSheet.create({
     color: colors.neutral.white,
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  selectedCard: {
+    borderWidth: 2,
+    borderColor: colors.primary.main,
+    backgroundColor: colors.primary.lighter,
   },
 });

@@ -1,26 +1,24 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { MotoCard } from './MotoCard';
 import { GridPosition, Motorcycle } from '@/types';
 import { colors } from '@/theme/colors';
 
 interface GridComponentProps {
     gridPositions: GridPosition[];
-    onPlaceMoto: (moto: Motorcycle, position: { x: number, y: number }) => void;
-    onRemoveFromGrid: (motoId: string) => void;
+    onPlaceMoto: (position: { x: number, y: number }) => void;
+    onRemoveFromGrid: (motoId: string) => void |  Promise<void>;
+    selectedMoto?: Motorcycle | null;
 }
 
-export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: GridComponentProps) {
-    const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
+export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, selectedMoto }: GridComponentProps) {
+    const [gridSelectedMoto, setGridSelectedMoto] = useState<Motorcycle | null>(null);
     const [selectedCell, setSelectedCell] = useState<{ x: number, y: number } | null>(null);
 
-    // Calcular a dimensão do grid dinamicamente com base na largura da tela
-    const screenWidth = Dimensions.get('window').width - 36 ; // Margem de 16 de cada lado
+    const screenWidth = Dimensions.get('window').width - 36;
     const gridSize = gridPositions.length > 0 ? Math.ceil(Math.sqrt(gridPositions.length + 10)) : 0;
     const cellWidth = gridSize > 0 ? screenWidth / gridSize : 80;
-    const cellHeight = cellWidth; // Manter as células quadradas
+    const cellHeight = cellWidth;
 
-    // Memoizar as posições ocupadas para evitar recálculos desnecessários
     const occupiedPositions = useMemo(() => gridPositions.filter(pos => pos.occupied), [gridPositions]);
 
     const handleCellPress = (x: number, y: number) => {
@@ -28,20 +26,18 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
 
         if (position) {
             if (position.occupied && position.motorcycle) {
-                setSelectedMoto(position.motorcycle);
+                setGridSelectedMoto(position.motorcycle);
                 setSelectedCell({ x, y });
             } else if (selectedMoto) {
-                onPlaceMoto(selectedMoto, { x, y });
-                setSelectedMoto(null);
-                setSelectedCell(null);
+                onPlaceMoto({ x, y });
             }
         }
     };
 
     const handleRemoveFromGrid = () => {
-        if (selectedMoto) {
-            onRemoveFromGrid(selectedMoto.id);
-            setSelectedMoto(null);
+        if (gridSelectedMoto) {
+            onRemoveFromGrid(gridSelectedMoto.id);
+            setGridSelectedMoto(null);
             setSelectedCell(null);
         }
     };
@@ -55,6 +51,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
             for (let x = 0; x < gridSize; x++) {
                 const position = gridPositions.find(pos => pos.x === x && pos.y === y);
                 const isSelected = selectedCell?.x === x && selectedCell?.y === y;
+                const isHighlighted = selectedMoto && !position?.occupied;
 
                 row.push(
                     <TouchableOpacity
@@ -63,8 +60,9 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
                             styles.gridCell,
                             { width: cellWidth, height: cellHeight },
                             position?.occupied && styles.occupiedCell,
-                            !position?.occupied && styles.emptyCell, // Novo estilo para células vazias
+                            !position?.occupied && styles.emptyCell,
                             isSelected && styles.selectedCell,
+                            isHighlighted && styles.highlightedCell,
                         ]}
                         onPress={() => handleCellPress(x, y)}
                     >
@@ -77,6 +75,11 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
                                         { backgroundColor: getStatusColor(position.motorcycle.status) }
                                     ]}
                                 />
+                            </View>
+                        )}
+                        {!position?.occupied && selectedMoto && (
+                            <View style={styles.previewContent}>
+                                <Text style={styles.previewText}>+</Text>
                             </View>
                         )}
                     </TouchableOpacity>
@@ -99,10 +102,10 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
                 {renderGridCells()}
             </View>
 
-            {selectedMoto && (
+            {gridSelectedMoto && (
                 <View style={styles.actionContainer}>
                     <Text style={styles.selectedText}>
-                        Moto selecionada: {selectedMoto.placa}
+                        Moto selecionada: {gridSelectedMoto.placa}
                     </Text>
 
                     <TouchableOpacity
@@ -111,6 +114,14 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
                     >
                         <Text style={styles.removeButtonText}>Remover do Grid</Text>
                     </TouchableOpacity>
+                </View>
+            )}
+
+            {selectedMoto && (
+                <View style={styles.selectionHint}>
+                    <Text style={styles.selectionHintText}>
+                        Clique em uma célula vazia para posicionar a moto {selectedMoto.placa}
+                    </Text>
                 </View>
             )}
 
@@ -137,7 +148,6 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid }: 
     );
 }
 
-// Helper function to get status color (mantido como está)
 const getStatusColor = (status: string): string => {
     switch (status) {
         case 'Pronta para aluguel':
@@ -180,17 +190,29 @@ const styles = StyleSheet.create({
     occupiedCell: {
         backgroundColor: colors.neutral.lightGray,
     },
-    emptyCell: { // Novo estilo para células vazias
+    emptyCell: {
         backgroundColor: colors.neutral.white,
-        opacity: 0.7, // Tornar um pouco mais sutil
+        opacity: 0.7,
     },
     selectedCell: {
         borderWidth: 2,
         borderColor: colors.primary.main,
     },
+    highlightedCell: {
+        backgroundColor: colors.primary.lighter,
+    },
     cellContent: {
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    previewContent: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    previewText: {
+        fontSize: 20,
+        color: colors.primary.main,
+        fontWeight: 'bold',
     },
     cellPlaca: {
         fontSize: 12,
@@ -223,6 +245,17 @@ const styles = StyleSheet.create({
         color: colors.neutral.white,
         fontWeight: 'bold',
         fontSize: 12,
+    },
+    selectionHint: {
+        backgroundColor: colors.primary.lighter,
+        padding: 12,
+        borderRadius: 8,
+        marginVertical: 8,
+    },
+    selectionHintText: {
+        color: colors.primary.main,
+        fontWeight: '500',
+        textAlign: 'center',
     },
     legendContainer: {
         marginTop: 16,

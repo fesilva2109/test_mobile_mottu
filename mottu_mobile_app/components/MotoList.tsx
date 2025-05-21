@@ -7,9 +7,10 @@ import { colors } from '@/theme/colors';
 interface MotoListProps {
   motorcycles: Motorcycle[];
   onSelect: (motorcycle: Motorcycle) => void;
+  selectedMoto?: Motorcycle | null;
 }
 
-export function MotoList({ motorcycles, onSelect }: MotoListProps) {
+export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps) {
   if (motorcycles.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -27,6 +28,7 @@ export function MotoList({ motorcycles, onSelect }: MotoListProps) {
           motorcycle={item}
           onPress={onSelect}
           isInWaitingArea
+          isSelected={item.id === selectedMoto?.id}
         />
       )}
       contentContainerStyle={styles.listContainer}

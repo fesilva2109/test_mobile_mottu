@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, LayoutAnimation } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMotorcycleStorage, useGridStorage } from '@/hooks/useStorage';
 import { GridComponent } from '@/components/GridComponent';
 import { MotoList } from '@/components/MotoList';
 import { FilterMenu } from '@/components/FilterMenu';
 import { colors } from '@/theme/colors';
+import { Motorcycle } from '@/types';
 
 export default function MapaScreen() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null); // Novo estado para moto selecionada
   
   const { motorcycles, loading: loadingMotos, updateMotorcycle } = useMotorcycleStorage();
   const { 
@@ -19,18 +21,19 @@ export default function MapaScreen() {
     removeMotorcycleFromGrid 
   } = useGridStorage();
   
-  const [waitingMotos, setWaitingMotos] = useState<any[]>([]);
-  const [placedMotos, setPlacedMotos] = useState<any[]>([]);
-  
+  const [waitingMotos, setWaitingMotos] = useState<Motorcycle[]>([]);
+  const [placedMotos, setPlacedMotos] = useState<Motorcycle[]>([]);
+
+  // Configurar animação para transições suaves
+  useEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  }, [waitingMotos, placedMotos]);
+
   // Filter motorcycles by status and model
   useEffect(() => {
-    // Get motorcycles that are placed on the grid
     const onGrid = motorcycles.filter(moto => moto.posicao);
-    
-    // Get motorcycles that are not on the grid (waiting)
     const waiting = motorcycles.filter(moto => !moto.posicao);
     
-    // Apply filters if selected
     let filteredWaiting = waiting;
     let filteredOnGrid = onGrid;
     
@@ -46,41 +49,52 @@ export default function MapaScreen() {
     
     setWaitingMotos(filteredWaiting);
     setPlacedMotos(filteredOnGrid);
+
+    // Se a moto selecionada foi movida para o grid, limpa a seleção
+    if (selectedMoto && filteredWaiting.every(m => m.id !== selectedMoto.id)) {
+      setSelectedMoto(null);
+    }
   }, [motorcycles, selectedStatus, selectedModel, gridPositions]);
   
-  // Handle motorcycle placement
-  const handlePlaceMoto = async (moto: any, position: any) => {
-    try {
-      await placeMotorcycle(moto, position.x, position.y);
+  // Modificada para aceitar moto e posição
+  const handlePlaceMoto = async (position: { x: number, y: number }) => {
+      if (!selectedMoto) return;
       
-      // Update the motorcycle with the new position
-      await updateMotorcycle({
-        ...moto,
-        posicao: { x: position.x, y: position.y }
-      });
-    } catch (error) {
-      console.error('Failed to place motorcycle:', error);
-    }
+      try {
+          await placeMotorcycle(selectedMoto, position.x, position.y);
+          await updateMotorcycle({
+              ...selectedMoto,
+              posicao: { x: position.x, y: position.y }
+          });
+          setSelectedMoto(null); // Limpa a seleção após posicionar
+      } catch (error) {
+          console.error('Failed to place motorcycle:', error);
+      }
   };
-  
   // Handle motorcycle removal from grid
   const handleRemoveFromGrid = async (motoId: string) => {
     try {
-      // Find the motorcycle
       const moto = motorcycles.find(m => m.id === motoId);
       if (!moto) return;
       
-      // Remove from grid
       await removeMotorcycleFromGrid(motoId);
-      
-      // Update the motorcycle to remove position
       await updateMotorcycle({
         ...moto,
         posicao: undefined
       });
+
+      // Se a moto removida era a selecionada, limpa a seleção
+      if (selectedMoto?.id === motoId) {
+        setSelectedMoto(null);
+      }
     } catch (error) {
       console.error('Failed to remove motorcycle from grid:', error);
     }
+  };
+
+  const handleClearSelection = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSelectedMoto(null);
   };
   
   if (loadingMotos || loadingGrid) {
@@ -94,7 +108,6 @@ export default function MapaScreen() {
   
   return (
     <SafeAreaView style={styles.container}>
-      
       <View style={styles.header}>
         <Text style={styles.title}>Mapa do Pátio</Text>
         <FilterMenu 
@@ -104,33 +117,49 @@ export default function MapaScreen() {
           onModelChange={setSelectedModel}
         />
       </View>
+
       <ScrollView>
-      <Text style={styles.sectionTitle}>Grid do Pátio</Text>
-      <ScrollView horizontal style={styles.gridContainer}>
-        <GridComponent 
-          gridPositions={gridPositions}
-          onPlaceMoto={handlePlaceMoto}
-          onRemoveFromGrid={handleRemoveFromGrid}
-        />
-      </ScrollView>
-      
-      <View style={styles.waitingSection}>
-        <View style={styles.waitingHeader}>
-          <Text style={styles.waitingTitle}>
-            Motos em Espera ({waitingMotos.length})
-          </Text>
-          <TouchableOpacity onPress={() => {
-            setSelectedStatus(null);
-            setSelectedModel(null);
-          }}>
-            <Text style={styles.clearFilters}>Limpar Filtros</Text>
-          </TouchableOpacity>
+        {/* Indicador de moto selecionada */}
+        {selectedMoto && (
+          <View style={styles.selectionIndicator}>
+            <Text style={styles.selectionText}>Moto selecionada: {selectedMoto.placa}</Text>
+            <TouchableOpacity
+              style={styles.clearSelectionButton}
+              onPress={handleClearSelection}
+            >
+              <Text style={styles.clearSelectionText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <Text style={styles.sectionTitle}>Grid do Pátio</Text>
+        <ScrollView horizontal style={styles.gridContainer}>
+          <GridComponent 
+              gridPositions={gridPositions}
+              onPlaceMoto={handlePlaceMoto}
+              onRemoveFromGrid={handleRemoveFromGrid}
+              selectedMoto={selectedMoto}
+          />
+        </ScrollView>
+        
+        <View style={styles.waitingSection}>
+          <View style={styles.waitingHeader}>
+            <Text style={styles.waitingTitle}>
+              Motos em Espera ({waitingMotos.length})
+            </Text>
+            <TouchableOpacity onPress={() => {
+              setSelectedStatus(null);
+              setSelectedModel(null);
+            }}>
+              <Text style={styles.clearFilters}>Limpar Filtros</Text>
+            </TouchableOpacity>
+          </View>
+          <MotoList 
+            motorcycles={waitingMotos}
+            onSelect={(moto) => setSelectedMoto(moto)}
+            selectedMoto={selectedMoto}
+          />
         </View>
-        <MotoList 
-          motorcycles={waitingMotos}
-          onSelect={(moto) => console.log('Selected:', moto)}
-        />
-      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -193,7 +222,29 @@ const styles = StyleSheet.create({
     marginBottom: 8, 
     maxHeight: 550,
   },
-  waitingAreaContainer: {
-    marginTop: 8, 
+  // Novos estilos para a seleção
+  selectionIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: colors.primary.lighter,
+    margin: 16,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary.main,
+  },
+  selectionText: {
+    fontWeight: 'bold',
+    color: colors.primary.main,
+  },
+  clearSelectionButton: {
+    padding: 6,
+    borderRadius: 4,
+    backgroundColor: colors.status.quarantine,
+  },
+  clearSelectionText: {
+    color: colors.neutral.white,
+    fontSize: 12,
   },
 });
