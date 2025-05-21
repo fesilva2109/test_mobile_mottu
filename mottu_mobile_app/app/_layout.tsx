@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ActivityIndicator, View } from 'react-native';
+import { colors } from '@/theme/colors';
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -20,21 +22,21 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('RootComponent - User:', user);
-    console.log('RootComponent - Loading:', loading);
     if (!loading) {
-      if (!user) {
-        console.log('RootComponent - Redirecionando para /login');
-        router.replace('/login');
-      } else {
-        console.log('RootComponent - Redirecionando para /(tabs)');
+      if (user) {
         router.replace('/(tabs)');
+      } else {
+        router.replace('/login');
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading]);
 
   if (loading) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary.main} />
+      </View>
+    );
   }
 
   return (

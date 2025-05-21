@@ -1,11 +1,17 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+}
 
 interface AuthContextType {
-  user: any | null; 
+  user: User | null;
   loading: boolean;
-  login: (userData: any) => Promise<void>; 
+  login: (email: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -15,15 +21,14 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem('user');
+        const storedUser = await AsyncStorage.getItem('@mottu:user');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
@@ -37,21 +42,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadUser();
   }, []);
 
-  const login = async (userData: any) => {
-    setUser(userData);
+  const login = async (email: string) => {
+    const userData = {
+      id: Date.now().toString(), 
+      email,
+      name: email.split('@')[0] 
+    };
+    
     try {
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
+      setUser(userData);
+      router.replace('/(tabs)');
     } catch (error) {
-      console.error('Erro ao salvar usuário:', error);
+      console.error('Erro ao fazer login:', error);
     }
   };
 
   const logout = async () => {
-    setUser(null);
     try {
-      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('@mottu:user');
+      setUser(null);
+      router.replace('/login');
     } catch (error) {
-      console.error('Erro ao remover usuário:', error);
+      console.error('Erro ao fazer logout:', error);
     }
   };
 

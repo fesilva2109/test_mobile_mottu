@@ -30,24 +30,21 @@ export default function LoginScreen() {
       email: '',
       password: ''
     };
-
+  
     if (!email) {
       newErrors.email = 'Email é obrigatório';
     } else if (!validateEmail(email)) {
       newErrors.email = 'Email inválido';
     }
-
+  
     if (!password) {
       newErrors.password = 'Senha é obrigatória';
-    } else if (!validatePassword(password)) {
-      newErrors.password = 'Senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número';
     }
-
+  
     setErrors(newErrors);
-
+  
     if (!newErrors.email && !newErrors.password) {
-      
-      router.replace('/(tabs)');
+      login(email); 
     }
   };
 
