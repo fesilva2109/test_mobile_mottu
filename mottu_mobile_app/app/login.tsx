@@ -70,6 +70,7 @@ export default function LoginScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
+              placeholderTextColor={colors.neutral.gray}
             />
           </View>
           {errors.email ? (
@@ -90,6 +91,7 @@ export default function LoginScreen() {
               onChangeText={setPassword}
               secureTextEntry
               autoComplete="password"
+              placeholderTextColor={colors.neutral.gray}
             />
           </View>
           {errors.password ? (
