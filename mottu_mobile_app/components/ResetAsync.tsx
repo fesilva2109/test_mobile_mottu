@@ -1,17 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
 
-export const limparAsyncStorage = async () => {
-  try {
-    await AsyncStorage.clear();
-    return true;
-  } catch (error) {
-    console.error('Erro ao limpar AsyncStorage:', error);
-    return false;
-  }
-};
 
 export function useResetAsync() {
+  const { resetApp } = useAuth();
+
   const resetar = async () => {
     Alert.alert(
       'Confirmar',
@@ -22,9 +16,9 @@ export function useResetAsync() {
           style: 'cancel',
         },
         {
-          text: 'Apagar',
+          text: 'Apagar Tudo',
           onPress: async () => {
-            const sucesso = await limparAsyncStorage();
+            const sucesso = await resetApp();
             if (sucesso) {
               Alert.alert('Sucesso', 'Dados locais apagados com sucesso');
             } else {
@@ -33,7 +27,8 @@ export function useResetAsync() {
           },
           style: 'destructive',
         },
-      ]
+      ],
+      { cancelable: true }
     );
   };
 

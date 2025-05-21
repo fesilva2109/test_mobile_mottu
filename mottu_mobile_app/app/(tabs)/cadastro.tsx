@@ -44,7 +44,7 @@ export default function CadastroScreen() {
     
     try {
       const newMotorcycle: Motorcycle = {
-        id: generateUUID(), // Use the function from expo-crypto
+        id: generateUUID(),
         placa: placa,
         modelo,
         cor,
@@ -56,7 +56,7 @@ export default function CadastroScreen() {
       
       Alert.alert(
         'Sucesso', 
-        'Moto cadastrada com sucesso!',
+        `Moto ${placa} cadastrada com sucesso!`,
         [
           { 
             text: 'Ver no Mapa', 

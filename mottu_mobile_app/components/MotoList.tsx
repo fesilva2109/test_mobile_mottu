@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, LayoutAnimation } from 'react-native';
 import { MotoCard } from './MotoCard';
 import { Motorcycle } from '@/types';
 import { colors } from '@/theme/colors';
@@ -33,6 +33,7 @@ export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps)
       )}
       contentContainerStyle={styles.listContainer}
       showsVerticalScrollIndicator={false}
+      onLayout={() => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)}
     />
   );
 }

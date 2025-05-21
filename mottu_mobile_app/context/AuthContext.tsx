@@ -13,6 +13,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string) => Promise<void>;
   logout: () => Promise<void>;
+  resetApp: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -68,8 +69,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const resetApp = async () => {
+    try {
+      await AsyncStorage.clear();
+      setUser(null);
+      router.replace('/login');
+      return true;
+    } catch (error) {
+      console.error('Erro ao resetar app:', error);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, resetApp }}>
       {children}
     </AuthContext.Provider>
   );

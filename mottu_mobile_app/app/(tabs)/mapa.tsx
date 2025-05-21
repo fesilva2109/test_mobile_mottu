@@ -8,12 +8,12 @@ import { FilterMenu } from '@/components/FilterMenu';
 import { colors } from '@/theme/colors';
 import { Motorcycle } from '@/types';
 
+
 export default function MapaScreen() {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
     const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
-
-    const { motorcycles, loading: loadingMotos, updateMotorcycle } = useMotorcycleStorage();
+    const { motorcycles, loading: loadingMotos, lastUpdate , updateMotorcycle } = useMotorcycleStorage();
     const {
         gridPositions,
         loading: loadingGrid,
@@ -51,7 +51,7 @@ export default function MapaScreen() {
         if (selectedMoto && filteredWaiting.every(m => m.id !== selectedMoto.id)) {
             setSelectedMoto(null);
         }
-    }, [motorcycles, selectedStatus, selectedModel, gridPositions]);
+    }, [motorcycles, selectedStatus, selectedModel, gridPositions, lastUpdate]);
 
     const handlePlaceMoto = async (position: { x: number, y: number }) => {
         if (!selectedMoto) return;

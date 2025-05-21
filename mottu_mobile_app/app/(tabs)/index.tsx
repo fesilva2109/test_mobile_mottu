@@ -83,10 +83,10 @@ export default function HomeScreen() {
           <Text style={styles.dashboardButtonText}>Ver Dashboard Completo</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={styles.dashboardButton}
+          style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
           onPress={resetar} 
         >
-          <Text style={styles.dashboardButtonText}>Limpar Dados Locais</Text>
+          <Text style={styles.dashboardButtonText}>Resetar App Completo</Text>
         </TouchableOpacity>
      </ScrollView>
     </SafeAreaView>
