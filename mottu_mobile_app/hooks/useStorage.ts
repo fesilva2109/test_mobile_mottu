@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Motorcycle, GridPosition } from '@/types';
 
@@ -6,9 +6,17 @@ import { Motorcycle, GridPosition } from '@/types';
 const MOTOS_KEY = '@mottu_motos';
 const GRID_KEY = '@mottu_grid';
 
+
+export const motorcycleListeners = new Set<() => void>();
+
+const notifyMotorcycleListeners = () => {
+  motorcycleListeners.forEach(listener => listener());
+};
+
 export const useMotorcycleStorage = () => {
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   // Load motorcycles from AsyncStorage
   const loadMotorcycles = async () => {
@@ -18,6 +26,7 @@ export const useMotorcycleStorage = () => {
       if (storedMotos) {
         setMotorcycles(JSON.parse(storedMotos));
       }
+      setLastUpdate(Date.now());
     } catch (error) {
       console.error('Failed to load motorcycles:', error);
     } finally {
@@ -26,14 +35,16 @@ export const useMotorcycleStorage = () => {
   };
 
   // Save motorcycles to AsyncStorage
-  const saveMotorcycles = async (motos: Motorcycle[]) => {
+  const saveMotorcycles = useCallback(async (motos: Motorcycle[]) => {
     try {
       await AsyncStorage.setItem(MOTOS_KEY, JSON.stringify(motos));
       setMotorcycles(motos);
+      setLastUpdate(Date.now());
+      notifyMotorcycleListeners(); 
     } catch (error) {
       console.error('Failed to save motorcycles:', error);
     }
-  };
+  }, []);
 
   // Add a new motorcycle
   const addMotorcycle = async (moto: Motorcycle) => {
@@ -57,6 +68,17 @@ export const useMotorcycleStorage = () => {
     await saveMotorcycles(updatedMotos);
   };
 
+  // Clear all motorcycles
+  const clearMotorcycles = async () => {
+    try {
+      await AsyncStorage.removeItem(MOTOS_KEY);
+      setMotorcycles([]);
+      setLastUpdate(Date.now());
+    } catch (e) {
+      console.error('Erro ao limpar motos:', e);
+    }
+  };
+
   // Initialize
   useEffect(() => {
     loadMotorcycles();
@@ -68,7 +90,9 @@ export const useMotorcycleStorage = () => {
     addMotorcycle,
     updateMotorcycle,
     removeMotorcycle,
-    refreshMotorcycles: loadMotorcycles
+    clearMotorcycles,
+    refreshMotorcycles: loadMotorcycles,
+    lastUpdate
   };
 };
 

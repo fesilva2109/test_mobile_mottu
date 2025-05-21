@@ -60,11 +60,11 @@ export default function CadastroScreen() {
         [
           { 
             text: 'Ver no Mapa', 
-            onPress: () => router.push('/mapa') 
+            onPress: () => router.replace('/mapa') 
           },
           { 
             text: 'Cadastrar Outra', 
-            onPress: resetForm 
+            onPress: resetForm
           }
         ]
       );

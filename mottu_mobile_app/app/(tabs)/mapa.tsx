@@ -13,7 +13,7 @@ export default function MapaScreen() {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
     const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
-    const { motorcycles, loading: loadingMotos, lastUpdate , updateMotorcycle } = useMotorcycleStorage();
+    const { motorcycles, loading: loadingMotos, lastUpdate , refreshMotorcycles, updateMotorcycle } = useMotorcycleStorage();
     const {
         gridPositions,
         loading: loadingGrid,
@@ -112,8 +112,7 @@ export default function MapaScreen() {
                     onModelChange={setSelectedModel}
                 />
             </View>
-
-            <ScrollView>
+            <ScrollView >
                 {selectedMoto && (
                     <View style={styles.selectionIndicator}>
                         <Text style={styles.selectionText}>Moto selecionada: {selectedMoto.placa}</Text>
@@ -127,7 +126,7 @@ export default function MapaScreen() {
                 )}
 
                 <Text style={styles.sectionTitle}>Grid do Pátio</Text>
-                <ScrollView horizontal style={styles.gridContainer}>
+                <ScrollView style={styles.gridContainer}>
                     <GridComponent
                         gridPositions={gridPositions}
                         onPlaceMoto={handlePlaceMoto}
@@ -154,7 +153,7 @@ export default function MapaScreen() {
                         selectedMoto={selectedMoto}
                     />
                 </View>
-            </ScrollView>
+            </ScrollView>    
         </SafeAreaView>
     );
 }

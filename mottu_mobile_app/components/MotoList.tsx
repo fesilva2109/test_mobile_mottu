@@ -34,6 +34,7 @@ export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps)
       contentContainerStyle={styles.listContainer}
       showsVerticalScrollIndicator={false}
       onLayout={() => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)}
+      scrollEnabled={false}
     />
   );
 }
