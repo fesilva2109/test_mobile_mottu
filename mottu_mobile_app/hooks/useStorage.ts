@@ -64,8 +64,19 @@ export const useMotorcycleStorage = () => {
 
   // Remove a motorcycle
   const removeMotorcycle = async (id: string) => {
-    const updatedMotos = motorcycles.filter(moto => moto.id !== id);
-    await saveMotorcycles(updatedMotos);
+    try {
+      const updatedMotos = motorcycles.filter(moto => moto.id !== id);
+      await AsyncStorage.setItem(MOTOS_KEY, JSON.stringify(updatedMotos));
+      setMotorcycles(updatedMotos);
+      
+      notifyMotorcycleListeners();
+      setLastUpdate(Date.now());
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to remove motorcycle:', error);
+      return false;
+    }
   };
 
   // Clear all motorcycles

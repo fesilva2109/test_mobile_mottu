@@ -7,10 +7,11 @@ import { colors } from '@/theme/colors';
 interface MotoListProps {
   motorcycles: Motorcycle[];
   onSelect: (motorcycle: Motorcycle) => void;
+  onDelete: (id:string) => void;
   selectedMoto?: Motorcycle | null;
 }
 
-export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps) {
+export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: MotoListProps) {
   if (motorcycles.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -19,6 +20,8 @@ export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps)
     );
   }
   
+
+
   return (
     <FlatList
       data={motorcycles}
@@ -27,6 +30,7 @@ export function MotoList({ motorcycles, onSelect, selectedMoto }: MotoListProps)
         <MotoCard 
           motorcycle={item}
           onPress={onSelect}
+          onDelete={onDelete}
           isInWaitingArea
           isSelected={item.id === selectedMoto?.id}
         />

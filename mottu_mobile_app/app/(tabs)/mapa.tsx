@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMotorcycleStorage, useGridStorage } from '@/hooks/useStorage';
 import { GridComponent } from '@/components/GridComponent';
@@ -13,7 +13,7 @@ export default function MapaScreen() {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
     const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
-    const { motorcycles, loading: loadingMotos, lastUpdate , refreshMotorcycles, updateMotorcycle } = useMotorcycleStorage();
+    const { motorcycles, loading: loadingMotos, lastUpdate , updateMotorcycle,refreshMotorcycles, removeMotorcycle } = useMotorcycleStorage();
     const {
         gridPositions,
         loading: loadingGrid,
@@ -91,6 +91,36 @@ export default function MapaScreen() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setSelectedMoto(null);
     };
+    const handleDeleteMoto = async (id: string) => {
+        Alert.alert(
+            'Confirmar Exclusão',
+            'Tem certeza que deseja remover esta moto?',
+            [
+            {
+                text: 'Cancelar',
+                style: 'cancel',
+            },
+            {
+                text: 'Remover',
+                style: 'destructive',
+                onPress: async () => {
+                try {
+
+                    await removeMotorcycleFromGrid(id);
+                    
+                    await removeMotorcycle(id);
+
+                    refreshMotorcycles();
+
+                } catch (error) {
+                    console.error('Erro ao remover moto:', error);
+                    Alert.alert('Erro', 'Não foi possível remover a moto');
+                }
+                },
+            },
+            ]
+        );
+        };
 
     if (loadingMotos || loadingGrid) {
         return (
@@ -150,6 +180,7 @@ export default function MapaScreen() {
                     <MotoList
                         motorcycles={waitingMotos}
                         onSelect={(moto) => setSelectedMoto(moto)}
+                        onDelete={handleDeleteMoto}
                         selectedMoto={selectedMoto}
                     />
                 </View>
@@ -241,3 +272,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
+
+function removeMotorcycle(id: string) {
+    throw new Error('Function not implemented.');
+}

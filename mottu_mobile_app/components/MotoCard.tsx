@@ -2,15 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Motorcycle } from '@/types';
 import { getStatusColor, getModelIcon, colors } from '@/theme/colors';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface MotoCardProps {
   motorcycle: Motorcycle;
   onPress?: (motorcycle: Motorcycle) => void;
+  onDelete?: (id: string) => void;
   isInWaitingArea?: boolean;
   isSelected?: boolean;
 }
 
-export function MotoCard({ motorcycle, onPress, isInWaitingArea = false, isSelected = false }: MotoCardProps) {
+export function MotoCard({ motorcycle, onPress, onDelete, isInWaitingArea = false, isSelected = false }: MotoCardProps) {
   const statusColor = getStatusColor(motorcycle.status);
   const modelIcon = getModelIcon(motorcycle.modelo);
   
@@ -19,48 +21,59 @@ export function MotoCard({ motorcycle, onPress, isInWaitingArea = false, isSelec
   const isOldMotorcycle = hoursInYard > 48; 
   
   return (
-    <TouchableOpacity
-      style={[
-        styles.container,
-        isInWaitingArea && styles.waitingAreaCard,
-        isOldMotorcycle && styles.oldMotorcycleCard,
-        isSelected && styles.selectedCard,
-      ]}
-      onPress={() => onPress?.(motorcycle)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.header}>
-        <View style={styles.modelContainer}>
-          <Text style={styles.emoji}>{modelIcon}</Text>
-          <Text style={styles.placa}>{motorcycle.placa}</Text>
+    <View style={styles.cardContainer}>
+      <TouchableOpacity
+        style={[
+          styles.container,
+          isInWaitingArea && styles.waitingAreaCard,
+          isOldMotorcycle && styles.oldMotorcycleCard,
+          isSelected && styles.selectedCard,
+        ]}
+        onPress={() => onPress?.(motorcycle)}
+        activeOpacity={0.8}
+      >
+        <View style={styles.header}>
+          <View style={styles.modelContainer}>
+            <Text style={styles.emoji}>{modelIcon}</Text>
+            <Text style={styles.placa}>{motorcycle.placa}</Text>
+          </View>
+          
+          {motorcycle.reservada && (
+            <View style={styles.reservedTag}>
+              <Text style={styles.reservedText}>Reservada</Text>
+            </View>
+          )}
         </View>
         
-        {motorcycle.reservada && (
-          <View style={styles.reservedTag}>
-            <Text style={styles.reservedText}>Reservada</Text>
-          </View>
-        )}
-      </View>
-      
-      <View style={styles.infoContainer}>
-        <Text style={styles.modelo}>{motorcycle.modelo}</Text>
-        <Text style={styles.cor}>{motorcycle.cor}</Text>
-      </View>
-      
-      <View style={styles.footer}>
-        <View style={[styles.statusContainer, { backgroundColor: statusColor }]}>
-          <Text style={styles.status}>{motorcycle.status}</Text>
+        <View style={styles.infoContainer}>
+          <Text style={styles.modelo}>{motorcycle.modelo}</Text>
+          <Text style={styles.cor}>{motorcycle.cor}</Text>
         </View>
         
-        {isOldMotorcycle && (
-          <View style={styles.timeAlertContainer}>
-            <Text style={styles.timeAlertText}>
-              {Math.floor(hoursInYard)}h no pátio
-            </Text>
+        <View style={styles.footer}>
+          <View style={[styles.statusContainer, { backgroundColor: statusColor }]}>
+            <Text style={styles.status}>{motorcycle.status}</Text>
           </View>
-        )}
-      </View>
-    </TouchableOpacity>
+          
+          {isOldMotorcycle && (
+            <View style={styles.timeAlertContainer}>
+              <Text style={styles.timeAlertText}>
+                {Math.floor(hoursInYard)}h no pátio
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+      {onDelete && (
+      <TouchableOpacity 
+        style={styles.deleteButton}
+        onPress={() => onDelete(motorcycle.id)}
+      >
+        <MaterialIcons name="delete" size={20} color={colors.neutral.white} />
+      </TouchableOpacity>
+    )}
+    </View>
+    
   );
 }
 
@@ -155,5 +168,16 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.primary.main,
     backgroundColor: colors.primary.lighter,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  deleteButton: {
+    marginLeft: 8,
+    padding: 8,
+    backgroundColor: colors.status.quarantine,
+    borderRadius: 6,
   },
 });
