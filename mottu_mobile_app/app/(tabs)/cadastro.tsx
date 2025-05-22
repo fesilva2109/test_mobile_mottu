@@ -7,10 +7,9 @@ import { useMotorcycleStorage } from '@/hooks/useStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { colors } from '@/theme/colors';
 import { Motorcycle } from '@/types';
-import * as Crypto from 'expo-crypto'; // Import expo-crypto
+import * as Crypto from 'expo-crypto'; 
 import useHistoryStorage from '@/hooks/useHistoryStorage';
 
-// Function to generate UUID using expo-crypto
 const generateUUID = () => {
   return Crypto.randomUUID();
 };
