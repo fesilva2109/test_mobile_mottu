@@ -1,3 +1,4 @@
+"use client"
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { Grid2x2 as Grid, QrCode, ChartBar as BarChart2, Chrome as Home } from 'lucide-react-native';
