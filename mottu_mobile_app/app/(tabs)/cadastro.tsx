@@ -8,6 +8,7 @@ import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { colors } from '@/theme/colors';
 import { Motorcycle } from '@/types';
 import * as Crypto from 'expo-crypto'; // Import expo-crypto
+import useHistoryStorage from '@/hooks/useHistoryStorage';
 
 // Function to generate UUID using expo-crypto
 const generateUUID = () => {
@@ -17,6 +18,8 @@ const generateUUID = () => {
 export default function CadastroScreen() {
   const {refreshMotorcycles} = useMotorcycleStorage();
   const router = useRouter();
+  const { addHistoryEvent } = useHistoryStorage();
+
   const { addMotorcycle } = useMotorcycleStorage();
   
   const { placa: scannedPlaca, modelo: scannedModelo, cor: scannedCor, status: scannedStatus } = useLocalSearchParams();
@@ -72,7 +75,8 @@ export default function CadastroScreen() {
       };
       
       await addMotorcycle(newMotorcycle);
-      
+      addHistoryEvent('Moto Cadastrada', `Placa: ${placa}, Modelo: ${modelo}`);
+
       await new Promise(resolve => setTimeout(resolve, 300));
 
       Alert.alert(

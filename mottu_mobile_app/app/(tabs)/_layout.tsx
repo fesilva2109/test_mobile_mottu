@@ -1,7 +1,7 @@
 "use client"
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { Grid2x2 as Grid, QrCode, ChartBar as BarChart2, Chrome as Home } from 'lucide-react-native';
+import { Grid2x2 as Grid, QrCode, ChartBar as BarChart2, Chrome as Home, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 
 export default function TabLayout() {
@@ -11,10 +11,8 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary.main,
         tabBarInactiveTintColor: colors.neutral.gray,
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel,
       }}>
-      
+
       <Tabs.Screen
         name="index"
         options={{
@@ -51,20 +49,41 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="historico"
+        options={{
+          title: 'Histórico',
+          tabBarIcon: ({ color, size }) => (
+            <Clock size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: colors.neutral.white,
-    height: 60,
-    paddingBottom: 5,
-    paddingTop: 5,
-    borderTopColor: colors.neutral.lightGray,
+  container: {
+    flex: 1,
+    backgroundColor: colors.neutral.lightGray,
   },
-  tabBarLabel: {
-    fontSize: 12,
-    fontWeight: '500',
+  header: {
+    padding: 16,
+    backgroundColor: colors.primary.main,
   },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.neutral.white,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: colors.neutral.white,
+    opacity: 0.9,
+  },
+  content: {
+    flex: 1, 
+    padding: 10,
+  },
+ 
 });

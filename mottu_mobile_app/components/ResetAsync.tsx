@@ -9,21 +9,16 @@ export function useResetAsync() {
   const resetar = async () => {
     Alert.alert(
       'Confirmar',
-      'Tem certeza que deseja apagar TODOS os dados locais?',
+      'Tem certeza que deseja fazer logout?',
       [
         {
           text: 'Cancelar',
           style: 'cancel',
         },
         {
-          text: 'Apagar Tudo',
+          text: 'Logout',
           onPress: async () => {
             const sucesso = await resetApp();
-            if (sucesso) {
-              Alert.alert('Sucesso', 'Dados locais apagados com sucesso');
-            } else {
-              Alert.alert('Erro', 'Não foi possível apagar os dados');
-            }
           },
           style: 'destructive',
         },

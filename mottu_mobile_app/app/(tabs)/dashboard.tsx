@@ -137,9 +137,7 @@ export default function DashboardScreen() {
             {metrics.motosDisponiveis} de {MOTO_EFFICIENCY_TARGET} motos prontas para aluguel
           </Text>
           
-          <Text style={styles.impactText}>
-            Impacto Social: {metrics.motosDisponiveis} motos = até {metrics.motosDisponiveis} entregadores trabalhando
-          </Text>
+          
         </View>
         
         {/* Model distribution */}

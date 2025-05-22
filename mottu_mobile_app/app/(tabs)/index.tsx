@@ -4,11 +4,13 @@ import { useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 import { useResetAsync } from '@/components/ResetAsync';
+import useHistoryStorage from '@/hooks/useHistoryStorage'; 
 
 
 export default function HomeScreen() {
   const router = useRouter();
   const {resetar} = useResetAsync();
+  const { clearHistory } = useHistoryStorage(); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,6 +52,8 @@ export default function HomeScreen() {
           
           <TouchableOpacity 
             style={styles.quickAccessCard}
+            onPress={() => router.push('/historico')}
+
           >
             <Clock size={36} color={colors.primary.main} />
             <Text style={styles.cardTitle}>Histórico</Text>
@@ -61,17 +65,17 @@ export default function HomeScreen() {
         
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>24</Text>
+            <Text style={styles.statValue}>0</Text>
             <Text style={styles.statLabel}>Motos Disponíveis</Text>
           </View>
           
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>8</Text>
+            <Text style={styles.statValue}>0</Text>
             <Text style={styles.statLabel}>Em Manutenção</Text>
           </View>
           
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>3</Text>
+            <Text style={styles.statValue}>0</Text>
             <Text style={styles.statLabel}>Em Quarentena</Text>
           </View>
         </View>
@@ -86,7 +90,7 @@ export default function HomeScreen() {
           style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
           onPress={resetar} 
         >
-          <Text style={styles.dashboardButtonText}>Resetar App Completo</Text>
+          <Text style={styles.dashboardButtonText}>Logout</Text>
         </TouchableOpacity>
      </ScrollView>
     </SafeAreaView>
