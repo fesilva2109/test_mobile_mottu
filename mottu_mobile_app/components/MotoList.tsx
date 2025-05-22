@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, LayoutAnimation } from 'react-native';
 import { MotoCard } from './MotoCard';
 import { Motorcycle } from '@/types';
 import { colors } from '@/theme/colors';
+import { motorcycleListeners, useMotorcycleStorage } from '@/hooks/useStorage';
 
 interface MotoListProps {
   motorcycles: Motorcycle[];
@@ -12,6 +13,21 @@ interface MotoListProps {
 }
 
 export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: MotoListProps) {
+    const { refreshMotorcycles } = useMotorcycleStorage();
+
+    useEffect(() => {
+      const listener = () => {
+        refreshMotorcycles();
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      };
+      
+      motorcycleListeners.add(listener);
+      return () => {
+        motorcycleListeners.delete(listener);
+      };
+    }, [refreshMotorcycles]);
+
+  
   if (motorcycles.length === 0) {
     return (
       <View style={styles.emptyContainer}>

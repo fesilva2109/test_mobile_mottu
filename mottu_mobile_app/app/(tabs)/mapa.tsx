@@ -13,7 +13,7 @@ export default function MapaScreen() {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
     const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
-    const { motorcycles, loading: loadingMotos, lastUpdate , updateMotorcycle,refreshMotorcycles, removeMotorcycle } = useMotorcycleStorage();
+    const { motorcycles, loading: loadingMotos, lastUpdate , updateMotorcycle, refreshMotorcycles, removeMotorcycle } = useMotorcycleStorage();
     const {
         gridPositions,
         loading: loadingGrid,
@@ -272,7 +272,3 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
-
-function removeMotorcycle(id: string) {
-    throw new Error('Function not implemented.');
-}

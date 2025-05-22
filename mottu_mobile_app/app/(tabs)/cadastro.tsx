@@ -16,6 +16,7 @@ const generateUUID = () => {
 };
 
 export default function CadastroScreen() {
+  const {refreshMotorcycles} = useMotorcycleStorage();
   const router = useRouter();
   const { addMotorcycle } = useMotorcycleStorage();
   
@@ -54,13 +55,17 @@ export default function CadastroScreen() {
       
       await addMotorcycle(newMotorcycle);
       
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       Alert.alert(
         'Sucesso', 
         `Moto ${placa} cadastrada com sucesso!`,
         [
           { 
-            text: 'Ver no Mapa', 
-            onPress: () => router.replace('/mapa') 
+            text: 'Ver no Mapa',
+            onPress: () => {;
+              router.push('/mapa');
+            }
           },
           { 
             text: 'Cadastrar Outra', 
@@ -68,6 +73,8 @@ export default function CadastroScreen() {
           }
         ]
       );
+      refreshMotorcycles();
+      resetForm();
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a moto.');
