@@ -73,7 +73,6 @@ export default function CadastroScreen() {
           }
         ]
       );
-      refreshMotorcycles();
       resetForm();
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
