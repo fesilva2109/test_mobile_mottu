@@ -15,7 +15,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
     const [selectedCell, setSelectedCell] = useState<{ x: number, y: number } | null>(null);
 
     const screenWidth = Dimensions.get('window').width - 36;
-    const gridSize = gridPositions.length > 0 ? Math.ceil(Math.sqrt(gridPositions.length + 10)) : 0;
+    const gridSize = gridPositions.reduce((max, pos) => Math.max(max, pos.x + 1, pos.y + 1), 5);
     const cellWidth = gridSize > 0 ? screenWidth / gridSize : 80;
     const cellHeight = cellWidth;
 

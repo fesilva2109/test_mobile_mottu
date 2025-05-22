@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     gridContainer: {
         marginBottom: 8,
         maxHeight: 550,
+         overflow: 'scroll',
     },
     selectionIndicator: {
         flexDirection: 'row',

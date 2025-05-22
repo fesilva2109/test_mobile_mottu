@@ -124,7 +124,7 @@ export const useGridStorage = () => {
         setGridPositions(JSON.parse(storedGrid));
       } else {
         // If no grid exists, initialize a new one (default 5x5)
-        const initialGrid = initializeGrid(5, 5);
+        const initialGrid = initializeGrid(8, 8);
         setGridPositions(initialGrid);
         await AsyncStorage.setItem(GRID_KEY, JSON.stringify(initialGrid));
       }
