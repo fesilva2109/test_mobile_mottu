@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-// import { v4 as uuidv4 } from 'uuid'; // Remove this line
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { QrCode, ChevronDown } from 'lucide-react-native';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
@@ -20,6 +19,9 @@ export default function CadastroScreen() {
   const router = useRouter();
   const { addMotorcycle } = useMotorcycleStorage();
   
+  const { placa: scannedPlaca, modelo: scannedModelo, cor: scannedCor, status: scannedStatus } = useLocalSearchParams();
+
+
   const [placa, setPlaca] = useState('');
   const [modelo, setModelo] = useState(MOTO_MODELS[0]);
   const [cor, setCor] = useState('');
@@ -28,6 +30,22 @@ export default function CadastroScreen() {
   const [showModelOptions, setShowModelOptions] = useState(false);
   const [showStatusOptions, setShowStatusOptions] = useState(false);
   
+  useEffect(() => {
+        if (scannedPlaca) {
+          setPlaca(scannedPlaca as string);
+        }
+        if (scannedModelo) {
+          setModelo(scannedModelo as string);
+        }
+        if (scannedCor) {
+          setCor(scannedCor as string);
+        }
+        if (scannedStatus) {
+          setStatus(scannedStatus as string);
+        }
+      }, [scannedPlaca, scannedModelo, scannedCor, scannedStatus]);
+
+
   const openQrCodeScanner = () => {
     router.push('/cadastro/camera');
   };

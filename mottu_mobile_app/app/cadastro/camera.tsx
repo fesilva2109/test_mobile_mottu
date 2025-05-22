@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
+import { BarcodeScanningResult } from 'expo-camera/build/Camera.types';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, X } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
@@ -16,13 +16,15 @@ export default function CameraScreen() {
     requestPermission();
   }, []);
 
-  const handleBarCodeScanned = ({ data }: BarCodeScanningResult) => {
+  const handleBarCodeScanned = ({ data }: BarcodeScanningResult) => {
     setScanned(true);
-    
+    console.log('Dados lidos do QR Code:', data); 
+
     try {
       // Try to parse the QR code data as JSON
       const parsedData = JSON.parse(data);
-      
+      console.log('Dados após o parse:', parsedData); 
+
       // Validate the data
       if (!parsedData.placa || !parsedData.modelo || !parsedData.cor || !parsedData.status) {
         Alert.alert(
@@ -33,7 +35,7 @@ export default function CameraScreen() {
       }
       
       // Navigate back to form with the scanned data
-      router.push({
+      router.replace({
         pathname: '/(tabs)/cadastro',
         params: {
           placa: parsedData.placa,
@@ -77,9 +79,9 @@ export default function CameraScreen() {
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeScannerSettings={{
-          barCodeTypes: ['qr']
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr']
         }}
         facing={facing}
       >
