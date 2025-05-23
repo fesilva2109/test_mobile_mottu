@@ -18,12 +18,12 @@ export const colors = {
   },
   // Status colors
   status: {
-    ready: '#05AF31',     // Ready for rental
-    maintenance: '#FFB800', // In maintenance
-    quarantine: '#FF5252',  // In quarantine
-    priority: '#B71C1C',   // High priority
-    reserved: '#4A56E2',   // Reserved
-    waiting: '#7A7A7A',    // Waiting for inspection
+    ready: '#05AF31',     
+    maintenance: '#FFB800', 
+    quarantine: '#FF5252', 
+    priority: '#B71C1C',   
+    reserved: '#4A56E2',  
+    waiting: '#7A7A7A',    
   }
 };
 
