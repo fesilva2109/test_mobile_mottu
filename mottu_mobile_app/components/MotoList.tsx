@@ -11,7 +11,9 @@ interface MotoListProps {
     selectedMoto?: Motorcycle | null;
 }
 
+// Lista visual de motos, usada em várias telas do app
 export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: MotoListProps) {
+    // Exibe mensagem amigável se não houver motos para mostrar
     if (motorcycles.length === 0) {
         return (
             <View style={styles.emptyContainer}>
@@ -24,6 +26,7 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
         <FlatList
             data={motorcycles}
             keyExtractor={(item) => item.id}
+            // Renderiza cada moto usando o MotoCard
             renderItem={({ item }) => (
                 <MotoCard
                     motorcycle={item}
@@ -35,12 +38,14 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
             )}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}
+            // Animação suave ao atualizar a lista
             onLayout={() => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)}
             scrollEnabled={false}
         />
     );
 }
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
     listContainer: {
         paddingBottom: 20,

@@ -6,26 +6,29 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, X } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 
+// Tela de leitura de QR Code para cadastro rápido de motos
 export default function CameraScreen() {
   const router = useRouter();
-  const [scanned, setScanned] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [scanned, setScanned] = useState(false); // Controla se já escaneou um QR
+  const [permission, requestPermission] = useCameraPermissions(); // Permissão da câmera
+  const [facing, setFacing] = useState<CameraType>('back'); // Câmera traseira por padrão
 
+  // Solicita permissão ao abrir a tela
   useEffect(() => {
     requestPermission();
   }, []);
 
+  // Função chamada ao escanear um QR Code
   const handleBarCodeScanned = ({ data }: BarcodeScanningResult) => {
     setScanned(true);
     console.log('Dados lidos do QR Code:', data); 
 
     try {
-      // Try to parse the QR code data as JSON
+      // Tenta interpretar o QR como JSON
       const parsedData = JSON.parse(data);
       console.log('Dados após o parse:', parsedData); 
 
-      // Validate the data
+      // Valida se todos os campos necessários estão presentes
       if (!parsedData.placa || !parsedData.modelo || !parsedData.cor || !parsedData.status) {
         Alert.alert(
           'QR Code Inválido', 
@@ -34,7 +37,7 @@ export default function CameraScreen() {
         return;
       }
       
-      // Navigate back to form with the scanned data
+      // Navega para o formulário de cadastro preenchendo os campos automaticamente
       router.replace({
         pathname: '/(tabs)/cadastro',
         params: {
@@ -45,6 +48,7 @@ export default function CameraScreen() {
         }
       });
     } catch (error) {
+      // Caso o QR não seja um JSON válido
       Alert.alert(
         'Erro ao Processar QR Code', 
         'O QR Code escaneado não está no formato correto. Certifique-se de escanear um código QR válido da Mottu.'
@@ -52,7 +56,7 @@ export default function CameraScreen() {
     }
   };
 
-  // If camera permission is not granted yet
+  // Exibe tela de permissão caso ainda não tenha sido concedida
   if (!permission?.granted) {
     return (
       <View style={styles.permissionContainer}>
@@ -85,6 +89,7 @@ export default function CameraScreen() {
         }}
         facing={facing}
       >
+        {/* Overlay para instrução e área de leitura */}
         <View style={styles.overlay}>
           <View style={styles.scannerContainer}>
             <Text style={styles.scannerText}>
@@ -93,6 +98,7 @@ export default function CameraScreen() {
             <View style={styles.scannerFrame} />
           </View>
           
+          {/* Botões de ação: voltar, escanear novamente, virar câmera */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.closeButton}
@@ -127,6 +133,7 @@ export default function CameraScreen() {
   );
 }
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
   container: {
     flex: 1,

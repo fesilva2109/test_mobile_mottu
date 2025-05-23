@@ -11,9 +11,12 @@ import { useFocusEffect } from 'expo-router';
 import React from 'react';
 
 export default function MapaScreen() {
+  // Estados para filtros e seleção de motos
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [selectedMoto, setSelectedMoto] = useState<Motorcycle | null>(null);
+
+  // Hooks customizados para acessar motos e grid do AsyncStorage
   const { motorcycles, loading: loadingMotos, updateMotorcycle, refreshMotorcycles, removeMotorcycle } = useMotorcycleStorage();
   const {
     gridPositions,
@@ -21,20 +24,24 @@ export default function MapaScreen() {
     placeMotorcycle,
     removeMotorcycleFromGrid
   } = useGridStorage();
+
+  // Estados para motos aguardando e já posicionadas no grid
   const [waitingMotos, setWaitingMotos] = useState<Motorcycle[]>([]);
   const [placedMotos, setPlacedMotos] = useState<Motorcycle[]>([]);
 
+  // Atualiza motos sempre que a tela ganha foco (garante dados atualizados)
   useFocusEffect(
     useCallback(() => {
-    console.log('MapaScreen: useFocusEffect acionado.'); 
       refreshMotorcycles();
     }, [refreshMotorcycles])
   );
 
+  // Animação suave ao atualizar listas de motos
   useEffect(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, [waitingMotos, placedMotos]);
 
+  // Filtra motos conforme status/modelo selecionados e atualiza listas
   useEffect(() => {
     console.log('MapaScreen: Estado motorcycles mudou. Recalculando waitingMotos.');
     const onGrid = motorcycles.filter(moto => moto.posicao);
@@ -56,11 +63,13 @@ export default function MapaScreen() {
     setWaitingMotos(filteredWaiting);
     setPlacedMotos(filteredOnGrid);
 
+    // Limpa seleção se moto filtrada sair da lista
     if (selectedMoto && filteredWaiting.every(m => m.id !== selectedMoto.id)) {
       setSelectedMoto(null);
     }
   }, [motorcycles, selectedStatus, selectedModel]); 
 
+  // Posiciona moto selecionada no grid
   const handlePlaceMoto = async (position: { x: number, y: number }) => {
     if (!selectedMoto) return;
 
@@ -76,6 +85,7 @@ export default function MapaScreen() {
     }
   };
 
+  // Remove moto do grid (mantém no sistema)
   const handleRemoveFromGrid = async (motoId: string) => {
     try {
       const moto = motorcycles.find(m => m.id === motoId);
@@ -95,6 +105,7 @@ export default function MapaScreen() {
     }
   };
 
+  // Limpa seleção de moto
   const handleClearSelection = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setSelectedMoto(null);
@@ -126,6 +137,7 @@ export default function MapaScreen() {
     );
   };
 
+  // Exibe loading enquanto carrega motos ou grid
   if (loadingMotos || loadingGrid) {
     return (
       <View style={styles.loadingContainer}>
@@ -137,6 +149,7 @@ export default function MapaScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Cabeçalho com filtros */}
       <View style={styles.header}>
         <Text style={styles.title}>Mapa do Pátio</Text>
         <FilterMenu
@@ -146,7 +159,8 @@ export default function MapaScreen() {
           onModelChange={setSelectedModel}
         />
       </View>
-      <ScrollView >
+      <ScrollView>
+        {/* Indicador de seleção de moto */}
         {selectedMoto && (
           <View style={styles.selectionIndicator}>
             <Text style={styles.selectionText}>Moto selecionada: {selectedMoto.placa}</Text>
@@ -159,6 +173,7 @@ export default function MapaScreen() {
           </View>
         )}
 
+        {/* Grid visual do pátio */}
         <Text style={styles.sectionTitle}>Grid do Pátio</Text>
         <ScrollView style={styles.gridContainer}>
           <GridComponent
@@ -169,6 +184,7 @@ export default function MapaScreen() {
           />
         </ScrollView>
 
+        {/* Lista de motos aguardando posicionamento */}
         <View style={styles.waitingSection}>
           <View style={styles.waitingHeader}>
             <Text style={styles.waitingTitle}>
@@ -193,6 +209,7 @@ export default function MapaScreen() {
   );
 }
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -5,9 +5,12 @@ import { Mail, Lock, AlertCircle } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 import { useAuth } from '@/context/AuthContext';
 
+// Tela de Login: autenticação simples para acesso ao app
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
+
+  // Estados controlados para os campos do formulário
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
@@ -15,22 +18,26 @@ export default function LoginScreen() {
     password: ''
   });
 
+  // Validação básica de email
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
+  // Validação de senha forte (mínimo 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 símbolo)
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/;
     return passwordRegex.test(password);
   };
 
+  // Função chamada ao pressionar "Entrar"
   const handleLogin = () => {
     const newErrors = {
       email: '',
       password: ''
     };
   
+    // Validação dos campos
     if (!email) {
       newErrors.email = 'Email é obrigatório';
     } else if (!validateEmail(email)) {
@@ -40,9 +47,13 @@ export default function LoginScreen() {
     if (!password) {
       newErrors.password = 'Senha é obrigatória';
     }
+    else if (!validatePassword(password)) {
+    newErrors.password = 'Senha fraca (mín. 8 caracteres, 1 maiúscula, 1 símbolo)';
+     }
   
     setErrors(newErrors);
   
+    // Se não houver erros, realiza login (contexto de autenticação)
     if (!newErrors.email && !newErrors.password) {
       login(email); 
     }
@@ -50,12 +61,15 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Cabeçalho visual do app */}
       <View style={styles.header}>
         <Text style={styles.title}>Mottu</Text>
         <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
       </View>
 
+      {/* Formulário de login */}
       <View style={styles.form}>
+        {/* Campo de email */}
         <View style={styles.inputGroup}>
           <View style={[styles.inputContainer, errors.email ? styles.inputError : null]}>
             <Mail size={20} color={colors.neutral.gray} />
@@ -70,6 +84,7 @@ export default function LoginScreen() {
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
+          {/* Exibe erro de email, se houver */}
           {errors.email ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
@@ -78,6 +93,7 @@ export default function LoginScreen() {
           ) : null}
         </View>
 
+        {/* Campo de senha */}
         <View style={styles.inputGroup}>
           <View style={[styles.inputContainer, errors.password ? styles.inputError : null]}>
             <Lock size={20} color={colors.neutral.gray} />
@@ -91,6 +107,7 @@ export default function LoginScreen() {
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
+          {/* Exibe erro de senha, se houver */}
           {errors.password ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
@@ -99,6 +116,7 @@ export default function LoginScreen() {
           ) : null}
         </View>
 
+        {/* Botão de login */}
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Entrar</Text>
         </TouchableOpacity>
@@ -107,6 +125,7 @@ export default function LoginScreen() {
   );
 }
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
   container: {
     flex: 1,

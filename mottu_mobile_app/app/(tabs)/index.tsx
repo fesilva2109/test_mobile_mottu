@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
-import { useResetAsync } from '@/components/ResetAsync';
+import { useLogout } from '@/components/Logout';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
 import React from 'react';
 
@@ -11,7 +11,7 @@ import React from 'react';
 // e exibindo um resumo do status do pátio.
 export default function HomeScreen() {
   const router = useRouter(); 
-  const { resetar } = useResetAsync(); 
+  const { logout } = useLogout(); 
   const { motorcycles, refreshMotorcycles } = useMotorcycleStorage(); 
 
   const motosDisponiveis = motorcycles.filter(m => m.status === 'Pronta para aluguel').length;
@@ -115,7 +115,7 @@ export default function HomeScreen() {
         {/* Botão para realizar o logout do aplicativo e retornar à tela de login. */}
         <TouchableOpacity
           style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
-          onPress={resetar}
+          onPress={logout}
         >
           <Text style={styles.dashboardButtonText}>Logout</Text>
         </TouchableOpacity>

@@ -6,34 +6,43 @@ import { colors } from '@/theme/colors';
 interface GridComponentProps {
     gridPositions: GridPosition[];
     onPlaceMoto: (position: { x: number, y: number }) => void;
-    onRemoveFromGrid: (motoId: string) => void |  Promise<void>;
+    onRemoveFromGrid: (motoId: string) => void | Promise<void>;
     selectedMoto?: Motorcycle | null;
 }
 
+// Componente visual do grid do pátio para posicionamento das motos
 export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, selectedMoto }: GridComponentProps) {
+    // Estado para moto selecionada no grid (para remoção)
     const [gridSelectedMoto, setGridSelectedMoto] = useState<Motorcycle | null>(null);
+    // Estado para célula selecionada (destaca visualmente)
     const [selectedCell, setSelectedCell] = useState<{ x: number, y: number } | null>(null);
 
+    // Calcula tamanho do grid e das células dinamicamente
     const screenWidth = Dimensions.get('window').width - 36;
     const gridSize = gridPositions.reduce((max, pos) => Math.max(max, pos.x + 1, pos.y + 1), 5);
     const cellWidth = gridSize > 0 ? screenWidth / gridSize : 80;
     const cellHeight = cellWidth;
 
+    // Lista de posições ocupadas (para renderização otimizada)
     const occupiedPositions = useMemo(() => gridPositions.filter(pos => pos.occupied), [gridPositions]);
 
+    // Lida com clique em uma célula do grid
     const handleCellPress = (x: number, y: number) => {
         const position = gridPositions.find(pos => pos.x === x && pos.y === y);
 
         if (position) {
+            // Se célula ocupada, seleciona moto para possível remoção
             if (position.occupied && position.motorcycle) {
                 setGridSelectedMoto(position.motorcycle);
                 setSelectedCell({ x, y });
+            // Se célula vazia e há moto selecionada, posiciona moto
             } else if (selectedMoto) {
                 onPlaceMoto({ x, y });
             }
         }
     };
 
+    // Remove moto selecionada do grid
     const handleRemoveFromGrid = () => {
         if (gridSelectedMoto) {
             onRemoveFromGrid(gridSelectedMoto.id);
@@ -42,6 +51,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
         }
     };
 
+    // Renderiza todas as células do grid
     const renderGridCells = () => {
         const cells = [];
 
@@ -51,6 +61,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
             for (let x = 0; x < gridSize; x++) {
                 const position = gridPositions.find(pos => pos.x === x && pos.y === y);
                 const isSelected = selectedCell?.x === x && selectedCell?.y === y;
+                // Destaca células vazias quando há moto selecionada para posicionar
                 const isHighlighted = selectedMoto && !position?.occupied;
 
                 row.push(
@@ -66,6 +77,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
                         ]}
                         onPress={() => handleCellPress(x, y)}
                     >
+                        {/* Exibe placa e status se célula ocupada */}
                         {position?.occupied && position.motorcycle && (
                             <View style={styles.cellContent}>
                                 <Text style={styles.cellPlaca}>{position.motorcycle.placa}</Text>
@@ -77,6 +89,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
                                 />
                             </View>
                         )}
+                        {/* Exibe preview "+" se célula vazia e há moto selecionada */}
                         {!position?.occupied && selectedMoto && (
                             <View style={styles.previewContent}>
                                 <Text style={styles.previewText}>+</Text>
@@ -98,16 +111,17 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
 
     return (
         <View style={styles.container}>
+            {/* Grid visual do pátio */}
             <View style={styles.gridContainer}>
                 {renderGridCells()}
             </View>
 
+            {/* Ações para moto selecionada no grid */}
             {gridSelectedMoto && (
                 <View style={styles.actionContainer}>
                     <Text style={styles.selectedText}>
                         Moto selecionada: {gridSelectedMoto.placa}
                     </Text>
-
                     <TouchableOpacity
                         style={styles.removeButton}
                         onPress={handleRemoveFromGrid}
@@ -117,6 +131,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
                 </View>
             )}
 
+            {/* Dica para posicionar moto */}
             {selectedMoto && (
                 <View style={styles.selectionHint}>
                     <Text style={styles.selectionHintText}>
@@ -125,6 +140,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
                 </View>
             )}
 
+            {/* Legenda de status das motos */}
             <View style={styles.legendContainer}>
                 <Text style={styles.legendTitle}>Legenda:</Text>
                 <View style={styles.legendRow}>
@@ -148,6 +164,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
     );
 }
 
+// Função utilitária para cor do status
 const getStatusColor = (status: string): string => {
     switch (status) {
         case 'Pronta para aluguel':
@@ -167,6 +184,7 @@ const getStatusColor = (status: string): string => {
     }
 };
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
     container: {
         padding: 16,
