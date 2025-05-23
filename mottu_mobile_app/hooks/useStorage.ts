@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Motorcycle, GridPosition } from '@/types';
 
+// Chaves para armazenamento local no AsyncStorage
 const MOTOS_KEY = '@mottu_motos';
 const GRID_KEY = '@mottu_grid';
 
@@ -9,21 +10,25 @@ export const useMotorcycleStorage = () => {
     const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
     const [loading, setLoading] = useState(true);
 
-  const loadMotorcycles = useCallback(async () => { 
-    try {
-      setLoading(true);
-      const storedMotos = await AsyncStorage.getItem(MOTOS_KEY);
-      if (storedMotos) {
-        setMotorcycles(JSON.parse(storedMotos));
-        console.log('useMotorcycleStorage: Motos carregadas:', JSON.parse(storedMotos).length);
-      }
-    } catch (error) {
-      console.error('Failed to load motorcycles:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    // Carrega motos do AsyncStorage ao iniciar ou quando solicitado
+    const loadMotorcycles = useCallback(async () => { 
+        try {
+            setLoading(true);
+            const storedMotos = await AsyncStorage.getItem(MOTOS_KEY);
+            if (storedMotos) {
+                setMotorcycles(JSON.parse(storedMotos));
+                console.log('useMotorcycleStorage: Motos carregadas:', JSON.parse(storedMotos).length);
+            } else {
+                setMotorcycles([]);
+            }
+        } catch (error) {
+            console.error('Failed to load motorcycles:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
+    // Salva lista de motos no AsyncStorage e atualiza estado local
     const saveMotorcycles = useCallback(async (motos: Motorcycle[]) => {
         try {
             await AsyncStorage.setItem(MOTOS_KEY, JSON.stringify(motos));
@@ -33,12 +38,14 @@ export const useMotorcycleStorage = () => {
         }
     }, []);
 
+    // Adiciona uma nova moto
     const addMotorcycle = async (moto: Motorcycle) => {
         const updatedMotos = [...motorcycles, moto];
         await saveMotorcycles(updatedMotos);
         return moto;
     };
 
+    // Atualiza uma moto existente
     const updateMotorcycle = async (updatedMoto: Motorcycle) => {
         const updatedMotos = motorcycles.map(moto =>
             moto.id === updatedMoto.id ? updatedMoto : moto
@@ -47,6 +54,7 @@ export const useMotorcycleStorage = () => {
         return updatedMoto;
     };
 
+    // Remove uma moto pelo ID
     const removeMotorcycle = async (id: string) => {
         try {
             const updatedMotos = motorcycles.filter(moto => moto.id !== id);
@@ -59,6 +67,7 @@ export const useMotorcycleStorage = () => {
         }
     };
 
+    // Limpa todas as motos do armazenamento
     const clearMotorcycles = async () => {
         try {
             await AsyncStorage.removeItem(MOTOS_KEY);
@@ -68,6 +77,7 @@ export const useMotorcycleStorage = () => {
         }
     };
 
+    // Carrega motos ao montar o componente
     useEffect(() => {
         loadMotorcycles();
     }, []);
@@ -87,6 +97,7 @@ export const useGridStorage = () => {
     const [gridPositions, setGridPositions] = useState<GridPosition[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Inicializa grid com dimensões padrão (8x8)
     const initializeGrid = (columns: number, rows: number): GridPosition[] => {
         const positions: GridPosition[] = [];
         for (let y = 0; y < rows; y++) {
@@ -101,6 +112,7 @@ export const useGridStorage = () => {
         return positions;
     };
 
+    // Carrega grid do AsyncStorage ou inicializa se não existir
     const loadGrid = async () => {
         try {
             setLoading(true);
@@ -121,6 +133,7 @@ export const useGridStorage = () => {
         }
     };
 
+    // Salva grid atualizado no AsyncStorage
     const saveGrid = async (grid: GridPosition[]) => {
         try {
             await AsyncStorage.setItem(GRID_KEY, JSON.stringify(grid));
@@ -130,6 +143,7 @@ export const useGridStorage = () => {
         }
     };
 
+    // Atualiza uma posição específica do grid
     const updateGridPosition = async (position: GridPosition) => {
         const updatedGrid = gridPositions.map(pos =>
             pos.x === position.x && pos.y === position.y ? position : pos
@@ -137,7 +151,9 @@ export const useGridStorage = () => {
         await saveGrid(updatedGrid);
     };
 
+    // Posiciona uma moto em uma célula do grid
     const placeMotorcycle = async (motorcycle: Motorcycle, x: number, y: number) => {
+        // Remove moto de qualquer posição anterior
         let updatedGrid = gridPositions.map(pos => {
             if (pos.motorcycle?.id === motorcycle.id) {
                 return { ...pos, occupied: false, motorcycle: undefined };
@@ -145,6 +161,7 @@ export const useGridStorage = () => {
             return pos;
         });
 
+        // Posiciona moto na nova célula
         updatedGrid = updatedGrid.map(pos => {
             if (pos.x === x && pos.y === y) {
                 return { ...pos, occupied: true, motorcycle: { ...motorcycle, posicao: { x, y } } };
@@ -156,6 +173,7 @@ export const useGridStorage = () => {
         return { ...motorcycle, posicao: { x, y } };
     };
 
+    // Remove uma moto do grid pelo ID
     const removeMotorcycleFromGrid = async (motorcycleId: string) => {
         const updatedGrid = gridPositions.map(pos => {
             if (pos.motorcycle?.id === motorcycleId) {
@@ -166,10 +184,12 @@ export const useGridStorage = () => {
         await saveGrid(updatedGrid);
     };
 
+    // Verifica se uma posição está ocupada
     const isPositionOccupied = (x: number, y: number) => {
         return gridPositions.some(pos => pos.x === x && pos.y === y && pos.occupied);
     };
 
+    // Carrega grid ao montar o componente
     useEffect(() => {
         loadGrid();
     }, []);
