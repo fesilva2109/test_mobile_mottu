@@ -10,83 +10,80 @@ import { Motorcycle } from '@/types';
 import * as Crypto from 'expo-crypto'; 
 import useHistoryStorage from '@/hooks/useHistoryStorage';
 
+// Função utilitária para gerar UUIDs únicos para cada moto cadastrada
 const generateUUID = () => {
   return Crypto.randomUUID();
 };
 
 export default function CadastroScreen() {
-  const {refreshMotorcycles} = useMotorcycleStorage();
+  // Hooks de navegação e armazenamento
   const router = useRouter();
+  const { addMotorcycle, refreshMotorcycles } = useMotorcycleStorage();
   const { addHistoryEvent } = useHistoryStorage();
 
-  const { addMotorcycle } = useMotorcycleStorage();
-  
+  // Parâmetros vindos do QR Code (se houver)
   const { placa: scannedPlaca, modelo: scannedModelo, cor: scannedCor, status: scannedStatus } = useLocalSearchParams();
 
-
+  // Estados controlados do formulário
   const [placa, setPlaca] = useState('');
   const [modelo, setModelo] = useState(MOTO_MODELS[0]);
   const [cor, setCor] = useState('');
   const [status, setStatus] = useState(MOTO_STATUSES[0]);
-  
   const [showModelOptions, setShowModelOptions] = useState(false);
   const [showStatusOptions, setShowStatusOptions] = useState(false);
-  
+
+  // Preenche os campos automaticamente se vierem do QR Code
   useEffect(() => {
-        if (scannedPlaca) {
-          setPlaca(scannedPlaca as string);
-        }
-        if (scannedModelo) {
-          setModelo(scannedModelo as string);
-        }
-        if (scannedCor) {
-          setCor(scannedCor as string);
-        }
-        if (scannedStatus) {
-          setStatus(scannedStatus as string);
-        }
-      }, [scannedPlaca, scannedModelo, scannedCor, scannedStatus]);
+    if (scannedPlaca) setPlaca(scannedPlaca as string);
+    if (scannedModelo) setModelo(scannedModelo as string);
+    if (scannedCor) setCor(scannedCor as string);
+    if (scannedStatus) setStatus(scannedStatus as string);
+  }, [scannedPlaca, scannedModelo, scannedCor, scannedStatus]);
 
-
+  // Navega para o scanner de QR Code
   const openQrCodeScanner = () => {
     router.push('/cadastro/camera');
   };
-  
+
+  // Função principal de cadastro da moto
   const handleCadastro = async () => {
+    // Validação dos campos obrigatórios
     if (!placa || !modelo || !cor || !status) {
       Alert.alert('Erro', 'Todos os campos são obrigatórios.');
       return;
     }
-    
     if (placa.length < 7) {
       Alert.alert('Erro', 'A placa deve conter no mínimo 7 caracteres.');
       return;
     }
-    
+
     try {
+      // Cria objeto da nova moto
       const newMotorcycle: Motorcycle = {
         id: generateUUID(),
-        placa: placa,
+        placa,
         modelo,
         cor,
         status,
         timestampEntrada: Date.now(),
       };
-      
+
+      // Salva a moto no AsyncStorage e adiciona evento ao histórico
       await addMotorcycle(newMotorcycle);
       addHistoryEvent('Moto Cadastrada', `Placa: ${placa}, Modelo: ${modelo}`);
 
+      // Aguarda um pequeno delay para garantir atualização
       await new Promise(resolve => setTimeout(resolve, 300));
+      refreshMotorcycles(); // Garante atualização da lista em outras telas
 
+      // Exibe alerta de sucesso com opções
       Alert.alert(
         'Sucesso', 
         `Moto ${placa} cadastrada com sucesso!`,
         [
           { 
             text: 'Ver no Mapa',
-            onPress: () => {;
-              router.push('/mapa');
-            }
+            onPress: () => router.push('/mapa')
           },
           { 
             text: 'Cadastrar Outra', 
@@ -100,21 +97,25 @@ export default function CadastroScreen() {
       Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a moto.');
     }
   };
-  
+
+  // Limpa o formulário para novo cadastro
   const resetForm = () => {
     setPlaca('');
     setModelo(MOTO_MODELS[0]);
     setCor('');
     setStatus(MOTO_STATUSES[0]);
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Cabeçalho da tela */}
       <View style={styles.header}>
         <Text style={styles.title}>Cadastrar Moto</Text>
       </View>
       
+      {/* Conteúdo principal com formulário */}
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Botão para escanear QR Code */}
         <TouchableOpacity 
           style={styles.scanButton}
           onPress={openQrCodeScanner}
@@ -126,6 +127,7 @@ export default function CadastroScreen() {
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Informações da Moto</Text>
           
+          {/* Campo Placa */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Placa</Text>
             <TextInput
@@ -139,6 +141,7 @@ export default function CadastroScreen() {
             />
           </View>
           
+          {/* Campo Modelo com seleção */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Modelo</Text>
             <TouchableOpacity 
@@ -148,7 +151,6 @@ export default function CadastroScreen() {
               <Text style={styles.selectText}>{modelo}</Text>
               <ChevronDown size={20} color={colors.neutral.gray} />
             </TouchableOpacity>
-            
             {showModelOptions && (
               <View style={styles.optionsContainer}>
                 {MOTO_MODELS.map((item) => (
@@ -172,6 +174,7 @@ export default function CadastroScreen() {
             )}
           </View>
           
+          {/* Campo Cor */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Cor</Text>
             <TextInput
@@ -183,6 +186,7 @@ export default function CadastroScreen() {
             />
           </View>
           
+          {/* Campo Status com seleção */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Status</Text>
             <TouchableOpacity 
@@ -192,7 +196,6 @@ export default function CadastroScreen() {
               <Text style={styles.selectText}>{status}</Text>
               <ChevronDown size={20} color={colors.neutral.gray} />
             </TouchableOpacity>
-            
             {showStatusOptions && (
               <View style={styles.optionsContainer}>
                 {MOTO_STATUSES.map((item) => (
@@ -216,6 +219,7 @@ export default function CadastroScreen() {
             )}
           </View>
           
+          {/* Botão de envio do formulário */}
           <TouchableOpacity 
             style={styles.submitButton}
             onPress={handleCadastro}
@@ -228,6 +232,7 @@ export default function CadastroScreen() {
   );
 }
 
+// Estilos organizados para manter o visual limpo e funcional
 const styles = StyleSheet.create({
   container: {
     flex: 1,

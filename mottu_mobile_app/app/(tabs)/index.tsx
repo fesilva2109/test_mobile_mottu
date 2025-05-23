@@ -1,29 +1,49 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 import { useResetAsync } from '@/components/ResetAsync';
-import useHistoryStorage from '@/hooks/useHistoryStorage'; 
+import { useMotorcycleStorage } from '@/hooks/useStorage';
+import React from 'react';
 
-
+// HomeScreen é a tela inicial, oferecendo acesso rápido às principais funcionalidades
+// e exibindo um resumo do status do pátio.
 export default function HomeScreen() {
-  const router = useRouter();
-  const {resetar} = useResetAsync();
-  const { clearHistory } = useHistoryStorage(); 
+  const router = useRouter(); 
+  const { resetar } = useResetAsync(); 
+  const { motorcycles, refreshMotorcycles } = useMotorcycleStorage(); 
+
+  const motosDisponiveis = motorcycles.filter(m => m.status === 'Pronta para aluguel').length;
+  const motosManutencao = motorcycles.filter(m => m.status === 'Em manutenção').length;
+  const motosQuarentena = motorcycles.filter(m => m.status === 'Em quarentena').length;
+
+  // useFocusEffect é um hook que permite executar efeitos colaterais quando a tela ganha foco.
+  // Aqui, ele é usado para atualizar a lista de motos sempre que a tela é exibida.
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshMotorcycles();
+    }, [refreshMotorcycles])
+  );
+
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Cabeçalho da tela com o título e subtítulo do aplicativo. */}
       <View style={styles.header}>
         <Text style={styles.title}>Mottu</Text>
         <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
       </View>
-      
+
+      {/* Área de conteúdo principal, permitindo rolagem para visualizar todo o conteúdo. */}
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Seção que oferece atalhos para as funcionalidades mais importantes do aplicativo. */}
         <Text style={styles.sectionTitle}>Acesso Rápido</Text>
-        
+
+        {/* Grid de botões que levam a diferentes telas do aplicativo. */}
         <View style={styles.quickAccessGrid}>
-          <TouchableOpacity 
+          {/* Botão para navegar para a tela de cadastro de novas motos. */}
+          <TouchableOpacity
             style={styles.quickAccessCard}
             onPress={() => router.push('/cadastro')}
           >
@@ -31,8 +51,9 @@ export default function HomeScreen() {
             <Text style={styles.cardTitle}>Cadastrar Moto</Text>
             <Text style={styles.cardDescription}>Scanner QR Code</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          {/* Botão para navegar para a tela do mapa do pátio, mostrando a localização das motos. */}
+          <TouchableOpacity
             style={styles.quickAccessCard}
             onPress={() => router.push('/mapa')}
           >
@@ -40,8 +61,9 @@ export default function HomeScreen() {
             <Text style={styles.cardTitle}>Mapa do Pátio</Text>
             <Text style={styles.cardDescription}>Organizar motos</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          {/* Botão para navegar para a tela do dashboard, exibindo métricas e KPIs. */}
+          <TouchableOpacity
             style={styles.quickAccessCard}
             onPress={() => router.push('/dashboard')}
           >
@@ -49,50 +71,55 @@ export default function HomeScreen() {
             <Text style={styles.cardTitle}>Dashboard</Text>
             <Text style={styles.cardDescription}>Métricas e KPIs</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          {/* Botão para navegar para a tela do histórico de atividades do aplicativo. */}
+          <TouchableOpacity
             style={styles.quickAccessCard}
             onPress={() => router.push('/historico')}
-
           >
             <Clock size={36} color={colors.primary.main} />
             <Text style={styles.cardTitle}>Histórico</Text>
             <Text style={styles.cardDescription}>Registro de atividades</Text>
           </TouchableOpacity>
         </View>
-        
+
+        {/* Seção que apresenta um resumo do status das motos presentes no pátio. */}
+
         <Text style={styles.sectionTitle}>Status do Pátio</Text>
-        
+
+        {/* Exibição de três cartões com informações sobre o status das motos. */}
+
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <Text style={styles.statValue}>{motosDisponiveis}</Text>
             <Text style={styles.statLabel}>Motos Disponíveis</Text>
           </View>
-          
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <Text style={styles.statValue}>{motosManutencao}</Text>
             <Text style={styles.statLabel}>Em Manutenção</Text>
           </View>
-          
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <Text style={styles.statValue}>{motosQuarentena}</Text>
             <Text style={styles.statLabel}>Em Quarentena</Text>
           </View>
         </View>
-        
-        <TouchableOpacity 
+
+        {/* Botão para navegar para a tela completa do dashboard para uma visão detalhada. */}
+        <TouchableOpacity
           style={styles.dashboardButton}
           onPress={() => router.push('/dashboard')}
         >
           <Text style={styles.dashboardButtonText}>Ver Dashboard Completo</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+
+        {/* Botão para realizar o logout do aplicativo e retornar à tela de login. */}
+        <TouchableOpacity
           style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
-          onPress={resetar} 
+          onPress={resetar}
         >
           <Text style={styles.dashboardButtonText}>Logout</Text>
         </TouchableOpacity>
-     </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -196,3 +223,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity }
 import { colors } from '@/theme/colors';
 import useHistoryStorage from '@/hooks/useHistoryStorage';
 
+// Tipagem para eventos do histórico
 interface HistoryEvent {
   id: string;
   action: string;
@@ -10,13 +11,17 @@ interface HistoryEvent {
   details?: string;
 }
 
+// Permite passar função opcional para limpar histórico
 interface HistoryListProps {
   onClearHistory?: () => void;
 }
 
+// Componente de histórico de ações do app
 const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
+  // Hook customizado para acessar histórico salvo localmente (AsyncStorage)
   const { history, loadingHistory } = useHistoryStorage();
 
+  // Renderiza cada item do histórico
   const renderHistoryItem = ({ item }: { item: HistoryEvent }) => (
     <View style={styles.historyItem}>
       <Text style={styles.historyAction}>{item.action}</Text>
@@ -27,12 +32,14 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
 
   return (
     <View style={styles.container}>
+      {/* Cabeçalho da tela de histórico */}
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Histórico de Ações</Text>
         <Text style={styles.subTitle}>
           Aqui você pode ver todas as ações realizadas no aplicativo.
         </Text>
       </View>
+      {/* Exibe loading enquanto carrega histórico */}
       {loadingHistory ? (
         <ActivityIndicator color={colors.primary.main} />
       ) : (
@@ -40,9 +47,12 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
           data={history}
           keyExtractor={(item) => item.id}
           renderItem={renderHistoryItem}
-          ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma ação registrada ainda.</Text>}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>Nenhuma ação registrada ainda.</Text>
+          }
         />
       )}
+      {/* Botão para limpar histórico, aparece apenas se houver eventos */}
       {history.length > 0 && onClearHistory && (
         <TouchableOpacity style={styles.clearButton} onPress={onClearHistory}>
           <Text style={styles.clearButtonText}>Limpar Histórico</Text>
@@ -52,6 +62,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
   );
 };
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,

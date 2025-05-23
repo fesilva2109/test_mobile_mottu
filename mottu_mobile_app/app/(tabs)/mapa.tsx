@@ -59,7 +59,7 @@ export default function MapaScreen() {
     if (selectedMoto && filteredWaiting.every(m => m.id !== selectedMoto.id)) {
       setSelectedMoto(null);
     }
-  }, [motorcycles, selectedStatus, selectedModel]); // Removi gridPositions e lastUpdate como dependências
+  }, [motorcycles, selectedStatus, selectedModel]); 
 
   const handlePlaceMoto = async (position: { x: number, y: number }) => {
     if (!selectedMoto) return;

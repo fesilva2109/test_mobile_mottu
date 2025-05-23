@@ -4,6 +4,9 @@ import { StyleSheet } from 'react-native';
 import { Grid2x2 as Grid, QrCode, ChartBar as BarChart2, Chrome as Home, Clock } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
 
+// TabLayout define a estrutura de navegação principal do aplicativo usando abas na parte inferior.
+// Cada aba permite ao usuário acessar diferentes seções do aplicativo.
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -12,7 +15,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary.main,
         tabBarInactiveTintColor: colors.neutral.gray,
       }}>
-
+      {/* Define a tela "Início" como a primeira aba. */}
       <Tabs.Screen
         name="index"
         options={{
@@ -31,6 +34,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="cadastro"
         options={{

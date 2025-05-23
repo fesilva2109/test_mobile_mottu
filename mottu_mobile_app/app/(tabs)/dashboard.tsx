@@ -8,8 +8,12 @@ import { StatusChart } from '@/components/StatusChart';
 import { MOTO_EFFICIENCY_TARGET } from '@/constants/dashboardConstants';
 import { colors } from '@/theme/colors';
 
+// Tela de Dashboard: apresenta métricas e gráficos sobre as motos do pátio
 export default function DashboardScreen() {
+  // Hook customizado para acessar motos salvas localmente (AsyncStorage)
   const { motorcycles, loading } = useMotorcycleStorage();
+
+  // Estado local para armazenar métricas calculadas
   const [metrics, setMetrics] = useState({
     totalMotos: 0,
     statusCounts: {} as Record<string, number>,
@@ -18,54 +22,42 @@ export default function DashboardScreen() {
     motosDisponiveis: 0,
     eficienciaPatio: 0,
   });
-  
+
+  // Sempre que as motos mudam, recalcula as métricas
   useEffect(() => {
     if (!loading && motorcycles.length > 0) {
       calculateMetrics();
     }
   }, [motorcycles, loading]);
-  
+
+  // Função para calcular todas as métricas do dashboard
   const calculateMetrics = () => {
-    // Initialize counts
+    // Inicializa contadores por status e modelo
     const statusCounts: Record<string, number> = {};
-    MOTO_STATUSES.forEach(status => {
-      statusCounts[status] = 0;
-    });
-    
+    MOTO_STATUSES.forEach(status => { statusCounts[status] = 0; });
+
     const modelCounts: Record<string, number> = {};
-    MOTO_MODELS.forEach(model => {
-      modelCounts[model] = 0;
-    });
-    
-    // Calculate counts
+    MOTO_MODELS.forEach(model => { modelCounts[model] = 0; });
+
+    // Conta motos por status e modelo
     motorcycles.forEach(moto => {
-      // Count by status
-      if (statusCounts[moto.status] !== undefined) {
-        statusCounts[moto.status]++;
-      }
-      
-      // Count by model
-      if (modelCounts[moto.modelo] !== undefined) {
-        modelCounts[moto.modelo]++;
-      }
+      if (statusCounts[moto.status] !== undefined) statusCounts[moto.status]++;
+      if (modelCounts[moto.modelo] !== undefined) modelCounts[moto.modelo]++;
     });
-    
-    // Calculate average time in yard (in hours)
+
+    // Calcula tempo médio no pátio (em horas)
     const now = Date.now();
     let totalTime = 0;
-    motorcycles.forEach(moto => {
-      totalTime += now - moto.timestampEntrada;
-    });
-    
+    motorcycles.forEach(moto => { totalTime += now - moto.timestampEntrada; });
     const avgTimeInMs = motorcycles.length > 0 ? totalTime / motorcycles.length : 0;
     const avgTimeInHours = avgTimeInMs / (1000 * 60 * 60);
-    
-    // Count available motorcycles (ready for rental)
+
+    // Conta motos disponíveis para aluguel
     const disponivel = statusCounts['Pronta para aluguel'] || 0;
-    
-    // Calculate yard efficiency (available motorcycles vs. target)
+
+    // Calcula eficiência do pátio (meta vs. disponível)
     const eficiencia = (disponivel / MOTO_EFFICIENCY_TARGET) * 100;
-    
+
     setMetrics({
       totalMotos: motorcycles.length,
       statusCounts,
@@ -75,16 +67,17 @@ export default function DashboardScreen() {
       eficienciaPatio: eficiencia > 100 ? 100 : eficiencia,
     });
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Cabeçalho do dashboard */}
       <View style={styles.header}>
         <Text style={styles.title}>Dashboard</Text>
         <Text style={styles.subtitle}>Métricas do Pátio</Text>
       </View>
       
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Main metrics */}
+        {/* Métricas principais em cards */}
         <View style={styles.mainMetrics}>
           <DashboardCard 
             title="Total de Motos"
@@ -92,14 +85,12 @@ export default function DashboardScreen() {
             iconName="motorcycle"
             color={colors.primary.main}
           />
-          
           <DashboardCard 
             title="Prontas p/ Aluguel"
             value={metrics.motosDisponiveis.toString()}
             iconName="check-circle"
             color={colors.status.ready}
           />
-          
           <DashboardCard 
             title="Tempo Médio"
             value={`${metrics.tempoMedioPatio.toFixed(1)}h`}
@@ -108,16 +99,15 @@ export default function DashboardScreen() {
           />
         </View>
         
-        {/* Status chart */}
+        {/* Gráfico de status das motos */}
         <View style={styles.chartContainer}>
           <Text style={styles.sectionTitle}>Status das Motos</Text>
           <StatusChart data={metrics.statusCounts} />
         </View>
         
-        {/* Efficiency metrics */}
+        {/* Barra de eficiência do pátio */}
         <View style={styles.efficiencyContainer}>
           <Text style={styles.sectionTitle}>Eficiência do Pátio</Text>
-          
           <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View 
@@ -132,22 +122,20 @@ export default function DashboardScreen() {
             </View>
             <Text style={styles.progressText}>{Math.round(metrics.eficienciaPatio)}%</Text>
           </View>
-          
           <Text style={styles.efficiencyInfo}>
             {metrics.motosDisponiveis} de {MOTO_EFFICIENCY_TARGET} motos prontas para aluguel
           </Text>
-          
-          
         </View>
         
-        {/* Model distribution */}
+        {/* Distribuição de motos por modelo */}
         <View style={styles.modelsContainer}>
           <Text style={styles.sectionTitle}>Distribuição por Modelo</Text>
-          
           {MOTO_MODELS.map(model => (
             <View key={model} style={styles.modelItem}>
               <View style={styles.modelNameContainer}>
-                <Text style={styles.modelEmoji}>{model === 'Mottu Pop' ? '🛵' : model === 'Mottu Sport' ? '🏍️' : '⚡'}</Text>
+                <Text style={styles.modelEmoji}>
+                  {model === 'Mottu Pop' ? '🛵' : model === 'Mottu Sport' ? '🏍️' : '⚡'}
+                </Text>
                 <Text style={styles.modelName}>{model}</Text>
               </View>
               <Text style={styles.modelCount}>{metrics.modelCounts[model] || 0}</Text>
@@ -159,6 +147,7 @@ export default function DashboardScreen() {
   );
 }
 
+// Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -241,13 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.neutral.gray,
     marginBottom: 12,
-  },
-  impactText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.primary.main,
-    marginTop: 8,
-    textAlign: 'center',
   },
   modelsContainer: {
     backgroundColor: colors.neutral.white,
