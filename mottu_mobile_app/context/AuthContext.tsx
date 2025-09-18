@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_BASE = 'http://localhost:3001'; 
+const API_BASE = 'http://192.168.0.183:3001'; // ajuste para seu IP + porta do JSON Server
 
 interface User {
   id: string;
@@ -22,11 +22,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,22 +49,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // Get all users from JSON Server
-      const response = await fetch(`${API_BASE}/users`);
+      const response = await fetch(`${API_BASE}/users?email=${email}&password=${password}`);
       if (!response.ok) {
         throw new Error('Erro ao conectar com o servidor');
       }
 
       const users = await response.json();
-      const user = users.find((u: any) => u.email === email && u.password === password);
+      const foundUser = users[0];
 
-      if (!user) {
+      if (!foundUser) {
         throw new Error('Email ou senha inválidos');
       }
 
-      // Mock token generation
-      const authToken = `mock_token_${user.id}_${Date.now()}`;
-      const userData = { id: user.id, email: user.email, name: user.name };
+      const authToken = `mock_token_${foundUser.id}_${Date.now()}`;
+      const userData = { id: foundUser.id, email: foundUser.email, name: foundUser.name };
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -77,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(authToken);
       router.replace('/(tabs)');
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      console.error('Erro no login:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -87,21 +81,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/auth/register`, {
+
+      // Verifica se já existe
+      const checkResponse = await fetch(`${API_BASE}/users?email=${email}`);
+      const exists = await checkResponse.json();
+      if (exists.length > 0) {
+        throw new Error('Usuário já cadastrado');
+      }
+
+      const response = await fetch(`${API_BASE}/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro no registro');
+        throw new Error('Erro ao registrar usuário');
       }
 
-      const data = await response.json();
-      const { token: authToken, user: userData } = data;
+      const newUser = await response.json();
+      const authToken = `mock_token_${newUser.id}_${Date.now()}`;
+      const userData = { id: newUser.id, email: newUser.email, name: newUser.name };
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(authToken);
       router.replace('/(tabs)');
     } catch (error) {
-      console.error('Erro ao registrar:', error);
+      console.error('Erro no registro:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -119,22 +119,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (token) {
-        await fetch(`${API_BASE}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao fazer logout na API:', error);
-    } finally {
       await AsyncStorage.removeItem('@mottu:user');
       await AsyncStorage.removeItem('@mottu:token');
       setUser(null);
       setToken(null);
       router.replace('/login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
     }
   };
 
@@ -160,8 +151,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
-  }
+  if (!context) throw new Error('useAuth deve ser usado dentro de um AuthProvider');
   return context;
 };
