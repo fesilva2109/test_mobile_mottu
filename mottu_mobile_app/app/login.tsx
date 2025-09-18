@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Mail, Lock, AlertCircle } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
 
 // Tela de Login: autenticação simples para acesso ao app
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
+  const { colors } = useTheme();
 
   // Estados controlados para os campos do formulário
   const [email, setEmail] = useState('');
@@ -83,6 +84,100 @@ export default function LoginScreen() {
       }
   };
 
+  const getStyles = (colors: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    header: {
+      backgroundColor: colors.primary.main,
+      padding: 24,
+      paddingTop: 60,
+      borderBottomLeftRadius: 24,
+      borderBottomRightRadius: 24,
+      marginBottom: 32,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: colors.neutral.white,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.neutral.white,
+      opacity: 0.9,
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    form: {
+      padding: 24,
+    },
+    inputGroup: {
+      marginBottom: 20,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      height: 56,
+      borderWidth: 1,
+      borderColor: colors.neutral.lightGray,
+    },
+    inputError: {
+      borderColor: colors.status.quarantine,
+    },
+    input: {
+      flex: 1,
+      marginLeft: 12,
+      fontSize: 16,
+      color: colors.neutral.darkGray,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+      paddingHorizontal: 4,
+    },
+    errorText: {
+      color: colors.status.quarantine,
+      marginLeft: 8,
+      fontSize: 12,
+    },
+    loginButton: {
+      backgroundColor: colors.primary.main,
+      borderRadius: 12,
+      height: 56,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    loginButtonText: {
+      color: colors.neutral.white,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    registerLink: {
+      marginTop: 16,
+      alignItems: 'center',
+    },
+    registerText: {
+      color: colors.neutral.gray,
+      fontSize: 14,
+    },
+    registerTextBold: {
+      color: colors.primary.main,
+      fontWeight: 'bold',
+    },
+    loginButtonDisabled: {
+      opacity: 0.6,
+    },
+  });
+
+  const styles = getStyles(colors);
+
   return (
     <View style={styles.container}>
       {/* Cabeçalho visual do app */}
@@ -141,8 +236,16 @@ export default function LoginScreen() {
         </View>
 
         {/* Botão de login */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Entrar</Text>
+        <TouchableOpacity
+          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.neutral.white} />
+          ) : (
+            <Text style={styles.loginButtonText}>Entrar</Text>
+          )}
         </TouchableOpacity>
 
         {/* Link para registro */}
@@ -153,95 +256,5 @@ export default function LoginScreen() {
     </View>
   );
 }
-
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    backgroundColor: colors.primary.main,
-    padding: 24,
-    paddingTop: 60,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.neutral.white,
-    opacity: 0.9,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  form: {
-    padding: 24,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
-    borderWidth: 1,
-    borderColor: colors.neutral.lightGray,
-  },
-  inputError: {
-    borderColor: colors.status.quarantine,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: colors.neutral.darkGray,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    color: colors.status.quarantine,
-    marginLeft: 8,
-    fontSize: 12,
-  },
-  loginButton: {
-    backgroundColor: colors.primary.main,
-    borderRadius: 12,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  loginButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  registerLink: {
-    marginTop: 16,
-    alignItems: 'center',
-  },
-  registerText: {
-    color: colors.neutral.gray,
-    fontSize: 14,
-  },
-  registerTextBold: {
-    color: colors.primary.main,
-    fontWeight: 'bold',
-  },
-});
 
 

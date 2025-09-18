@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Mail, Lock, AlertCircle, User } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import React from 'react';
 
 // Tela de Registro: cadastro de novo usuário
 export default function RegisterScreen() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, loading } = useAuth();
+  const { colors } = useTheme();
 
   // Estados controlados para os campos do formulário
   const [name, setName] = useState('');
@@ -84,6 +85,100 @@ export default function RegisterScreen() {
       }
     }
   };
+
+  const getStyles = (colors: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    header: {
+      backgroundColor: colors.primary.main,
+      padding: 24,
+      paddingTop: 60,
+      borderBottomLeftRadius: 24,
+      borderBottomRightRadius: 24,
+      marginBottom: 32,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: colors.neutral.white,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.neutral.white,
+      opacity: 0.9,
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    form: {
+      padding: 24,
+    },
+    inputGroup: {
+      marginBottom: 20,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      height: 56,
+      borderWidth: 1,
+      borderColor: colors.neutral.lightGray,
+    },
+    inputError: {
+      borderColor: colors.status.quarantine,
+    },
+    input: {
+      flex: 1,
+      marginLeft: 12,
+      fontSize: 16,
+      color: colors.neutral.darkGray,
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+      paddingHorizontal: 4,
+    },
+    errorText: {
+      color: colors.status.quarantine,
+      marginLeft: 8,
+      fontSize: 12,
+    },
+    registerButton: {
+      backgroundColor: colors.primary.main,
+      borderRadius: 12,
+      height: 56,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    registerButtonText: {
+      color: colors.neutral.white,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    loginLink: {
+      marginTop: 16,
+      alignItems: 'center',
+    },
+    loginText: {
+      color: colors.neutral.gray,
+      fontSize: 14,
+    },
+    loginTextBold: {
+      color: colors.primary.main,
+      fontWeight: 'bold',
+    },
+    registerButtonDisabled: {
+      opacity: 0.6,
+    },
+  });
+
+  const styles = getStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -185,8 +280,16 @@ export default function RegisterScreen() {
         </View>
 
         {/* Botão de registro */}
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-          <Text style={styles.registerButtonText}>Registrar</Text>
+        <TouchableOpacity
+          style={[styles.registerButton, loading && styles.registerButtonDisabled]}
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.neutral.white} />
+          ) : (
+            <Text style={styles.registerButtonText}>Registrar</Text>
+          )}
         </TouchableOpacity>
 
         {/* Link para login */}
@@ -197,93 +300,3 @@ export default function RegisterScreen() {
     </View>
   );
 }
-
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    backgroundColor: colors.primary.main,
-    padding: 24,
-    paddingTop: 60,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.neutral.white,
-    opacity: 0.9,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  form: {
-    padding: 24,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
-    borderWidth: 1,
-    borderColor: colors.neutral.lightGray,
-  },
-  inputError: {
-    borderColor: colors.status.quarantine,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 16,
-    color: colors.neutral.darkGray,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-    paddingHorizontal: 4,
-  },
-  errorText: {
-    color: colors.status.quarantine,
-    marginLeft: 8,
-    fontSize: 12,
-  },
-  registerButton: {
-    backgroundColor: colors.primary.main,
-    borderRadius: 12,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  registerButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  loginLink: {
-    marginTop: 16,
-    alignItems: 'center',
-  },
-  loginText: {
-    color: colors.neutral.gray,
-    fontSize: 14,
-  },
-  loginTextBold: {
-    color: colors.primary.main,
-    fontWeight: 'bold',
-  },
-});

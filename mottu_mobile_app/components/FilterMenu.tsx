@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Filter } from 'lucide-react-native';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 
 interface FilterMenuProps {
   selectedStatus: string | null;
@@ -11,14 +11,71 @@ interface FilterMenuProps {
   onModelChange: (model: string | null) => void;
 }
 
-export function FilterMenu({ 
-  selectedStatus, 
-  selectedModel, 
-  onStatusChange, 
-  onModelChange 
+export function FilterMenu({
+  selectedStatus,
+  selectedModel,
+  onStatusChange,
+  onModelChange
 }: FilterMenuProps) {
   const [expanded, setExpanded] = useState(false);
-  
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      marginVertical: 8,
+    },
+    filterButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      alignSelf: 'flex-start',
+    },
+    filterButtonText: {
+      color: colors.neutral.white,
+      marginLeft: 6,
+      fontSize: 14,
+    },
+    filtersContainer: {
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      padding: 12,
+      marginTop: 8,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      marginTop: 4,
+    },
+    optionsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: 8,
+    },
+    filterOption: {
+      backgroundColor: colors.neutral.lightGray,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      marginRight: 8,
+      marginBottom: 8,
+    },
+    selectedOption: {
+      backgroundColor: colors.primary.main,
+    },
+    optionText: {
+      fontSize: 12,
+      color: colors.neutral.darkGray,
+    },
+    selectedOptionText: {
+      color: colors.neutral.white,
+      fontWeight: '500',
+    },
+  });
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -110,58 +167,4 @@ export function FilterMenu({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 8,
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-  },
-  filterButtonText: {
-    color: colors.neutral.white,
-    marginLeft: 6,
-    fontSize: 14,
-  },
-  filtersContainer: {
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 8,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 4,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 8,
-  },
-  filterOption: {
-    backgroundColor: colors.neutral.lightGray,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  selectedOption: {
-    backgroundColor: colors.primary.main,
-  },
-  optionText: {
-    fontSize: 12,
-    color: colors.neutral.darkGray,
-  },
-  selectedOptionText: {
-    color: colors.neutral.white,
-    fontWeight: '500',
-  },
-});
+

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { GridPosition, Motorcycle } from '@/types';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 
 interface GridComponentProps {
     gridPositions: GridPosition[];
@@ -12,6 +12,146 @@ interface GridComponentProps {
 
 // Componente visual do grid do pátio para posicionamento das motos
 export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, selectedMoto }: GridComponentProps) {
+    const { colors } = useTheme();
+
+    const getStyles = (colors: any) => StyleSheet.create({
+        container: {
+            padding: 16,
+        },
+        gridContainer: {
+            borderWidth: 1,
+            borderColor: colors.neutral.gray,
+            borderRadius: 8,
+            overflow: 'hidden',
+        },
+        gridRow: {
+            flexDirection: 'row',
+        },
+        gridCell: {
+            borderWidth: 0.5,
+            borderColor: colors.neutral.gray,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.neutral.white,
+        },
+        occupiedCell: {
+            backgroundColor: colors.neutral.lightGray,
+        },
+        emptyCell: {
+            backgroundColor: colors.neutral.white,
+            opacity: 0.7,
+        },
+        selectedCell: {
+            borderWidth: 2,
+            borderColor: colors.primary.main,
+        },
+        highlightedCell: {
+            backgroundColor: colors.primary.lighter,
+        },
+        cellContent: {
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        previewContent: {
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        previewText: {
+            fontSize: 20,
+            color: colors.primary.main,
+            fontWeight: 'bold',
+        },
+        cellPlaca: {
+            fontSize: 12,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        statusIndicator: {
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            marginTop: 4,
+        },
+        actionContainer: {
+            marginVertical: 16,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
+        selectedText: {
+            fontSize: 14,
+            fontWeight: 'bold',
+        },
+        removeButton: {
+            backgroundColor: colors.status.quarantine,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 4,
+        },
+        removeButtonText: {
+            color: colors.neutral.white,
+            fontWeight: 'bold',
+            fontSize: 12,
+        },
+        selectionHint: {
+            backgroundColor: colors.primary.lighter,
+            padding: 12,
+            borderRadius: 8,
+            marginVertical: 8,
+        },
+        selectionHintText: {
+            color: colors.primary.main,
+            fontWeight: '500',
+            textAlign: 'center',
+        },
+        legendContainer: {
+            marginTop: 16,
+            padding: 12,
+            backgroundColor: colors.neutral.white,
+            borderRadius: 8,
+        },
+        legendTitle: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            marginBottom: 8,
+        },
+        legendRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 6,
+        },
+        legendDot: {
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            marginRight: 8,
+        },
+        legendText: {
+            fontSize: 12,
+        },
+    });
+
+    const styles = getStyles(colors);
+
+    const getStatusColor = (status: string): string => {
+        switch (status) {
+            case 'Pronta para aluguel':
+                return colors.status.ready;
+            case 'Em manutenção':
+                return colors.status.maintenance;
+            case 'Em quarentena':
+                return colors.status.quarantine;
+            case 'Alta prioridade':
+                return colors.status.priority;
+            case 'Reservada':
+                return colors.status.reserved;
+            case 'Aguardando vistoria':
+                return colors.status.waiting;
+            default:
+                return colors.status.waiting;
+        }
+    };
+
     // Estado para moto selecionada no grid (para remoção)
     const [gridSelectedMoto, setGridSelectedMoto] = useState<Motorcycle | null>(null);
     // Estado para célula selecionada (destaca visualmente)
@@ -164,140 +304,4 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
     );
 }
 
-// Função utilitária para cor do status
-const getStatusColor = (status: string): string => {
-    switch (status) {
-        case 'Pronta para aluguel':
-            return colors.status.ready;
-        case 'Em manutenção':
-            return colors.status.maintenance;
-        case 'Em quarentena':
-            return colors.status.quarantine;
-        case 'Alta prioridade':
-            return colors.status.priority;
-        case 'Reservada':
-            return colors.status.reserved;
-        case 'Aguardando vistoria':
-            return colors.status.waiting;
-        default:
-            return colors.status.waiting;
-    }
-};
 
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-    },
-    gridContainer: {
-        borderWidth: 1,
-        borderColor: colors.neutral.gray,
-        borderRadius: 8,
-        overflow: 'hidden',
-    },
-    gridRow: {
-        flexDirection: 'row',
-    },
-    gridCell: {
-        borderWidth: 0.5,
-        borderColor: colors.neutral.gray,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors.neutral.white,
-    },
-    occupiedCell: {
-        backgroundColor: colors.neutral.lightGray,
-    },
-    emptyCell: {
-        backgroundColor: colors.neutral.white,
-        opacity: 0.7,
-    },
-    selectedCell: {
-        borderWidth: 2,
-        borderColor: colors.primary.main,
-    },
-    highlightedCell: {
-        backgroundColor: colors.primary.lighter,
-    },
-    cellContent: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    previewContent: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    previewText: {
-        fontSize: 20,
-        color: colors.primary.main,
-        fontWeight: 'bold',
-    },
-    cellPlaca: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    statusIndicator: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        marginTop: 4,
-    },
-    actionContainer: {
-        marginVertical: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    selectedText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    removeButton: {
-        backgroundColor: colors.status.quarantine,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 4,
-    },
-    removeButtonText: {
-        color: colors.neutral.white,
-        fontWeight: 'bold',
-        fontSize: 12,
-    },
-    selectionHint: {
-        backgroundColor: colors.primary.lighter,
-        padding: 12,
-        borderRadius: 8,
-        marginVertical: 8,
-    },
-    selectionHintText: {
-        color: colors.primary.main,
-        fontWeight: '500',
-        textAlign: 'center',
-    },
-    legendContainer: {
-        marginTop: 16,
-        padding: 12,
-        backgroundColor: colors.neutral.white,
-        borderRadius: 8,
-    },
-    legendTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    legendRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    legendDot: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        marginRight: 8,
-    },
-    legendText: {
-        fontSize: 12,
-    },
-});

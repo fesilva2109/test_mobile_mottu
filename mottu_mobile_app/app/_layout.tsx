@@ -5,9 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { ActivityIndicator, View } from 'react-native';
-import { colors } from '@/theme/colors';
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -24,6 +23,7 @@ export default function RootLayout() {
 function RootComponent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (!loading) {

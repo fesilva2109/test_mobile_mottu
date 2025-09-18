@@ -4,7 +4,8 @@ import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { BarcodeScanningResult } from 'expo-camera/build/Camera.types';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, X } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
+import React from 'react';
 
 // Tela de leitura de QR Code para cadastro rápido de motos
 export default function CameraScreen() {
@@ -57,81 +58,9 @@ export default function CameraScreen() {
   };
 
   // Exibe tela de permissão caso ainda não tenha sido concedida
-  if (!permission?.granted) {
-    return (
-      <View style={styles.permissionContainer}>
-        <Text style={styles.permissionText}>
-          Precisamos de permissão para acessar a câmera
-        </Text>
-        <TouchableOpacity
-          style={styles.permissionButton}
-          onPress={requestPermission}
-        >
-          <Text style={styles.permissionButtonText}>Conceder Permissão</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => router.back()}
-        >
-          <X size={24} color={colors.neutral.white} />
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
-  return (
-    <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr']
-        }}
-        facing={facing}
-      >
-        {/* Overlay para instrução e área de leitura */}
-        <View style={styles.overlay}>
-          <View style={styles.scannerContainer}>
-            <Text style={styles.scannerText}>
-              Posicione o QR Code da moto dentro da área
-            </Text>
-            <View style={styles.scannerFrame} />
-          </View>
-          
-          {/* Botões de ação: voltar, escanear novamente, virar câmera */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => router.back()}
-            >
-              <ArrowLeft size={24} color={colors.neutral.white} />
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={() => setScanned(false)}
-              disabled={!scanned}
-            >
-              <Text style={[
-                styles.scanButtonText,
-                scanned ? {} : { opacity: 0.6 }
-              ]}>
-                {scanned ? 'Escanear Novamente' : 'Escaneando...'}
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.flipButton}
-              onPress={() => setFacing(current => (current === 'back' ? 'front' : 'back'))}
-            >
-              <Text style={styles.flipButtonText}>Virar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </CameraView>
-    </View>
-  );
-}
+
+  const { colors } = useTheme();
 
 // Estilos organizados para visual limpo e responsivo
 const styles = StyleSheet.create({
@@ -229,3 +158,78 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+  if (!permission?.granted) {
+    return (
+      <View style={styles.permissionContainer}>
+        <Text style={styles.permissionText}>
+          Precisamos de permissão para acessar a câmera
+        </Text>
+        <TouchableOpacity
+          style={styles.permissionButton}
+          onPress={requestPermission}
+        >
+          <Text style={styles.permissionButtonText}>Conceder Permissão</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => router.back()}
+        >
+          <X size={24} color={colors.neutral.white} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  
+  return (
+    <View style={styles.container}>
+      <CameraView
+        style={styles.camera}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr']
+        }}
+        facing={facing}
+      >
+        {/* Overlay para instrução e área de leitura */}
+        <View style={styles.overlay}>
+          <View style={styles.scannerContainer}>
+            <Text style={styles.scannerText}>
+              Posicione o QR Code da moto dentro da área
+            </Text>
+            <View style={styles.scannerFrame} />
+          </View>
+          
+          {/* Botões de ação: voltar, escanear novamente, virar câmera */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={colors.neutral.white} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.scanButton}
+              onPress={() => setScanned(false)}
+              disabled={!scanned}
+            >
+              <Text style={[
+                styles.scanButtonText,
+                scanned ? {} : { opacity: 0.6 }
+              ]}>
+                {scanned ? 'Escanear Novamente' : 'Escaneando...'}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.flipButton}
+              onPress={() => setFacing(current => (current === 'back' ? 'front' : 'back'))}
+            >
+              <Text style={styles.flipButtonText}>Virar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </CameraView>
+    </View>
+  );
+}

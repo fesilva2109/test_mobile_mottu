@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_BASE = 'http://localhost:3001'; 
+const API_BASE = 'https://68cb62ef716562cf50734720.mockapi.io/api/v1'; 
 
 interface User {
   id: string;
@@ -22,11 +22,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,22 +49,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // Get all users from JSON Server
-      const response = await fetch(`${API_BASE}/users`);
+
+      // Validação básica de entrada
+      if (!email || !password) {
+        throw new Error('Email e senha são obrigatórios');
+      }
+
+      const response = await fetch(`${API_BASE}/users?email=${email}`);
       if (!response.ok) {
-        throw new Error('Erro ao conectar com o servidor');
+        if (response.status === 404) {
+          throw new Error('Serviço temporariamente indisponível. Tente novamente mais tarde.');
+        }
+        throw new Error('Erro ao conectar com o servidor. Verifique sua conexão com a internet.');
       }
 
       const users = await response.json();
-      const user = users.find((u: any) => u.email === email && u.password === password);
+      const foundUser = users[0];
 
-      if (!user) {
-        throw new Error('Email ou senha inválidos');
+      if (!foundUser) {
+        throw new Error('Email não encontrado. Verifique suas credenciais.');
       }
 
-      // Mock token generation
-      const authToken = `mock_token_${user.id}_${Date.now()}`;
-      const userData = { id: user.id, email: user.email, name: user.name };
+      if (foundUser.password !== password) {
+        throw new Error('Senha incorreta. Tente novamente.');
+      }
+
+      const authToken = `mock_token_${foundUser.id}_${Date.now()}`;
+      const userData = { id: foundUser.id, email: foundUser.email, name: foundUser.name };
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -77,8 +84,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(authToken);
       router.replace('/(tabs)');
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      throw error;
+      console.error('Erro no login:', error);
+      // Re-throw com mensagem mais amigável se necessário
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Ocorreu um erro inesperado durante o login. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -87,21 +98,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/auth/register`, {
+
+      // Validação básica de entrada
+      if (!name || !email || !password) {
+        throw new Error('Nome, email e senha são obrigatórios');
+      }
+
+      // Verifica se já existe usuário com este email
+      const checkResponse = await fetch(`${API_BASE}/users?email=${email}`);
+      if (!checkResponse.ok) {
+        throw new Error('Erro ao verificar disponibilidade do email. Tente novamente.');
+      }
+
+      const exists = await checkResponse.json();
+      if (exists.length > 0) {
+        throw new Error('Este email já está cadastrado. Use outro email ou faça login.');
+      }
+
+      const response = await fetch(`${API_BASE}/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro no registro');
+        if (response.status === 400) {
+          throw new Error('Dados inválidos. Verifique as informações e tente novamente.');
+        }
+        throw new Error('Erro ao criar conta. Verifique sua conexão com a internet e tente novamente.');
       }
 
-      const data = await response.json();
-      const { token: authToken, user: userData } = data;
+      const newUser = await response.json();
+      const authToken = `mock_token_${newUser.id}_${Date.now()}`;
+      const userData = { id: newUser.id, email: newUser.email, name: newUser.name };
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -110,8 +139,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(authToken);
       router.replace('/(tabs)');
     } catch (error) {
-      console.error('Erro ao registrar:', error);
-      throw error;
+      console.error('Erro no registro:', error);
+      // Re-throw com mensagem mais amigável se necessário
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Ocorreu um erro inesperado durante o registro. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -119,22 +152,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (token) {
-        await fetch(`${API_BASE}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao fazer logout na API:', error);
-    } finally {
       await AsyncStorage.removeItem('@mottu:user');
       await AsyncStorage.removeItem('@mottu:token');
       setUser(null);
       setToken(null);
       router.replace('/login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
     }
   };
 
@@ -160,8 +184,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
-  }
+  if (!context) throw new Error('useAuth deve ser usado dentro de um AuthProvider');
   return context;
 };

@@ -7,68 +7,119 @@ const MOTOS_KEY = '@mottu_motos';
 const GRID_KEY = '@mottu_grid';
 const TOKEN_KEY = '@mottu:token';
 
-const API_BASE = 'http://localhost:8080/api'; // Altere para sua URL da API
+const API_BASE = 'https://68cb62ef716562cf50734720.mockapi.io/api/v1';
 
 export const useMotorcycleStorage = () => {
-    const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    // Carrega motos do AsyncStorage ao iniciar ou quando solicitado
-    const loadMotorcycles = useCallback(async () => { 
-        try {
-            setLoading(true);
-            const storedMotos = await AsyncStorage.getItem(MOTOS_KEY);
-            if (storedMotos) {
-                setMotorcycles(JSON.parse(storedMotos));
-                console.log('useMotorcycleStorage: Motos carregadas:', JSON.parse(storedMotos).length);
-            } else {
-                setMotorcycles([]);
-            }
-        } catch (error) {
-            console.error('Failed to load motorcycles:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  // Load motorcycles from mock API with all required attributes
+  const loadMotorcycles = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/motorcycles`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch motorcycles');
+      }
+      const motos = await response.json();
+      // Map or validate attributes if needed here
+      setMotorcycles(
+        motos.map((moto: any) => ({
+          id: moto.id,
+          placa: moto.placa,
+          modelo: moto.modelo,
+          cor: moto.cor,
+          status: moto.status,
+          timestampEntrada: moto.timestampEntrada,
+          reservada: moto.reservada,
+          posicao: moto.posicao || null,
+        }))
+      );
+      console.log('useMotorcycleStorage: Motos carregadas:', motos.length);
+    } catch (error) {
+      console.error('Failed to load motorcycles:', error);
+      setMotorcycles([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    // Salva lista de motos no AsyncStorage e atualiza estado local
-    const saveMotorcycles = useCallback(async (motos: Motorcycle[]) => {
-        try {
-            await AsyncStorage.setItem(MOTOS_KEY, JSON.stringify(motos));
-            setMotorcycles(motos);
-        } catch (error) {
-            console.error('Failed to save motorcycles:', error);
-        }
-    }, []);
+  // Add a new motorcycle via API with all required attributes
+  const addMotorcycle = async (moto: Motorcycle) => {
+    try {
+      const response = await fetch(`${API_BASE}/motorcycles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: moto.id,
+          placa: moto.placa,
+          modelo: moto.modelo,
+          cor: moto.cor,
+          status: moto.status,
+          timestampEntrada: moto.timestampEntrada,
+          reservada: moto.reservada,
+          posicao: moto.posicao || null,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add motorcycle');
+      }
+      const newMoto = await response.json();
+      setMotorcycles((prev) => [...prev, newMoto]);
+      return newMoto;
+    } catch (error) {
+      console.error('Failed to add motorcycle:', error);
+      throw error;
+    }
+  };
 
-    // Adiciona uma nova moto
-    const addMotorcycle = async (moto: Motorcycle) => {
-        const updatedMotos = [...motorcycles, moto];
-        await saveMotorcycles(updatedMotos);
-        return moto;
-    };
+  // Update a motorcycle via API with all required attributes
+  const updateMotorcycle = async (updatedMoto: Motorcycle) => {
+    try {
+      const response = await fetch(`${API_BASE}/motorcycles/${updatedMoto.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: updatedMoto.id,
+          placa: updatedMoto.placa,
+          modelo: updatedMoto.modelo,
+          cor: updatedMoto.cor,
+          status: updatedMoto.status,
+          timestampEntrada: updatedMoto.timestampEntrada,
+          reservada: updatedMoto.reservada,
+          posicao: updatedMoto.posicao || null,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update motorcycle');
+      }
+      const moto = await response.json();
+      setMotorcycles((prev) =>
+        prev.map((m) => (m.id === moto.id ? moto : m))
+      );
+      return moto;
+    } catch (error) {
+      console.error('Failed to update motorcycle:', error);
+      throw error;
+    }
+  };
 
-    // Atualiza uma moto existente
-    const updateMotorcycle = async (updatedMoto: Motorcycle) => {
-        const updatedMotos = motorcycles.map(moto =>
-            moto.id === updatedMoto.id ? updatedMoto : moto
-        );
-        await saveMotorcycles(updatedMotos);
-        return updatedMoto;
-    };
-
-    // Remove uma moto pelo ID
-    const removeMotorcycle = async (id: string) => {
-        try {
-            const updatedMotos = motorcycles.filter(moto => moto.id !== id);
-            await AsyncStorage.setItem(MOTOS_KEY, JSON.stringify(updatedMotos));
-            setMotorcycles(updatedMotos);
-            return true;
-        } catch (error) {
-            console.error('Failed to remove motorcycle:', error);
-            return false;
-        }
-    };
+  // Remove a motorcycle via API
+  const removeMotorcycle = async (id: string) => {
+    try {
+      const response = await fetch(`${API_BASE}/motorcycles/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to remove motorcycle');
+      }
+      setMotorcycles((prev) => prev.filter((moto) => moto.id !== id));
+      return true;
+    } catch (error) {
+      console.error('Failed to remove motorcycle:', error);
+      return false;
+    }
+  };
 
     // Limpa todas as motos do armazenamento
     const clearMotorcycles = async () => {
