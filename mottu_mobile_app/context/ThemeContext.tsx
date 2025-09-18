@@ -1,15 +1,14 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { lightColors, darkColors } from '@/theme/colors';
+import { lightColors, darkColors, ColorsType } from '@/theme/colors';
 
 type ThemeType = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: ThemeType;
-  colors: typeof lightColors;
+  colors: ColorsType;
   toggleTheme: () => void;
 }
-
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 interface ThemeProviderProps {
@@ -26,8 +25,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const loadTheme = async () => {
       try {
         const storedTheme = await AsyncStorage.getItem(THEME_KEY);
-        if (storedTheme === 'dark') {
-          setTheme('dark');
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+          setTheme(storedTheme as ThemeType);
         }
       } catch (error) {
         console.error('Erro ao carregar tema:', error);

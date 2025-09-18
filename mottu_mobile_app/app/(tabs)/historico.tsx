@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import useHistoryStorage from '@/hooks/useHistoryStorage';
 
 // Tipagem para eventos do histórico
@@ -30,6 +30,77 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
     </View>
   );
 
+  const { colors } = useTheme();
+
+  // Estilos organizados para visual limpo e responsivo
+  const styles = StyleSheet.create({
+    container: {
+      marginTop: 50,
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    header: {
+      padding: 16,
+      backgroundColor: colors.primary.main,
+    },
+    sectionTitle: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.neutral.white,
+    },
+    subTitle: {
+      marginTop: 8,
+      fontSize: 16,
+      color: colors.neutral.white,
+      opacity: 0.9,
+    },
+    historyItem: {
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 8,
+      elevation: 1,
+      shadowColor: colors.neutral.black,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      borderWidth: 1,
+      borderColor: colors.neutral.lightGray,
+    },
+    historyAction: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.neutral.black,
+      marginBottom: 4,
+    },
+    historyDetails: {
+      fontSize: 14,
+      color: colors.neutral.gray,
+    },
+    historyTimestamp: {
+      fontSize: 12,
+      color: colors.neutral.gray,
+      marginTop: 8,
+    },
+    clearButton: {
+      backgroundColor: colors.status.quarantine,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      marginTop: 24,
+    },
+    clearButtonText: {
+      color: colors.neutral.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: colors.neutral.gray,
+      textAlign: 'center',
+      marginTop: 20,
+    },
+  });
   return (
     <View style={styles.container}>
       {/* Cabeçalho da tela de histórico */}
@@ -62,74 +133,5 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
   );
 };
 
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: colors.primary.main,
-  },
-  sectionTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-  },
-  subTitle: {
-    marginTop: 8,
-    fontSize: 16,
-    color: colors.neutral.white,
-    opacity: 0.9,
-  },
-  historyItem: {
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
-    elevation: 1,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    borderWidth: 1,
-    borderColor: colors.neutral.lightGray,
-  },
-  historyAction: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.neutral.black,
-    marginBottom: 4,
-  },
-  historyDetails: {
-    fontSize: 14,
-    color: colors.neutral.gray,
-  },
-  historyTimestamp: {
-    fontSize: 12,
-    color: colors.neutral.gray,
-    marginTop: 8,
-  },
-  clearButton: {
-    backgroundColor: colors.status.quarantine,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 24,
-  },
-  clearButtonText: {
-    color: colors.neutral.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.neutral.gray,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-});
 
 export default HistoryList;

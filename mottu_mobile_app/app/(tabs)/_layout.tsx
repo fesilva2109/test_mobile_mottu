@@ -1,13 +1,41 @@
 "use client"
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { Grid2x2 as Grid, QrCode, ChartBar as BarChart2, Chrome as Home, Clock } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 
 // TabLayout define a estrutura de navegação principal do aplicativo usando abas na parte inferior.
 // Cada aba permite ao usuário acessar diferentes seções do aplicativo.
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    header: {
+      padding: 16,
+      backgroundColor: colors.primary.main,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.neutral.white,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.neutral.white,
+      opacity: 0.9,
+    },
+    content: {
+      flex: 1,
+      padding: 10,
+    },
+  });
+
   return (
     <Tabs
       screenOptions={{
@@ -65,29 +93,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: colors.primary.main,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.neutral.white,
-    opacity: 0.9,
-  },
-  content: {
-    flex: 1, 
-    padding: 10,
-  },
- 
-});

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Motorcycle } from '@/types';
-import { getStatusColor, getModelIcon, colors } from '@/theme/colors';
+import { getStatusColor, getModelIcon } from '@/theme/colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '@/context/ThemeContext';
 
 interface MotoCardProps {
   motorcycle: Motorcycle;
@@ -20,8 +21,10 @@ export function MotoCard({
   isInWaitingArea = false,
   isSelected = false,
 }: MotoCardProps) {
+  const { colors } = useTheme();
+
   // Cor de fundo do status, definida por função utilitária
-  const statusColor = getStatusColor(motorcycle.status);
+  const statusColor = getStatusColor(motorcycle.status, colors);
   // Ícone/emoji do modelo da moto
   const modelIcon = getModelIcon(motorcycle.modelo);
 
@@ -29,6 +32,114 @@ export function MotoCard({
   const hoursInYard = (Date.now() - motorcycle.timestampEntrada) / (1000 * 60 * 60);
   // Destaca motos que estão há mais de 48h no pátio
   const isOldMotorcycle = hoursInYard > 48;
+
+  const getStyles = (colors: any) => StyleSheet.create({
+    cardContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    container: {
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 12,
+      elevation: 2,
+      shadowColor: colors.neutral.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      flex: 1,
+    },
+    waitingAreaCard: {
+      borderLeftWidth: 4,
+      borderLeftColor: colors.primary.light,
+    },
+    oldMotorcycleCard: {
+      borderLeftWidth: 4,
+      borderLeftColor: colors.status.priority,
+    },
+    selectedCard: {
+      borderWidth: 2,
+      borderColor: colors.primary.main,
+      backgroundColor: colors.primary.lighter,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    modelContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    emoji: {
+      fontSize: 20,
+      marginRight: 6,
+    },
+    placa: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.neutral.black,
+    },
+    reservedTag: {
+      backgroundColor: colors.status.reserved,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    },
+    reservedText: {
+      color: colors.neutral.white,
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+    infoContainer: {
+      marginBottom: 12,
+    },
+    modelo: {
+      fontSize: 14,
+      color: colors.neutral.darkGray,
+    },
+    cor: {
+      fontSize: 14,
+      color: colors.neutral.gray,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    statusContainer: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 4,
+    },
+    status: {
+      color: colors.neutral.white,
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    timeAlertContainer: {
+      backgroundColor: colors.status.priority,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    },
+    timeAlertText: {
+      color: colors.neutral.white,
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+    deleteButton: {
+      marginLeft: 8,
+      padding: 8,
+      backgroundColor: colors.status.quarantine,
+      borderRadius: 6,
+    },
+  });
+
+  const styles = getStyles(colors);
 
   return (
     <View style={styles.cardContainer}>
@@ -90,110 +201,3 @@ export function MotoCard({
     </View>
   );
 }
-
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-  cardContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  container: {
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    flex: 1,
-  },
-  waitingAreaCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: colors.primary.light,
-  },
-  oldMotorcycleCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: colors.status.priority,
-  },
-  selectedCard: {
-    borderWidth: 2,
-    borderColor: colors.primary.main,
-    backgroundColor: colors.primary.lighter,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  modelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  emoji: {
-    fontSize: 20,
-    marginRight: 6,
-  },
-  placa: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.neutral.black,
-  },
-  reservedTag: {
-    backgroundColor: colors.status.reserved,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  reservedText: {
-    color: colors.neutral.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  infoContainer: {
-    marginBottom: 12,
-  },
-  modelo: {
-    fontSize: 14,
-    color: colors.neutral.darkGray,
-  },
-  cor: {
-    fontSize: 14,
-    color: colors.neutral.gray,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statusContainer: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  status: {
-    color: colors.neutral.white,
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  timeAlertContainer: {
-    backgroundColor: colors.status.priority,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  timeAlertText: {
-    color: colors.neutral.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  deleteButton: {
-    marginLeft: 8,
-    padding: 8,
-    backgroundColor: colors.status.quarantine,
-    borderRadius: 6,
-  },
-});

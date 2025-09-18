@@ -49,16 +49,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
+
+      // Validação básica de entrada
+      if (!email || !password) {
+        throw new Error('Email e senha são obrigatórios');
+      }
+
       const response = await fetch(`${API_BASE}/users?email=${email}`);
       if (!response.ok) {
-        throw new Error('Erro ao conectar com o servidor');
+        if (response.status === 404) {
+          throw new Error('Serviço temporariamente indisponível. Tente novamente mais tarde.');
+        }
+        throw new Error('Erro ao conectar com o servidor. Verifique sua conexão com a internet.');
       }
 
       const users = await response.json();
       const foundUser = users[0];
 
-      if (!foundUser || foundUser.password !== password) {
-        throw new Error('Email ou senha inválidos');
+      if (!foundUser) {
+        throw new Error('Email não encontrado. Verifique suas credenciais.');
+      }
+
+      if (foundUser.password !== password) {
+        throw new Error('Senha incorreta. Tente novamente.');
       }
 
       const authToken = `mock_token_${foundUser.id}_${Date.now()}`;
@@ -72,7 +85,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro no login:', error);
-      throw error;
+      // Re-throw com mensagem mais amigável se necessário
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Ocorreu um erro inesperado durante o login. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -82,11 +99,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
 
-      // Verifica se já existe
+      // Validação básica de entrada
+      if (!name || !email || !password) {
+        throw new Error('Nome, email e senha são obrigatórios');
+      }
+
+      // Verifica se já existe usuário com este email
       const checkResponse = await fetch(`${API_BASE}/users?email=${email}`);
+      if (!checkResponse.ok) {
+        throw new Error('Erro ao verificar disponibilidade do email. Tente novamente.');
+      }
+
       const exists = await checkResponse.json();
       if (exists.length > 0) {
-        throw new Error('Usuário já cadastrado');
+        throw new Error('Este email já está cadastrado. Use outro email ou faça login.');
       }
 
       const response = await fetch(`${API_BASE}/users`, {
@@ -96,7 +122,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao registrar usuário');
+        if (response.status === 400) {
+          throw new Error('Dados inválidos. Verifique as informações e tente novamente.');
+        }
+        throw new Error('Erro ao criar conta. Verifique sua conexão com a internet e tente novamente.');
       }
 
       const newUser = await response.json();
@@ -111,7 +140,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro no registro:', error);
-      throw error;
+      // Re-throw com mensagem mais amigável se necessário
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Ocorreu um erro inesperado durante o registro. Tente novamente.');
     } finally {
       setLoading(false);
     }

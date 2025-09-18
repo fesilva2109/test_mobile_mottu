@@ -56,9 +56,9 @@ export const darkColors = {
   }
 };
 
-export const colors = lightColors; // Default to light
+export type ColorsType = typeof lightColors;
 
-export const getStatusColor = (status: string): string => {
+export const getStatusColor = (status: string, colors: ColorsType): string => {
   switch (status) {
     case 'Pronta para aluguel':
       return colors.status.ready;

@@ -5,10 +5,11 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { QrCode, ChevronDown } from 'lucide-react-native';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import { Motorcycle } from '@/types';
 import * as Crypto from 'expo-crypto'; 
 import useHistoryStorage from '@/hooks/useHistoryStorage';
+import React from 'react';
 
 // Função utilitária para gerar UUIDs únicos para cada moto cadastrada
 const generateUUID = () => {
@@ -105,6 +106,120 @@ export default function CadastroScreen() {
     setCor('');
     setStatus(MOTO_STATUSES[0]);
   };
+
+    const { colors } = useTheme();
+
+// Estilos organizados para manter o visual limpo e funcional
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.neutral.lightGray,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: colors.primary.main,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.neutral.white,
+  },
+  content: {
+    padding: 16,
+  },
+  scanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary.main,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+  },
+  scanButtonText: {
+    color: colors.neutral.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  formContainer: {
+    backgroundColor: colors.neutral.white,
+    borderRadius: 12,
+    padding: 16,
+    elevation: 2,
+    shadowColor: colors.neutral.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: colors.neutral.black,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: colors.neutral.darkGray,
+  },
+  input: {
+    backgroundColor: colors.neutral.lightGray,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: colors.neutral.black,
+  },
+  selectInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.neutral.lightGray,
+    borderRadius: 8,
+    padding: 12,
+  },
+  selectText: {
+    fontSize: 16,
+    color: colors.neutral.black,
+  },
+  optionsContainer: {
+    backgroundColor: colors.neutral.white,
+    borderRadius: 8,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: colors.neutral.lightGray,
+    zIndex: 2,
+  },
+  optionItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral.lightGray,
+  },
+  optionText: {
+    fontSize: 16,
+    color: colors.neutral.black,
+  },
+  selectedOptionText: {
+    color: colors.primary.main,
+    fontWeight: 'bold',
+  },
+  submitButton: {
+    backgroundColor: colors.primary.main,
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  submitButtonText: {
+    color: colors.neutral.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -230,116 +345,7 @@ export default function CadastroScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+
+
 }
-
-// Estilos organizados para manter o visual limpo e funcional
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: colors.primary.main,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-  },
-  content: {
-    padding: 16,
-  },
-  scanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary.main,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-  },
-  scanButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
-  },
-  formContainer: {
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 16,
-    elevation: 2,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: colors.neutral.black,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: colors.neutral.darkGray,
-  },
-  input: {
-    backgroundColor: colors.neutral.lightGray,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: colors.neutral.black,
-  },
-  selectInput: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.neutral.lightGray,
-    borderRadius: 8,
-    padding: 12,
-  },
-  selectText: {
-    fontSize: 16,
-    color: colors.neutral.black,
-  },
-  optionsContainer: {
-    backgroundColor: colors.neutral.white,
-    borderRadius: 8,
-    marginTop: 4,
-    borderWidth: 1,
-    borderColor: colors.neutral.lightGray,
-    zIndex: 2,
-  },
-  optionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.neutral.lightGray,
-  },
-  optionText: {
-    fontSize: 16,
-    color: colors.neutral.black,
-  },
-  selectedOptionText: {
-    color: colors.primary.main,
-    fontWeight: 'bold',
-  },
-  submitButton: {
-    backgroundColor: colors.primary.main,
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  submitButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
+  

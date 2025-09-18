@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, StyleSheet, View, Text, LayoutAnimation } from 'react-native';
 import { MotoCard } from './MotoCard';
 import { Motorcycle } from '@/types';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 
 interface MotoListProps {
     motorcycles: Motorcycle[];
@@ -13,6 +13,27 @@ interface MotoListProps {
 
 // Lista visual de motos, usada em várias telas do app
 export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: MotoListProps) {
+    const { colors } = useTheme();
+
+    const getStyles = (colors: any) => StyleSheet.create({
+        listContainer: {
+            paddingBottom: 20,
+        },
+        emptyContainer: {
+            padding: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.neutral.lightGray,
+            borderRadius: 8,
+        },
+        emptyText: {
+            color: colors.neutral.gray,
+            fontSize: 16,
+        },
+    });
+
+    const styles = getStyles(colors);
+
     // Exibe mensagem amigável se não houver motos para mostrar
     if (motorcycles.length === 0) {
         return (
@@ -44,20 +65,4 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
     );
 }
 
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-    listContainer: {
-        paddingBottom: 20,
-    },
-    emptyContainer: {
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.neutral.lightGray,
-        borderRadius: 8,
-    },
-    emptyText: {
-        color: colors.neutral.gray,
-        fontSize: 16,
-    },
-});
+

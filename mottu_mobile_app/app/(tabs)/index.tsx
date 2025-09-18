@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import { useLogout } from '@/components/Logout';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
 import React from 'react';
@@ -13,6 +13,7 @@ export default function HomeScreen() {
   const router = useRouter(); 
   const { logout } = useLogout(); 
   const { motorcycles, refreshMotorcycles } = useMotorcycleStorage(); 
+  const { colors } = useTheme();
 
   const motosDisponiveis = motorcycles.filter(m => m.status === 'Pronta para aluguel').length;
   const motosManutencao = motorcycles.filter(m => m.status === 'Em manutenção').length;
@@ -25,6 +26,108 @@ export default function HomeScreen() {
       refreshMotorcycles();
     }, [refreshMotorcycles])
   );
+
+  const getStyles = (colors: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    header: {
+      padding: 16,
+      backgroundColor: colors.primary.main,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.neutral.white,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.neutral.white,
+      opacity: 0.9,
+    },
+    content: {
+      padding: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginTop: 16,
+      marginBottom: 12,
+      color: colors.neutral.black,
+    },
+    quickAccessGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    quickAccessCard: {
+      width: '48%',
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      elevation: 2,
+      shadowColor: colors.neutral.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    cardTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginTop: 12,
+      marginBottom: 4,
+      color: colors.neutral.black,
+    },
+    cardDescription: {
+      fontSize: 14,
+      color: colors.neutral.gray,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.neutral.white,
+      borderRadius: 12,
+      padding: 16,
+      marginHorizontal: 4,
+      alignItems: 'center',
+      elevation: 2,
+      shadowColor: colors.neutral.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.primary.main,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: colors.neutral.gray,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    dashboardButton: {
+      backgroundColor: colors.primary.main,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    dashboardButtonText: {
+      color: colors.neutral.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+  });
+
+  const styles = getStyles(colors);
 
 
   return (
@@ -123,105 +226,5 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: colors.primary.main,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.neutral.white,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.neutral.white,
-    opacity: 0.9,
-  },
-  content: {
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 16,
-    marginBottom: 12,
-    color: colors.neutral.black,
-  },
-  quickAccessGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  quickAccessCard: {
-    width: '48%',
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 12,
-    marginBottom: 4,
-    color: colors.neutral.black,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: colors.neutral.gray,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.neutral.white,
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 4,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.primary.main,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: colors.neutral.gray,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  dashboardButton: {
-    backgroundColor: colors.primary.main,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  dashboardButtonText: {
-    color: colors.neutral.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 

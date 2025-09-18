@@ -5,12 +5,13 @@ import { useMotorcycleStorage, useGridStorage } from '@/hooks/useStorage';
 import { GridComponent } from '@/components/GridComponent';
 import { MotoList } from '@/components/MotoList';
 import { FilterMenu } from '@/components/FilterMenu';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/context/ThemeContext';
 import { Motorcycle } from '@/types';
 import { useFocusEffect } from 'expo-router';
 import React from 'react';
 
 export default function MapaScreen() {
+  const { colors } = useTheme();
   // Estados para filtros e seleção de motos
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -137,6 +138,92 @@ export default function MapaScreen() {
     );
   };
 
+  const getStyles = (colors: any) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.neutral.lightGray,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginTop: 12,
+      fontSize: 16,
+      color: colors.neutral.gray,
+    },
+    header: {
+      backgroundColor: colors.primary.main,
+      padding: 16,
+    },
+    title: {
+      color: colors.neutral.white,
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 8,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginVertical: 12,
+      marginHorizontal: 16,
+    },
+    waitingSection: {
+      flex: 1,
+      backgroundColor: colors.neutral.white,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      marginTop: -20,
+      padding: 16,
+    },
+    waitingHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    waitingTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    clearFilters: {
+      color: colors.primary.main,
+      fontWeight: '500',
+    },
+    gridContainer: {
+      marginBottom: 8,
+      maxHeight: 550,
+      overflow: 'scroll',
+    },
+    selectionIndicator: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 12,
+      backgroundColor: colors.primary.lighter,
+      margin: 16,
+      borderRadius: 8,
+      borderLeftWidth: 4,
+      borderLeftColor: colors.primary.main,
+    },
+    selectionText: {
+      fontWeight: 'bold',
+      color: colors.primary.main,
+    },
+    clearSelectionButton: {
+      padding: 6,
+      borderRadius: 4,
+      backgroundColor: colors.status.quarantine,
+    },
+    clearSelectionText: {
+      color: colors.neutral.white,
+      fontSize: 12,
+    },
+  });
+
+  const styles = getStyles(colors);
+
   // Exibe loading enquanto carrega motos ou grid
   if (loadingMotos || loadingGrid) {
     return (
@@ -208,88 +295,3 @@ export default function MapaScreen() {
     </SafeAreaView>
   );
 }
-
-// Estilos organizados para visual limpo e responsivo
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.neutral.lightGray,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: colors.neutral.gray,
-  },
-  header: {
-    backgroundColor: colors.primary.main,
-    padding: 16,
-  },
-  title: {
-    color: colors.neutral.white,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 12,
-    marginHorizontal: 16,
-  },
-  waitingSection: {
-    flex: 1,
-    backgroundColor: colors.neutral.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    marginTop: -20,
-    padding: 16,
-  },
-  waitingHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  waitingTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  clearFilters: {
-    color: colors.primary.main,
-    fontWeight: '500',
-  },
-  gridContainer: {
-    marginBottom: 8,
-    maxHeight: 550,
-    overflow: 'scroll',
-  },
-  selectionIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: colors.primary.lighter,
-    margin: 16,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.primary.main,
-  },
-  selectionText: {
-    fontWeight: 'bold',
-    color: colors.primary.main,
-  },
-  clearSelectionButton: {
-    padding: 6,
-    borderRadius: 4,
-    backgroundColor: colors.status.quarantine,
-  },
-  clearSelectionText: {
-    color: colors.neutral.white,
-    fontSize: 12,
-  },
-});
