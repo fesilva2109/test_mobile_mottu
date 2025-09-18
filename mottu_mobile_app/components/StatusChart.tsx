@@ -7,10 +7,8 @@ interface StatusChartProps {
 }
 
 export function StatusChart({ data }: StatusChartProps) {
-  // Calculate total
   const total = Object.values(data).reduce((sum, value) => sum + value, 0);
   
-  // Check if we have data
   if (total === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -22,10 +20,8 @@ export function StatusChart({ data }: StatusChartProps) {
   return (
     <View style={styles.container}>
       {Object.entries(data).map(([status, count]) => {
-        // Skip if count is 0
         if (count === 0) return null;
         
-        // Calculate percentage
         const percentage = (count / total) * 100;
         
         return (
@@ -53,7 +49,6 @@ export function StatusChart({ data }: StatusChartProps) {
   );
 }
 
-// Helper function to get status color
 const getStatusColor = (status: string): string => {
   switch (status) {
     case 'Pronta para aluguel':

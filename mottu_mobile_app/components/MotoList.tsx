@@ -38,7 +38,6 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
             )}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}
-            // Animação suave ao atualizar a lista
             onLayout={() => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)}
             scrollEnabled={false}
         />

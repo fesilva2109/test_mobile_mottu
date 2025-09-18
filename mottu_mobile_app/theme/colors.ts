@@ -1,4 +1,4 @@
-export const colors = {
+export const lightColors = {
   // Primary colors
   primary: {
     main: '#05AF31',
@@ -18,14 +18,45 @@ export const colors = {
   },
   // Status colors
   status: {
-    ready: '#05AF31',     
-    maintenance: '#FFB800', 
-    quarantine: '#FF5252', 
-    priority: '#B71C1C',   
-    reserved: '#4A56E2',  
-    waiting: '#7A7A7A',    
+    ready: '#05AF31',
+    maintenance: '#FFB800',
+    quarantine: '#FF5252',
+    priority: '#B71C1C',
+    reserved: '#4A56E2',
+    waiting: '#7A7A7A',
   }
 };
+
+export const darkColors = {
+  // Primary colors
+  primary: {
+    main: '#05AF31',
+    light: '#3ED17D',
+    lighter: '#61CE70',
+    bright: '#29D443',
+    teal: '#4BCFAD',
+    accent: '#A2FF00',
+  },
+  // Neutral colors
+  neutral: {
+    white: '#1D1D1D',
+    lightGray: '#2D2D2D',
+    gray: '#7A7A7A',
+    darkGray: '#F4F4F4',
+    black: '#FFFFFF',
+  },
+  // Status colors
+  status: {
+    ready: '#05AF31',
+    maintenance: '#FFB800',
+    quarantine: '#FF5252',
+    priority: '#B71C1C',
+    reserved: '#4A56E2',
+    waiting: '#7A7A7A',
+  }
+};
+
+export const colors = lightColors; // Default to light
 
 export const getStatusColor = (status: string): string => {
   switch (status) {

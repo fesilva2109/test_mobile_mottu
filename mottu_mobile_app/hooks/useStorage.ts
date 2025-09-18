@@ -5,6 +5,9 @@ import { Motorcycle, GridPosition } from '@/types';
 // Chaves para armazenamento local no AsyncStorage
 const MOTOS_KEY = '@mottu_motos';
 const GRID_KEY = '@mottu_grid';
+const TOKEN_KEY = '@mottu:token';
+
+const API_BASE = 'http://localhost:8080/api'; // Altere para sua URL da API
 
 export const useMotorcycleStorage = () => {
     const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);

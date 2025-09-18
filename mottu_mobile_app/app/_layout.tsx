@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { ActivityIndicator, View } from 'react-native';
 import { colors } from '@/theme/colors';
 
@@ -12,9 +13,11 @@ export default function RootLayout() {
   useFrameworkReady();
 
   return (
-    <AuthProvider>
-      <RootComponent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RootComponent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
@@ -44,6 +47,7 @@ function RootComponent() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="cadastro/camera" options={{ presentation: 'modal' }} />

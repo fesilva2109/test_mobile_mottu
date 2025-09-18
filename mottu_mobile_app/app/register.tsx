@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Mail, Lock, AlertCircle } from 'lucide-react-native';
-import { useAuth } from '@/context/AuthContext';
+import { Mail, Lock, AlertCircle, User } from 'lucide-react-native';
 import { colors } from '@/theme/colors';
+import { useAuth } from '@/context/AuthContext';
 import React from 'react';
 
-// Tela de Login: autenticação simples para acesso ao app
-export default function LoginScreen() {
+// Tela de Registro: cadastro de novo usuário
+export default function RegisterScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   // Estados controlados para os campos do formulário
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
 
   // Validação básica de email
@@ -31,14 +35,20 @@ export default function LoginScreen() {
     return passwordRegex.test(password);
   };
 
-  // Função chamada ao pressionar "Entrar"
-  const handleLogin = async () => {
+  // Função chamada ao pressionar "Registrar"
+  const handleRegister = async () => {
     const newErrors = {
+      name: '',
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     };
 
     // Validação dos campos
+    if (!name) {
+      newErrors.name = 'Nome é obrigatório';
+    }
+
     if (!email) {
       newErrors.email = 'Email é obrigatório';
     } else if (!validateEmail(email)) {
@@ -47,40 +57,32 @@ export default function LoginScreen() {
 
     if (!password) {
       newErrors.password = 'Senha é obrigatória';
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'Senha fraca (mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 símbolo)';
     }
-    else if (!validatePassword(password)) {
-    newErrors.password = 'Senha fraca (mín. 8 caracteres, 1 maiúscula, 1 símbolo)';
-     }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Senhas não coincidem';
+    }
 
     setErrors(newErrors);
 
-    // Se não houver erros, realiza login (contexto de autenticação)
-      if (!newErrors.email && !newErrors.password) {
-        try {
-          await login(email, password);
-        } catch (error: unknown) {
-            let errorMessage = 'Erro ao fazer login.';
-
-            if (error instanceof Error) {
-              if (
-                error.message.includes('Network request failed') ||
-                error.message.includes('fetch')
-              ) {
-                errorMessage =
-                  'Não foi possível conectar ao sistema. Verifique sua conexão com a internet.';
-              } else {
-                errorMessage = error.message;
-              }
-            } else {
-              errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
-            }
-
-            setErrors({
-              email: '',
-              password: errorMessage,
-            });
-}
+    // Se não houver erros, realiza registro
+    if (!newErrors.name && !newErrors.email && !newErrors.password && !newErrors.confirmPassword) {
+      try {
+        await register(email, password, name);
+      } catch (error) {
+        // Tratamento de erro da API
+        setErrors({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: error instanceof Error ? error.message : 'Erro no registro'
+        });
       }
+    }
   };
 
   return (
@@ -88,11 +90,33 @@ export default function LoginScreen() {
       {/* Cabeçalho visual do app */}
       <View style={styles.header}>
         <Text style={styles.title}>Mottu</Text>
-        <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
+        <Text style={styles.subtitle}>Criar Conta</Text>
       </View>
 
-      {/* Formulário de login */}
+      {/* Formulário de registro */}
       <View style={styles.form}>
+        {/* Campo de nome */}
+        <View style={styles.inputGroup}>
+          <View style={[styles.inputContainer, errors.name ? styles.inputError : null]}>
+            <User size={20} color={colors.neutral.gray} />
+            <TextInput
+              style={styles.input}
+              placeholder="Nome completo"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+              autoComplete="name"
+              placeholderTextColor={colors.neutral.gray}
+            />
+          </View>
+          {errors.name ? (
+            <View style={styles.errorContainer}>
+              <AlertCircle size={16} color={colors.status.quarantine} />
+              <Text style={styles.errorText}>{errors.name}</Text>
+            </View>
+          ) : null}
+        </View>
+
         {/* Campo de email */}
         <View style={styles.inputGroup}>
           <View style={[styles.inputContainer, errors.email ? styles.inputError : null]}>
@@ -108,7 +132,6 @@ export default function LoginScreen() {
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
-          {/* Exibe erro de email, se houver */}
           {errors.email ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
@@ -127,11 +150,10 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              autoComplete="password"
+              autoComplete="password-new"
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
-          {/* Exibe erro de senha, se houver */}
           {errors.password ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
@@ -140,14 +162,36 @@ export default function LoginScreen() {
           ) : null}
         </View>
 
-        {/* Botão de login */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Entrar</Text>
+        {/* Campo de confirmação de senha */}
+        <View style={styles.inputGroup}>
+          <View style={[styles.inputContainer, errors.confirmPassword ? styles.inputError : null]}>
+            <Lock size={20} color={colors.neutral.gray} />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirmar senha"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+              autoComplete="password-new"
+              placeholderTextColor={colors.neutral.gray}
+            />
+          </View>
+          {errors.confirmPassword ? (
+            <View style={styles.errorContainer}>
+              <AlertCircle size={16} color={colors.status.quarantine} />
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Botão de registro */}
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <Text style={styles.registerButtonText}>Registrar</Text>
         </TouchableOpacity>
 
-        {/* Link para registro */}
-        <TouchableOpacity style={styles.registerLink} onPress={() => router.push('/register')}>
-          <Text style={styles.registerText}>Não tem conta? <Text style={styles.registerTextBold}>Registrar</Text></Text>
+        {/* Link para login */}
+        <TouchableOpacity style={styles.loginLink} onPress={() => router.push('/login')}>
+          <Text style={styles.loginText}>Já tem conta? <Text style={styles.loginTextBold}>Entrar</Text></Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -217,7 +261,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 12,
   },
-  loginButton: {
+  registerButton: {
     backgroundColor: colors.primary.main,
     borderRadius: 12,
     height: 56,
@@ -225,23 +269,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 12,
   },
-  loginButtonText: {
+  registerButtonText: {
     color: colors.neutral.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
-  registerLink: {
+  loginLink: {
     marginTop: 16,
     alignItems: 'center',
   },
-  registerText: {
+  loginText: {
     color: colors.neutral.gray,
     fontSize: 14,
   },
-  registerTextBold: {
+  loginTextBold: {
     color: colors.primary.main,
     fontWeight: 'bold',
   },
 });
-
-
