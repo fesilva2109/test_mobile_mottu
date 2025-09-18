@@ -5,6 +5,7 @@ import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native
 import { useTheme } from '@/context/ThemeContext';
 import { useLogout } from '@/components/Logout';
 import { useMotorcycleStorage } from '@/hooks/useStorage';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import React from 'react';
 
 // HomeScreen é a tela inicial, oferecendo acesso rápido às principais funcionalidades
@@ -35,6 +36,9 @@ export default function HomeScreen() {
     header: {
       padding: 16,
       backgroundColor: colors.primary.main,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     title: {
       fontSize: 28,
@@ -134,8 +138,11 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       {/* Cabeçalho da tela com o título e subtítulo do aplicativo. */}
       <View style={styles.header}>
-        <Text style={styles.title}>Mottu</Text>
-        <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
+        <View>
+          <Text style={styles.title}>Mottu</Text>
+          <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
+        </View>
+        <ThemeToggle />
       </View>
 
       {/* Área de conteúdo principal, permitindo rolagem para visualizar todo o conteúdo. */}
