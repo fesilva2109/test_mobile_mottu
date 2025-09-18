@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_BASE = 'http://192.168.0.183:3001'; // ajuste para seu IP + porta do JSON Server
+const API_BASE = 'https://68cb62ef716562cf50734720.mockapi.io/api/v1'; 
 
 interface User {
   id: string;
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/users?email=${email}&password=${password}`);
+      const response = await fetch(`${API_BASE}/users?email=${email}`);
       if (!response.ok) {
         throw new Error('Erro ao conectar com o servidor');
       }
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const users = await response.json();
       const foundUser = users[0];
 
-      if (!foundUser) {
+      if (!foundUser || foundUser.password !== password) {
         throw new Error('Email ou senha inválidos');
       }
 

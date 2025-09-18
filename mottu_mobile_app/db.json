@@ -1,26 +1,47 @@
 {
   "users": [
     {
-      "id": 1,
-      "email": "felipe@email.com",
-      "password": "Family@06212611",
-      "name": "Felipe"
+      "id": "user1",
+      "email": "user1@example.com",
+      "name": "User One",
+      "password": "Password1$"
+    },
+    {
+      "id": "user2",
+      "email": "user2@example.com",
+      "name": "User Two",
+      "password": "Password2$"
     }
   ],
   "motorcycles": [
     {
-      "id": 1,
-      "brand": "Yamaha",
-      "model": "MT-07",
-      "year": 2021,
-      "price": 35000
+      "id": "moto1",
+      "placa": "ABC1234",
+      "modelo": "Honda CG 160",
+      "cor": "Vermelho",
+      "status": "Disponível",
+      "timestampEntrada": 1688000000000,
+      "reservada": false,
+      "posicao": { "x": 1, "y": 2 }
     },
     {
-      "id": 2,
-      "brand": "Honda",
-      "model": "CB 500F",
-      "year": 2020,
-      "price": 28000
+      "id": "moto2",
+      "placa": "XYZ5678",
+      "modelo": "Yamaha YBR",
+      "cor": "Preto",
+      "status": "Em Manutenção",
+      "timestampEntrada": 1687900000000,
+      "reservada": true,
+      "posicao": { "x": 3, "y": 4 }
+    },
+    {
+      "id": "moto3",
+      "placa": "DEF9012",
+      "modelo": "Suzuki GSX",
+      "cor": "Azul",
+      "status": "Quarentena",
+      "timestampEntrada": 1687800000000,
+      "reservada": false
     }
   ]
 }
