@@ -1,55 +1,74 @@
-import { API_BASE_URL } from './config';
+import { API_BASE_URL } from '@/context/config';
 import { User } from '@/types';
 
-// Funções para autenticação de usuários usando API mockada
+/** Serviço para autenticação de usuários via API. */
 
-// Faz login buscando usuário por email e validando senha
-export const loginUser = async (email: string, password: string): Promise<User> => {
-  const response = await fetch(`${API_BASE_URL}/users?email=${encodeURIComponent(email)}`);
+interface AuthResponse {
+  user: User;
+  token: string;
+}
 
-  if (!response.ok) {
-    throw new Error('Erro ao conectar com o servidor. Verifique sua conexão.');
-  }
-
-  const users = await response.json();
-  const foundUser = users[0];
-
-  if (!foundUser) {
-    throw new Error('Email não encontrado. Verifique suas credenciais.');
-  }
-
-  if (foundUser.password !== password) {
-    throw new Error('Senha incorreta. Tente novamente.');
-  }
-
-  // Retorna os dados do usuário sem a senha
-  return { id: foundUser.id, email: foundUser.email, name: foundUser.name };
-};
-
-// Registra um novo usuário verificando se o email já existe
-export const registerUser = async (name: string, email: string, password: string): Promise<User> => {
-  // Verifica se o email já está em uso
-  const checkResponse = await fetch(`${API_BASE_URL}/users?email=${encodeURIComponent(email)}`);
-  if (!checkResponse.ok) {
-    throw new Error('Erro ao verificar disponibilidade do email.');
-  }
-
-  const existingUsers = await checkResponse.json();
-  if (existingUsers.length > 0) {
-    throw new Error('Este email já está cadastrado.');
-  }
-
-  // Cria o novo usuário na API mock
-  const response = await fetch(`${API_BASE_URL}/users`, {
+/**
+ * Autentica um usuário via API.
+ * @param email O email do usuário.
+ * @param password A senha do usuário.
+ */
+export const loginUser = async (email: string, password: string): Promise<AuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, name }),
+    body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
-    throw new Error('Erro ao criar a conta. Tente novamente mais tarde.');
+    const errorData = await response.json().catch(() => ({ message: 'Credenciais inválidas ou erro no servidor.' }));
+    throw new Error(errorData.message);
   }
 
-  const newUser = await response.json();
-  return { id: newUser.id, email: newUser.email, name: newUser.name };
+  return response.json();
+};
+
+/**
+ * Registra um novo usuário via API.
+ * @param name O nome do usuário.
+ * @param email O email do usuário.
+ * @param password A senha do usuário.
+ */
+export const registerUser = async (name: string, email: string, password: string): Promise<AuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Não foi possível criar a conta.' }));
+    throw new Error(errorData.message);
+  }
+
+  return response.json();
+};
+
+/**
+ * Encerra a sessão do usuário no servidor.
+ * @param token O token de autenticação.
+ */
+export const logoutUser = async (token: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      // Mesmo que o logout na API falhe, o app deve prosseguir com o logout local.
+      console.warn('Falha ao invalidar a sessão no servidor, mas o logout local prosseguirá.');
+    }
+  } catch (error) {
+    // Se houver um erro de rede, o logout local também deve prosseguir.
+    console.error('Erro de rede ao tentar fazer logout no servidor:', error);
+  }
 };

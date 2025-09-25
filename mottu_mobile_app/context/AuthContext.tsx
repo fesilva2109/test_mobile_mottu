@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { User } from '@/types';
-import { loginUser, registerUser } from '@/context/authService';
+import { loginUser, registerUser, logoutUser } from '@/context/authService';
 
 // Define o formato dos dados do contexto de autenticação
 interface AuthContextType {
@@ -62,8 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const userData = await loginUser(email, password);
-      const authToken = `mock_token_${userData.id}_${Date.now()}`;
+      const { user: userData, token: authToken } = await loginUser(email, password);
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -90,8 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const newUser = await registerUser(name, email, password);
-      const authToken = `mock_token_${newUser.id}_${Date.now()}`;
+      const { user: newUser, token: authToken } = await registerUser(name, email, password);
 
       await AsyncStorage.multiSet([
         ['@mottu:user', JSON.stringify(newUser)],
@@ -112,6 +110,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Remove dados do usuário e volta para a tela de login
   const logout = async () => {
     try {
+      // Tenta invalidar o token no servidor antes de limpar localmente
+      if (token) {
+        await logoutUser(token);
+      }
+
       await AsyncStorage.removeItem('@mottu:user');
       await AsyncStorage.removeItem('@mottu:token');
       setUser(null);
