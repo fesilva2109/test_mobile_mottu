@@ -8,7 +8,6 @@ Aplicativo mobile para gerenciamento inteligente de pátios de motocicletas da M
 - **Eduardo Henrique Strapazzon Nagado** - RM558158  
 - **Gustavo Ramires Lazzuri** - RM556772  
 
-<<<<<<< HEAD
 ## 📱 Sobre o Projeto
 
 Sistema completo para controle e organização de motocicletas em pátios, com integração em tempo real com backend API. Desenvolvido como protótipo funcional para gerenciamento eficiente do fluxo de motos.
@@ -46,7 +45,6 @@ Sistema completo para controle e organização de motocicletas em pátios, com i
 1. **Clone o repositório:**
 ```bash
 git clone https://github.com/fesilva2109/test_mobile_mottu.git
-cd test_mobile_mottu
 ```
 
 2. **Instale as dependências:**
