@@ -9,7 +9,7 @@ import React from 'react';
 // Tela de Login: autenticação simples para acesso ao app
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, loading } = useAuth();
+  const { login, loading, authError, clearAuthError } = useAuth();
   const { colors } = useTheme();
 
   // Estados controlados para os campos do formulário
@@ -57,30 +57,7 @@ export default function LoginScreen() {
 
     // Se não houver erros, realiza login (contexto de autenticação)
       if (!newErrors.email && !newErrors.password) {
-        try {
-          await login(email, password);
-        } catch (error: unknown) {
-            let errorMessage = 'Erro ao fazer login.';
-
-            if (error instanceof Error) {
-              if (
-                error.message.includes('Network request failed') ||
-                error.message.includes('fetch')
-              ) {
-                errorMessage =
-                  'Não foi possível conectar ao sistema. Verifique sua conexão com a internet.';
-              } else {
-                errorMessage = error.message;
-              }
-            } else {
-              errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
-            }
-
-            setErrors({
-              email: '',
-              password: errorMessage,
-            });
-}
+        await login(email, password);
       }
   };
 
@@ -138,13 +115,20 @@ export default function LoginScreen() {
     errorContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 8,
-      paddingHorizontal: 4,
+      marginTop: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      backgroundColor: '#ffe6e6',
+      borderWidth: 1,
+      borderColor: colors.status.quarantine,
+      borderRadius: 8,
+      marginBottom: 12,
     },
     errorText: {
       color: colors.status.quarantine,
       marginLeft: 8,
-      fontSize: 12,
+      fontSize: 14,
+      fontWeight: '600',
     },
     loginButton: {
       backgroundColor: colors.primary.main,
@@ -196,7 +180,10 @@ export default function LoginScreen() {
               style={styles.input}
               placeholder="Email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                clearAuthError();
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -214,23 +201,26 @@ export default function LoginScreen() {
 
         {/* Campo de senha */}
         <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.password ? styles.inputError : null]}>
+          <View style={[styles.inputContainer, errors.password || authError ? styles.inputError : null]}>
             <Lock size={20} color={colors.neutral.gray} />
             <TextInput
               style={styles.input}
               placeholder="Senha"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                clearAuthError();
+              }}
               secureTextEntry
               autoComplete="password"
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
-          {/* Exibe erro de senha, se houver */}
-          {errors.password ? (
+          {/* Exibe erro de senha ou authError, se houver */}
+          {(errors.password || authError) ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.password}</Text>
+              <Text style={styles.errorText}>{errors.password || authError}</Text>
             </View>
           ) : null}
         </View>

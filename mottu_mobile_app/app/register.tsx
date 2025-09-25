@@ -9,7 +9,7 @@ import React from 'react';
 // Tela de Registro: cadastro de novo usuário
 export default function RegisterScreen() {
   const router = useRouter();
-  const { register, loading } = useAuth();
+  const { register, loading, authError, clearAuthError } = useAuth();
   const { colors } = useTheme();
 
   // Estados controlados para os campos do formulário
@@ -72,17 +72,7 @@ export default function RegisterScreen() {
 
     // Se não houver erros, realiza registro
     if (!newErrors.name && !newErrors.email && !newErrors.password && !newErrors.confirmPassword) {
-      try {
-        await register(email, password, name);
-      } catch (error) {
-        // Tratamento de erro da API
-        setErrors({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: error instanceof Error ? error.message : 'Erro no registro'
-        });
-      }
+      await register(email, password, name);
     }
   };
 
@@ -140,13 +130,20 @@ export default function RegisterScreen() {
     errorContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 8,
-      paddingHorizontal: 4,
+      marginTop: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      backgroundColor: '#ffe6e6',
+      borderWidth: 1,
+      borderColor: colors.status.quarantine,
+      borderRadius: 8,
+      marginBottom: 12,
     },
     errorText: {
       color: colors.status.quarantine,
       marginLeft: 8,
-      fontSize: 12,
+      fontSize: 14,
+      fontWeight: '600',
     },
     registerButton: {
       backgroundColor: colors.primary.main,
@@ -198,7 +195,10 @@ export default function RegisterScreen() {
               style={styles.input}
               placeholder="Nome completo"
               value={name}
-              onChangeText={setName}
+              onChangeText={(text) => {
+                setName(text);
+                clearAuthError();
+              }}
               autoCapitalize="words"
               autoComplete="name"
               placeholderTextColor={colors.neutral.gray}
@@ -214,23 +214,26 @@ export default function RegisterScreen() {
 
         {/* Campo de email */}
         <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.email ? styles.inputError : null]}>
+          <View style={[styles.inputContainer, errors.email || authError ? styles.inputError : null]}>
             <Mail size={20} color={colors.neutral.gray} />
             <TextInput
               style={styles.input}
               placeholder="Email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                clearAuthError();
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
-          {errors.email ? (
+          {(errors.email || authError) ? (
             <View style={styles.errorContainer}>
               <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.email}</Text>
+              <Text style={styles.errorText}>{errors.email || authError}</Text>
             </View>
           ) : null}
         </View>
@@ -243,7 +246,10 @@ export default function RegisterScreen() {
               style={styles.input}
               placeholder="Senha"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                clearAuthError();
+              }}
               secureTextEntry
               autoComplete="password-new"
               placeholderTextColor={colors.neutral.gray}
@@ -265,7 +271,10 @@ export default function RegisterScreen() {
               style={styles.input}
               placeholder="Confirmar senha"
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                clearAuthError();
+              }}
               secureTextEntry
               autoComplete="password-new"
               placeholderTextColor={colors.neutral.gray}
