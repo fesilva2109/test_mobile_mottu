@@ -34,7 +34,7 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
 
     const styles = getStyles(colors);
 
-    // Exibe mensagem amigável se não houver motos para mostrar
+    // Exibe mensagem se não houver motos para mostrar
     if (motorcycles.length === 0) {
         return (
             <View style={styles.emptyContainer}>

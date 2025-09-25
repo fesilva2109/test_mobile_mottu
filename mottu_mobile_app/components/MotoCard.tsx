@@ -23,9 +23,7 @@ export function MotoCard({
 }: MotoCardProps) {
   const { colors } = useTheme();
 
-  // Cor de fundo do status, definida por função utilitária
   const statusColor = getStatusColor(motorcycle.status, colors);
-  // Ícone/emoji do modelo da moto
   const modelIcon = getModelIcon(motorcycle.modelo);
 
   // Calcula há quantas horas a moto está no pátio

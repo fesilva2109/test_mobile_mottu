@@ -18,10 +18,9 @@ interface HistoryListProps {
 
 // Componente de histórico de ações do app
 const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
-  // Hook customizado para acessar histórico salvo localmente (AsyncStorage)
   const { history, loadingHistory } = useHistoryStorage();
 
-  // Renderiza cada item do histórico
+  // Renderiza itens do histórico
   const renderHistoryItem = ({ item }: { item: HistoryEvent }) => (
     <View style={styles.historyItem}>
       <Text style={styles.historyAction}>{item.action}</Text>

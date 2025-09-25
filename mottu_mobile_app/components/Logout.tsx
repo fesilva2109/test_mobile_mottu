@@ -4,11 +4,10 @@ import { useAuth } from '@/context/AuthContext';
 
 export function useLogout() {
   // Função de reset do contexto de autenticação (limpa dados do usuário e AsyncStorage)
-  const { resetApp } = useAuth();
+  const { logout: authLogout } = useAuth();
 
-  /**
-   * Dispara o alerta de confirmação e executa o logout se confirmado.
-   */
+  //Dispara o alerta de confirmação e executa o logout se confirmado
+
   const logout = async () => {
     Alert.alert(
       'Confirmar Logout',
@@ -22,8 +21,8 @@ export function useLogout() {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            // Chama função de reset do contexto de autenticação
-            await resetApp();
+            // Chama a função de logout do contexto de autenticação
+            await authLogout();
           },
         },
       ],

@@ -7,7 +7,7 @@ export interface Motorcycle {
   posicao?: {
     x: number;
     y: number;
-  };
+  } | null;
   timestampEntrada: number;
   reservada?: boolean;
 }

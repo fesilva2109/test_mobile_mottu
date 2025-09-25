@@ -1,15 +1,10 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { User } from '@/types';
+import { loginUser, registerUser } from '@/context/authService';
 
-const API_BASE = 'https://68cb62ef716562cf50734720.mockapi.io/api/v1';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
+// Define o formato dos dados do contexto de autenticação
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -24,6 +19,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Provedor que gerencia login, registro, logout e sessão do usuário
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -31,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Carrega dados salvos do usuário ao iniciar o app
     const loadAuthData = async () => {
       try {
         const storedUser = await AsyncStorage.getItem('@mottu:user');
@@ -49,10 +46,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadAuthData();
   }, []);
 
+  // Limpa mensagens de erro de autenticação
   const clearAuthError = () => {
     setAuthError(null);
   };
 
+  // Faz login do usuário e salva dados no AsyncStorage
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -63,31 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const response = await fetch(`${API_BASE}/users?email=${encodeURIComponent(email)}`);
-      if (!response.ok) {
-        if (response.status === 404) {
-          setAuthError('Serviço temporariamente indisponível. Tente novamente mais tarde.');
-          return;
-        }
-        setAuthError('Erro ao conectar com o servidor. Verifique sua conexão com a internet.');
-        return;
-      }
-
-      const users = await response.json();
-      const foundUser = users[0];
-
-      if (!foundUser) {
-        setAuthError('Email não encontrado. Verifique suas credenciais.');
-        return;
-      }
-
-      if (foundUser.password !== password) {
-        setAuthError('Senha incorreta. Tente novamente.');
-        return;
-      }
-
-      const authToken = `mock_token_${foundUser.id}_${Date.now()}`;
-      const userData = { id: foundUser.id, email: foundUser.email, name: foundUser.name };
+      const userData = await loginUser(email, password);
+      const authToken = `mock_token_${userData.id}_${Date.now()}`;
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -97,12 +73,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro no login:', error);
-      setAuthError('Ocorreu um erro inesperado durante o login. Tente novamente.');
+      setAuthError(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Registra novo usuário e cria sessão automaticamente
   const register = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
@@ -113,53 +90,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const checkResponse = await fetch(`${API_BASE}/users?email=${encodeURIComponent(email)}`);
-      if (!checkResponse.ok) {
-        setAuthError('Erro ao verificar disponibilidade do email. Tente novamente.');
-        return;
-      }
-
-      const exists = await checkResponse.json();
-      if (exists.length > 0) {
-        setAuthError('Este email já está cadastrado.');
-        return;
-      }
-
-      const response = await fetch(`${API_BASE}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 400) {
-          setAuthError('Dados inválidos. Verifique as informações e tente novamente.');
-          return;
-        }
-        setAuthError('Erro ao criar conta. Verifique sua conexão com a internet e tente novamente.');
-        return;
-      }
-
-      const newUser = await response.json();
+      const newUser = await registerUser(name, email, password);
       const authToken = `mock_token_${newUser.id}_${Date.now()}`;
-      const userData = { id: newUser.id, email: newUser.email, name: newUser.name };
 
       await AsyncStorage.multiSet([
-        ['@mottu:user', JSON.stringify(userData)],
+        ['@mottu:user', JSON.stringify(newUser)],
         ['@mottu:token', authToken],
       ]);
 
-      setUser(userData);
+      setUser(newUser);
       setToken(authToken);
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Erro no registro:', error);
-      setAuthError('Ocorreu um erro inesperado durante o registro. Tente novamente.');
+      setAuthError(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Remove dados do usuário e volta para a tela de login
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('@mottu:user');
@@ -172,6 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Apaga todos os dados do app e reinicia para tela de login
   const resetApp = async () => {
     try {
       await AsyncStorage.clear();
@@ -186,12 +137,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, authError, login, register, logout, resetApp, clearAuthError }}>
+    <AuthContext.Provider value={{ user, token, loading, authError, login, register, logout, resetApp, clearAuthError}}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Hook para acessar os dados e funções de autenticação
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth deve ser usado dentro de um AuthProvider');

@@ -32,7 +32,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ size = 24, style }) =>
       {theme === 'light' ? (
         <Moon size={size} color={colors.neutral.gray} />
       ) : (
-        <Sun size={size} color={colors.neutral.white} />
+        <Sun size={size} color={colors.neutral.black} />
       )}
     </TouchableOpacity>
   );

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { QrCode, ChevronDown } from 'lucide-react-native';
-import { useMotorcycleStorage } from '@/hooks/useStorage';
+import { useMotorcycleStorage } from '@/hooks/useMotorcycleStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { useTheme } from '@/context/ThemeContext';
 import { Motorcycle } from '@/types';
@@ -75,8 +75,8 @@ export default function CadastroScreen() {
 
       // Aguarda um pequeno delay para garantir atualização
       await new Promise(resolve => setTimeout(resolve, 300));
-      refreshMotorcycles(); // Garante atualização da lista em outras telas
-
+      refreshMotorcycles(); 
+      
       // Exibe alerta de sucesso com opções
       Alert.alert(
         'Sucesso', 
@@ -109,7 +109,7 @@ export default function CadastroScreen() {
 
     const { colors } = useTheme();
 
-// Estilos organizados para manter o visual limpo e funcional
+// Estilos organizados 
 const styles = StyleSheet.create({
   container: {
     flex: 1,

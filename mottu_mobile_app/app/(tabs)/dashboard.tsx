@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
-import { useMotorcycleStorage } from '@/hooks/useStorage';
+import { useState, useEffect, useMemo } from 'react';
+import { useMotorcycleStorage } from '@/hooks/useMotorcycleStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { DashboardCard } from '@/components/DashboardCard';
 import { StatusChart } from '@/components/StatusChart';
@@ -9,9 +9,8 @@ import { MOTO_EFFICIENCY_TARGET } from '@/constants/dashboardConstants';
 import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
 
-// Tela de Dashboard: apresenta métricas e gráficos sobre as motos do pátio
+// Apresenta métricas e gráficos sobre as motos do pátio
 export default function DashboardScreen() {
-  // Hook customizado para acessar motos salvas localmente (AsyncStorage)
   const { motorcycles, loading } = useMotorcycleStorage();
   const { colors } = useTheme();
 
@@ -32,127 +31,7 @@ export default function DashboardScreen() {
     }
   }, [motorcycles, loading]);
 
-  const getStyles = (colors: any) => StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.neutral.lightGray,
-    },
-    header: {
-      padding: 16,
-      backgroundColor: colors.primary.main,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: colors.neutral.white,
-    },
-    subtitle: {
-      fontSize: 16,
-      color: colors.neutral.white,
-      opacity: 0.9,
-    },
-    content: {
-      padding: 16,
-    },
-    mainMetrics: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 24,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 16,
-      color: colors.neutral.black,
-    },
-    chartContainer: {
-      backgroundColor: colors.neutral.white,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 24,
-      elevation: 2,
-      shadowColor: colors.neutral.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    efficiencyContainer: {
-      backgroundColor: colors.neutral.white,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 24,
-      elevation: 2,
-      shadowColor: colors.neutral.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    progressContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 12,
-    },
-    progressBar: {
-      flex: 1,
-      height: 24,
-      backgroundColor: colors.neutral.lightGray,
-      borderRadius: 12,
-      overflow: 'hidden',
-    },
-    progressFill: {
-      height: '100%',
-      backgroundColor: colors.primary.main,
-    },
-    progressText: {
-      marginLeft: 12,
-      fontSize: 16,
-      fontWeight: 'bold',
-      width: 48,
-      textAlign: 'right',
-    },
-    efficiencyInfo: {
-      fontSize: 14,
-      color: colors.neutral.gray,
-      marginBottom: 12,
-    },
-    modelsContainer: {
-      backgroundColor: colors.neutral.white,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 24,
-      elevation: 2,
-      shadowColor: colors.neutral.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    modelItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.neutral.lightGray,
-    },
-    modelNameContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    modelEmoji: {
-      fontSize: 24,
-      marginRight: 12,
-    },
-    modelName: {
-      fontSize: 16,
-    },
-    modelCount: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: colors.primary.main,
-    },
-  });
-
-  const styles = getStyles(colors);
+  const styles = useMemo(() => getStyles(colors), [colors]);
 
   // Função para calcular todas as métricas do dashboard
   const calculateMetrics = () => {
@@ -270,3 +149,123 @@ export default function DashboardScreen() {
     </SafeAreaView>
   );
 }
+
+const getStyles = (colors: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.neutral.lightGray,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: colors.primary.main,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.neutral.white,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: colors.neutral.white,
+    opacity: 0.9,
+  },
+  content: {
+    padding: 16,
+  },
+  mainMetrics: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: colors.neutral.black,
+  },
+  chartContainer: {
+    backgroundColor: colors.neutral.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    elevation: 2,
+    shadowColor: colors.neutral.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  efficiencyContainer: {
+    backgroundColor: colors.neutral.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    elevation: 2,
+    shadowColor: colors.neutral.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  progressBar: {
+    flex: 1,
+    height: 24,
+    backgroundColor: colors.neutral.lightGray,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary.main,
+  },
+  progressText: {
+    marginLeft: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    width: 48,
+    textAlign: 'right',
+  },
+  efficiencyInfo: {
+    fontSize: 14,
+    color: colors.neutral.gray,
+    marginBottom: 12,
+  },
+  modelsContainer: {
+    backgroundColor: colors.neutral.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    elevation: 2,
+    shadowColor: colors.neutral.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  modelItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral.lightGray,
+  },
+  modelNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modelEmoji: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  modelName: {
+    fontSize: 16,
+  },
+  modelCount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary.main,
+  },
+});

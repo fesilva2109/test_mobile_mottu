@@ -65,6 +65,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
             fontSize: 12,
             fontWeight: 'bold',
             textAlign: 'center',
+            color: colors.neutral.black,
         },
         statusIndicator: {
             width: 12,
@@ -113,6 +114,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
         legendTitle: {
             fontSize: 14,
             fontWeight: 'bold',
+            color: colors.neutral.black,
             marginBottom: 8,
         },
         legendRow: {
@@ -128,6 +130,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
         },
         legendText: {
             fontSize: 12,
+            color: colors.neutral.black,
         },
     });
 
@@ -303,5 +306,3 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
         </View>
     );
 }
-
-
