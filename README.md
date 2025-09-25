@@ -69,29 +69,35 @@ npx expo start
 ## 🏗️ Estrutura do Projeto
 
 ```
-mottu_mobile_app/
-├── app/                    # Telas e rotas
-│   ├── (tabs)/            # Navegação por abas
-│   │   ├── index.tsx      # Tela inicial
-│   │   ├── cadastro.tsx   # Cadastro de motos
-│   │   ├── mapa.tsx       # Mapa do pátio
-│   │   ├── dashboard.tsx  # Estatísticas
-│   │   └── historico.tsx  # Histórico
-│   ├── login.tsx          # Autenticação
-│   └── register.tsx       # Registro
-├── components/            # Componentes reutilizáveis
-│   ├── GridComponent.tsx  # Grid do pátio
-│   ├── Logout.tsx         # Controle de sessão
-│   └── ThemeToggle.tsx    # Alternância de tema
-├── context/               # Gerenciamento de estado
-│   ├── AuthContext.tsx    # Autenticação
-│   ├── ThemeContext.tsx   # Tema
-│   └── authService.ts     # Serviços de auth
-├── hooks/                 # Hooks customizados
-│   ├── useGridStorage.ts  # Gerenciamento do grid
-│   └── useStorage.ts      # CRUD de motos
-└── types/                 # Definições TypeScript
-    └── index.ts           # Interfaces
+mottu_challenge/
+├── app/
+│   ├── (tabs)/
+│   │   ├── _layout.tsx
+│   │   ├── cadastro.tsx
+│   │   ├── dashboard.tsx
+│   │   ├── historico.tsx
+│   │   ├── index.tsx
+│   │   └── mapa.tsx
+│   ├── _layout.tsx
+│   ├── login.tsx
+│   └── register.tsx
+├── assets/
+│   └── images/
+├── components/
+│   ├── GridComponent.tsx
+│   ├── Logout.tsx
+│   └── ThemeToggle.tsx
+├── context/
+│   ├── AuthContext.tsx
+│   ├── ThemeContext.tsx
+│   ├── authService.ts
+│   └── config.ts
+├── hooks/
+│   ├── useGridStorage.ts
+│   └── useMotorcycleStorage.ts
+└── types/
+    └── index.ts   
+
 ```
 
 ## 🔌 Integração com API
