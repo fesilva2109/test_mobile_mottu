@@ -1,4 +1,4 @@
-# Mottu Challenge - Mapeamento Inteligente de Pátios
+# GEF Mottu Challenge - Mapeamento Inteligente de Pátios
 
 Aplicativo mobile para gerenciamento inteligente de pátios de motocicletas da Mottu, desenvolvido com React Native e Expo.
 
