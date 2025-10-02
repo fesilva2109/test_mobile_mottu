@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { User } from '@/types';
 import { loginUser, registerUser, logoutUser } from '@/context/authService';
+import { useApiStatus } from '@/context/ApiStatusContext';
 
 // Define o formato dos dados do contexto de autenticação
 interface AuthContextType {
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { isOffline, setApiOffline } = useApiStatus();
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const { user: userData, token: authToken } = await loginUser(email, password);
+      const { user: userData, token: authToken } = await loginUser(email, password, isOffline, setApiOffline);
 
       await AsyncStorage.setItem('@mottu:user', JSON.stringify(userData));
       await AsyncStorage.setItem('@mottu:token', authToken);
@@ -89,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const { user: newUser, token: authToken } = await registerUser(name, email, password);
+      const { user: newUser, token: authToken } = await registerUser(name, email, password, isOffline, setApiOffline);
 
       await AsyncStorage.multiSet([
         ['@mottu:user', JSON.stringify(newUser)],
@@ -112,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       // Tenta invalidar o token no servidor antes de limpar localmente
       if (token) {
-        await logoutUser(token);
+        await logoutUser(token, isOffline, setApiOffline);
       }
 
       await AsyncStorage.removeItem('@mottu:user');

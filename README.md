@@ -38,7 +38,7 @@ Sistema completo para controle e organização de motocicletas em pátios, com i
 - npm ou yarn
 - Expo CLI (`npm install -g expo-cli`)
 - Git
-- Backend Java configurado e rodando
+- Backend Java configurado
 
 ## 🔧 Instalação e Configuração
 
