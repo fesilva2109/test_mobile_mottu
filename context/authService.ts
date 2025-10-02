@@ -20,7 +20,9 @@ const isValidEmail = (email: string): boolean => {
  * Valida força da senha
  */
 const isPasswordStrong = (password: string): boolean => {
-  return password.length >= 6; // Requisito mínimo simplificado
+  // Requisito: mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 símbolo.
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/;
+  return passwordRegex.test(password);
 };
 
 /**
@@ -136,7 +138,7 @@ export const registerUser = async (name: string, email: string, password: string
     }
 
     if (!isPasswordStrong(password)) {
-      throw new Error('A senha deve ter pelo menos 6 caracteres.');
+      throw new Error('A senha deve ter no mínimo 8 caracteres, incluindo maiúscula, minúscula, número e símbolo ($*&@#).');
     }
 
     if (USE_MOCK_API) {
