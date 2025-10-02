@@ -69,34 +69,37 @@ npx expo start
 ## 🏗️ Estrutura do Projeto
 
 ```
-mottu_challenge/
+mottu_mobile_app/
 ├── app/
 │   ├── (tabs)/
 │   │   ├── _layout.tsx
 │   │   ├── cadastro.tsx
 │   │   ├── dashboard.tsx
-│   │   ├── historico.tsx
 │   │   ├── index.tsx
 │   │   └── mapa.tsx
 │   ├── _layout.tsx
 │   ├── login.tsx
 │   └── register.tsx
-├── assets/
-│   └── images/
 ├── components/
+│   ├── DashboardCard.tsx
+│   ├── FilterMenu.tsx
 │   ├── GridComponent.tsx
-│   ├── Logout.tsx
+│   ├── MotoCard.tsx
+│   ├── MotoList.tsx
+│   ├── OfflineBanner.tsx
+│   ├── StatusChart.tsx
 │   └── ThemeToggle.tsx
 ├── context/
+│   ├── ApiStatusContext.tsx
+│   ├── apiErrorHandler.ts
 │   ├── AuthContext.tsx
-│   ├── ThemeContext.tsx
 │   ├── authService.ts
+│   ├── context/ThemeContext.tsx
 │   └── config.ts
 ├── hooks/
-│   ├── useGridStorage.ts
 │   └── useMotorcycleStorage.ts
-└── types/
-    └── index.ts   
+└── types/  
+    └── index.ts
 
 ```
 

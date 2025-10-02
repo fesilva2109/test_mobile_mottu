@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Motorcycle } from '@/types';
 import { API_BASE_URL } from '@/context/config';
 import { useAuth } from '@/context/AuthContext';
-import { handleApiError } from '@/hooks/apiErrorHandler';
+import { handleApiError } from '@/context/apiErrorHandler';
 import { useApiStatus } from '@/context/ApiStatusContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

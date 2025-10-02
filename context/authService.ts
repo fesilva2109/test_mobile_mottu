@@ -1,6 +1,6 @@
 import { API_BASE_URL} from '@/context/config';
 import { User } from '@/types';
-import { handleApiError } from '@/hooks/apiErrorHandler';
+import { handleApiError } from '@/context/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /** Serviço para autenticação de usuários via API. */

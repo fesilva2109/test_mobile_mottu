@@ -9,7 +9,7 @@ import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ApiStatusProvider } from '@/context/ApiStatusContext';
-import { OfflineBanner } from '@/hooks/OfflineBanner';
+import { OfflineBanner } from '@/components/OfflineBanner';
 
 export default function RootLayout() {
   useFrameworkReady();

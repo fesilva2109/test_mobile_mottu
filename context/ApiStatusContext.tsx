@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, ReactNode, useCallback } fr
 
 type ApiStatus = 'online' | 'offline';
 
-interface ApiStatusContextType {
+export interface ApiStatusContextType {
   status: ApiStatus;
   isOffline: boolean;
   setApiOffline: () => void;
