@@ -1,6 +1,6 @@
 import { ApiStatusContextType } from "@/context/ApiStatusContext";
 import axios, { AxiosError } from "axios";
-import i18n from "../i18n"; // Ajustado para import relativo
+import i18n from "@/i18n";
 
 /**
  * Centraliza o tratamento de erros de API, sejam eles de rede ou de status HTTP.

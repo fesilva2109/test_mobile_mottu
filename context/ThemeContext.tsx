@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lightColors, darkColors, ColorsType } from '@/theme/colors';
-import i18n from '../i18n'; // Ajustado para import relativo
+import i18n from '@/i18n';
 import { getLocales } from 'expo-localization';
 
 type ThemeType = 'light' | 'dark';
@@ -14,6 +14,7 @@ interface ThemeContextType {
   language: LanguageType;
   setLanguage: (lang: LanguageType) => void;
   t: (scope: any, options?: any) => string;
+  reloadPreferences: () => void;
 }
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
@@ -73,8 +74,33 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Função de tradução para ser usada nos componentes
   const t = useCallback((scope: any, options?: any) => i18n.t(scope, options), [language]);
 
+  const reloadPreferences = useCallback(async () => {
+    try {
+      const storedTheme = await AsyncStorage.getItem(THEME_KEY);
+      if (storedTheme === 'dark' || storedTheme === 'light') {
+        setTheme(storedTheme as ThemeType);
+      } else {
+        setTheme('light');
+      }
+
+      const storedLanguage = await AsyncStorage.getItem(LANGUAGE_KEY);
+      if (storedLanguage === 'pt' || storedLanguage === 'es') {
+        setLanguageState(storedLanguage as LanguageType);
+        i18n.locale = storedLanguage;
+      } else {
+        setLanguageState('pt');
+        i18n.locale = 'pt';
+      }
+    } catch (error) {
+      console.error('Erro ao recarregar preferências:', error);
+      setTheme('light');
+      setLanguageState('pt');
+      i18n.locale = 'pt';
+    }
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ theme, colors, toggleTheme, language, setLanguage, t }}>
+    <ThemeContext.Provider value={{ theme, colors, toggleTheme, language, setLanguage, t, reloadPreferences }}>
       {children}
     </ThemeContext.Provider>
   );
