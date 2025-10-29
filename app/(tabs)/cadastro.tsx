@@ -70,6 +70,15 @@ export default function CadastroScreen() {
       return;
     }
 
+    // Validação adicional para edição: verificar se placa foi alterada
+    if (isEditing && existingId) {
+      const existingMoto = motorcycles.find(m => m.id === existingId);
+      if (existingMoto && existingMoto.placa !== placa) {
+        Alert.alert(t('common.error'), 'A placa não pode ser alterada durante a edição.');
+        return;
+      }
+    }
+
     try {
       if (isEditing) {
         // Modo Edição

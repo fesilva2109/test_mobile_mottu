@@ -104,6 +104,30 @@
     "offline": "Erro de conexão. Verifique sua internet e tente novamente.",
     "unavailable": "O servidor está indisponível. Ativando modo offline.",
     "unexpected": "Ocorreu um erro inesperado."
+  },
+  "about": {
+    "title": "Sobre o App",
+    "subtitle": "Informações sobre o projeto Mottu Challenge",
+    "appInfo": "Informações do App",
+    "appName": "Nome do App",
+    "version": "Versão",
+    "commitHash": "Hash do Commit",
+    "team": "Equipe",
+    "technologies": "Tecnologias Utilizadas",
+    "contactProfessor": "Contato com Professor",
+    "viewCode": "Ver Código no GitHub"
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "error": "Erro",
+    "success": "Sucesso",
+    "loading": "Carregando...",
+    "allFieldsRequired": "Todos os campos são obrigatórios.",
+    "unexpectedError": "Ocorreu um erro inesperado.",
+    "email": "Email",
+    "password": "Senha",
+    "back": "Voltar"
   }
 }
 

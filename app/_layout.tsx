@@ -9,6 +9,7 @@ import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ApiStatusProvider } from '@/context/ApiStatusContext';
+import { NotificationProvider } from '@/context/NotificationContext';
 import { OfflineBanner } from '@/components/OfflineBanner';
 
 export default function RootLayout() {
@@ -17,8 +18,10 @@ export default function RootLayout() {
   return (
     <ApiStatusProvider>
       <ThemeProvider>
-        <AuthProvider> 
-          <RootComponent />
+        <AuthProvider>
+          <NotificationProvider>
+            <RootComponent />
+          </NotificationProvider>
         </AuthProvider>
       </ThemeProvider>
     </ApiStatusProvider>

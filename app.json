@@ -16,9 +16,21 @@
       "output": "single",
       "favicon": "./assets/images/icon.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-web-browser"],
+    "plugins": ["expo-router", "expo-font", "expo-web-browser", "expo-notifications"],
     "experiments": {
       "typedRoutes": true
+    },
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#05AF31",
+      "iosDisplayInForeground": true,
+      "androidMode": "default",
+      "androidCollapsedTitle": "Mottu Challenge"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "64339743069"
+      }
     }
   }
 }

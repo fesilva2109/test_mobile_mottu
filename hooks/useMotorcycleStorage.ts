@@ -3,6 +3,7 @@ import { Motorcycle } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { handleApiError } from '@/context/apiErrorHandler';
 import { useApiStatus } from '@/context/ApiStatusContext';
+import { useNotifications } from '@/context/NotificationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/context/api';
 
@@ -10,9 +11,10 @@ const LOCAL_MOTOS_KEY = '@mottu:motorcycles_local';
 // Hook customizado para gerenciar o CRUD de motocicletas via API.
 
 export const useMotorcycleStorage = () => {
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const { isOffline, setApiOffline } = useApiStatus();
+  const { sendNotification } = useNotifications();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,6 +90,14 @@ export const useMotorcycleStorage = () => {
         const response = await api.post('/motorcycles', newMotoData);
         const addedMoto = response.data;
         setMotorcycles((prev) => [...prev, addedMoto]);
+
+        // Send notification for new motorcycle
+        await sendNotification(
+          'Nova Moto Cadastrada',
+          `Moto ${addedMoto.placa} foi adicionada ao pátio`,
+          { type: 'new_motorcycle', motorcycleId: addedMoto.id }
+        );
+
         return addedMoto;
       }
     } catch (error) {
@@ -108,7 +118,14 @@ export const useMotorcycleStorage = () => {
         setMotorcycles(updatedMotos);
         return updatedMoto;
       } else {
-        await api.put(`/motorcycles/${updatedMoto.id}`, updatedMoto);
+        // Only send the fields that can be updated (exclude id, placa, timestampEntrada, posicao)
+        const updateData = {
+          modelo: updatedMoto.modelo,
+          cor: updatedMoto.cor,
+          status: updatedMoto.status,
+          reservada: updatedMoto.reservada,
+        };
+        await api.put(`/motorcycles/${updatedMoto.id}`, updateData);
         setMotorcycles((prev) =>
           prev.map((m) => (m.id === updatedMoto.id ? updatedMoto : m))
         );
@@ -117,7 +134,7 @@ export const useMotorcycleStorage = () => {
     } catch (error) {
       const apiError = await handleApiError(error, setApiOffline);
       console.error('Falha ao atualizar motocicleta:', apiError.message);
-      throw apiError; 
+      throw apiError;
     }
   };
 
