@@ -34,7 +34,6 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
   // Estilos organizados para visual limpo e responsivo
   const styles = StyleSheet.create({
     container: {
-      marginTop: 50,
       flex: 1,
       backgroundColor: colors.neutral.lightGray,
     },

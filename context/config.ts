@@ -1,2 +1,4 @@
 // URL da API (backend Java) 
-export const API_BASE_URL = 'https://gef-mottu-dev-app-a2dffngahzayd3a.brazilsouth-01.azurewebsites.net/api'; 
+// Para testes locais, substitua <SEU-IP-AQUI> pelo IP da sua máquina na rede local.
+// Exemplo: 'http://192.168.0.183:8080'
+export const API_BASE_URL = 'http://192.168.0.183:8080';

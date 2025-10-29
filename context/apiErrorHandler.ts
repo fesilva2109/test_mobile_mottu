@@ -1,4 +1,5 @@
 import { ApiStatusContextType } from "@/context/ApiStatusContext";
+import axios, { AxiosError } from "axios";
 
 /**
  * Centraliza o tratamento de erros de API, sejam eles de rede ou de status HTTP.
@@ -19,41 +20,53 @@ export async function handleApiError(
       apiStatusSetter();
     }
   };
-  if (error instanceof Response) {
-    // O erro é uma resposta da API com status de falha (4xx, 5xx)
-    const response = error;
 
-    // Mensagem personalizada para o status code, se existir
-    if (customMessages[response.status]) {
-      return new Error(customMessages[response.status]);
-    }
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<any>;
 
-    // Mensagens genéricas para status de erro comuns
-    if (response.status === 404) {
-      return new Error('O recurso solicitado não foi encontrado no servidor.');
-    }
-    if (response.status >= 500) {
+    // Erro de rede (sem resposta do servidor)
+    if (!axiosError.response) {
       triggerOfflineMode();
-      return new Error('O servidor está indisponível ou em manutenção. Tente novamente mais tarde.');
+      return new Error('Erro de conexão. Verifique sua internet e tente novamente.');
     }
 
-    // Tenta extrair uma mensagem de erro do corpo da resposta
-    try {
-      const errorData = await response.json();
-      return new Error(errorData.message || 'Ocorreu um erro na comunicação com o servidor.');
-    } catch {
-      return new Error(`Erro ${response.status}: Não foi possível processar a resposta do servidor.`);
+    const { response } = axiosError;
+    const status = response.status;
+    const data = response.data;
+
+    // Mensagem personalizada para o status code, se existir no `customMessages`
+    if (customMessages[status]) {
+      return new Error(customMessages[status]);
+    }
+
+    // Traduzindo exceções específicas do backend Java
+    switch (status) {
+      case 400: // Bad Request
+        // O backend pode retornar uma mensagem específica para validação
+        return new Error(data?.message || 'Dados inválidos. Verifique as informações enviadas.');
+      case 404:
+        return new Error('O recurso solicitado não foi encontrado.');
+      case 409: // Conflict
+        // Exemplo: placa de moto já existente, email já cadastrado.
+        return new Error(data?.message || 'Conflito de dados. O recurso já existe.');
+      case 500:
+        return new Error(data?.message || 'Erro interno no servidor. Tente novamente mais tarde.');
+      case 502:
+      case 503:
+      case 504:
+        triggerOfflineMode();
+        return new Error('O servidor está indisponível. Ativando modo offline.');
+      default:
+        return new Error(data?.message || `Ocorreu um erro inesperado (código ${status}).`);
     }
   }
 
-  // O erro é de rede ou já é um Error
+  // O erro não é do Axios, pode ser um erro de lógica no frontend
   console.error('API Error Handler:', error);
-
-  if (error instanceof Error && error.message.includes('Network request failed')) {
-    triggerOfflineMode();
-    return new Error('Erro de conexão. Ativando modo offline.');
+  if (error instanceof Error) {
+    return error;
   }
 
-  triggerOfflineMode();
-  return new Error('Erro de conexão. Verifique sua internet ou tente novamente mais tarde.');
+  // Fallback para erros desconhecidos
+  return new Error('Ocorreu um erro desconhecido.');
 }

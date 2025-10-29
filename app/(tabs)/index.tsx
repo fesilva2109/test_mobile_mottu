@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ScanLine, Map, ChartBar as BarChart3, Clock } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
@@ -30,7 +29,7 @@ export default function HomeScreen() {
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Cabeçalho com título e botão de tema */}
       <View style={styles.header}>
         <View>
@@ -125,7 +124,7 @@ export default function HomeScreen() {
           <Text style={styles.dashboardButtonText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

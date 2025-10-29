@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Motorcycle } from '@/types';
-import { API_BASE_URL } from '@/context/config';
 import { useAuth } from '@/context/AuthContext';
 import { handleApiError } from '@/context/apiErrorHandler';
 import { useApiStatus } from '@/context/ApiStatusContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '@/context/api';
 
 const LOCAL_MOTOS_KEY = '@mottu:motorcycles_local';
 // Hook customizado para gerenciar o CRUD de motocicletas via API.
@@ -34,16 +34,10 @@ export const useMotorcycleStorage = () => {
         const localData = await AsyncStorage.getItem(LOCAL_MOTOS_KEY);
         motosFromSource = localData ? JSON.parse(localData) : [];
       } else {
-        const response = await fetch(`${API_BASE_URL}/motorcycles`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        if (!response.ok) {
-          throw await handleApiError(response, setApiOffline);
-        }
-        const motosFromApi = await response.json();
-        
+        const response = await api.get('/motorcycles');
+        const motosFromApi = response.data;
         // Formata os dados para garantir consistência com o tipo Motorcycle
-        motosFromSource = motosFromApi.map((moto: any): Motorcycle => ({
+        motosFromSource = motosFromApi.content.map((moto: any): Motorcycle => ({
           id: moto.id,
           placa: moto.placa,
           modelo: moto.modelo,
@@ -60,7 +54,7 @@ export const useMotorcycleStorage = () => {
       setMotorcycles(motosFromSource);
     } catch (error) {
       const apiError = await handleApiError(error, setApiOffline);
-      setError(apiError.message);
+      setError(apiError.message); // Define a mensagem de erro no estado
       setMotorcycles([]);
     } finally {
       setLoading(false);
@@ -91,18 +85,8 @@ export const useMotorcycleStorage = () => {
         setMotorcycles(updatedMotos);
         return newLocalMoto;
       } else {
-        const response = await fetch(`${API_BASE_URL}/motorcycles`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(newMotoData),
-        });
-
-        if (!response.ok) throw await handleApiError(response, setApiOffline);
-        
-        const addedMoto = await response.json();
+        const response = await api.post('/motorcycles', newMotoData);
+        const addedMoto = response.data;
         setMotorcycles((prev) => [...prev, addedMoto]);
         return addedMoto;
       }
@@ -124,17 +108,7 @@ export const useMotorcycleStorage = () => {
         setMotorcycles(updatedMotos);
         return updatedMoto;
       } else {
-        const response = await fetch(`${API_BASE_URL}/motorcycles/${updatedMoto.id}`, {
-          method: 'PUT',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedMoto),
-        });
-
-        if (!response.ok) throw await handleApiError(response, setApiOffline);
-        
+        await api.put(`/motorcycles/${updatedMoto.id}`, updatedMoto);
         setMotorcycles((prev) =>
           prev.map((m) => (m.id === updatedMoto.id ? updatedMoto : m))
         );
@@ -157,14 +131,7 @@ export const useMotorcycleStorage = () => {
         await AsyncStorage.setItem(LOCAL_MOTOS_KEY, JSON.stringify(updatedMotos));
         setMotorcycles(updatedMotos);
       } else {
-        const response = await fetch(`${API_BASE_URL}/motorcycles/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (!response.ok && response.status !== 204) throw await handleApiError(response, setApiOffline);
-        
+        await api.delete(`/motorcycles/${id}`);
         setMotorcycles((prev) => prev.filter((moto) => moto.id !== id));
       }
     } catch (error) {

@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { QrCode, ChevronDown } from 'lucide-react-native';
 import { useMotorcycleStorage } from '@/hooks/useMotorcycleStorage';
 import { MOTO_STATUSES, MOTO_MODELS } from '@/constants/motoStatuses';
 import { useTheme } from '@/context/ThemeContext';
-import { Motorcycle } from '@/types';
-import * as Crypto from 'expo-crypto'; 
 import useHistoryStorage from '@/hooks/useHistoryStorage';
 import React from 'react';
-
-// Função utilitária para gerar UUIDs únicos para cada moto cadastrada
-const generateUUID = () => {
-  return Crypto.randomUUID();
-};
 
 export default function CadastroScreen() {
   // Hooks de navegação e armazenamento
   const router = useRouter();
-  const { addMotorcycle, refreshMotorcycles } = useMotorcycleStorage();
+  const { addMotorcycle, updateMotorcycle, refreshMotorcycles } = useMotorcycleStorage();
   const { addHistoryEvent } = useHistoryStorage();
 
-  // Parâmetros vindos do QR Code (se houver)
-  const { placa: scannedPlaca, modelo: scannedModelo, cor: scannedCor, status: scannedStatus } = useLocalSearchParams();
+  // Parâmetros vindos da navegação (QR Code ou Edição)
+  const params = useLocalSearchParams();
+  const isEditing = useMemo(() => !!params.id, [params.id]);
+
+  const { 
+    id: existingId,
+    placa: paramPlaca, 
+    modelo: paramModelo, 
+    cor: paramCor, 
+    status: paramStatus 
+  } = params;
 
   // Estados controlados do formulário
   const [placa, setPlaca] = useState('');
@@ -33,21 +34,21 @@ export default function CadastroScreen() {
   const [showModelOptions, setShowModelOptions] = useState(false);
   const [showStatusOptions, setShowStatusOptions] = useState(false);
 
-  // Preenche os campos automaticamente se vierem do QR Code
+  // Preenche os campos automaticamente se vierem da navegação (QR Code ou Edição)
   useEffect(() => {
-    if (scannedPlaca) setPlaca(scannedPlaca as string);
-    if (scannedModelo) setModelo(scannedModelo as string);
-    if (scannedCor) setCor(scannedCor as string);
-    if (scannedStatus) setStatus(scannedStatus as string);
-  }, [scannedPlaca, scannedModelo, scannedCor, scannedStatus]);
+    if (paramPlaca) setPlaca(paramPlaca as string);
+    if (paramModelo) setModelo(paramModelo as string);
+    if (paramCor) setCor(paramCor as string);
+    if (paramStatus) setStatus(paramStatus as string);
+  }, [paramPlaca, paramModelo, paramCor, paramStatus]);
 
   // Navega para o scanner de QR Code
   const openQrCodeScanner = () => {
     router.push('/cadastro/camera');
   };
 
-  // Função principal de cadastro da moto
-  const handleCadastro = async () => {
+  // Função para salvar (cadastrar ou atualizar) a moto
+  const handleSave = async () => {
     // Validação dos campos obrigatórios
     if (!placa || !modelo || !cor || !status) {
       Alert.alert('Erro', 'Todos os campos são obrigatórios.');
@@ -59,55 +60,35 @@ export default function CadastroScreen() {
     }
 
     try {
-      // Cria objeto da nova moto
-      const newMotorcycle: Motorcycle = {
-        id: generateUUID(),
-        placa,
-        modelo,
-        cor,
-        status,
-        timestampEntrada: Date.now(),
-      };
+      if (isEditing) {
+        // Modo Edição
+        const updatedMoto = { id: existingId as string, placa, modelo, cor, status };
+        await updateMotorcycle(updatedMoto as any); 
+        addHistoryEvent('Moto Atualizada', `Placa: ${placa}`);
+        Alert.alert('Sucesso', `Moto ${placa} atualizada com sucesso!`);
+      } else {
+        // Modo Cadastro
+        const newMotoData = { placa, modelo, cor, status };
+        await addMotorcycle(newMotoData);
+        addHistoryEvent('Moto Cadastrada', `Placa: ${placa}, Modelo: ${modelo}`);
+        Alert.alert('Sucesso', `Moto ${placa} cadastrada com sucesso!`);
+      }
 
-      // Salva a moto no AsyncStorage e adiciona evento ao histórico
-      await addMotorcycle(newMotorcycle);
-      addHistoryEvent('Moto Cadastrada', `Placa: ${placa}, Modelo: ${modelo}`);
-
-      // Aguarda um pequeno delay para garantir atualização
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Atualiza a lista e volta para a tela principal (Home)
       refreshMotorcycles(); 
-      
-      // Exibe alerta de sucesso com opções
-      Alert.alert(
-        'Sucesso', 
-        `Moto ${placa} cadastrada com sucesso!`,
-        [
-          { 
-            text: 'Ver no Mapa',
-            onPress: () => router.push('/mapa')
-          },
-          { 
-            text: 'Cadastrar Outra', 
-            onPress: resetForm
-          }
-        ]
-      );
-      resetForm();
+      router.back();
+
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a moto.');
     }
   };
 
-  // Limpa o formulário para novo cadastro
-  const resetForm = () => {
-    setPlaca('');
-    setModelo(MOTO_MODELS[0]);
-    setCor('');
-    setStatus(MOTO_STATUSES[0]);
-  };
+  const { colors } = useTheme();
 
-    const { colors } = useTheme();
+  // Título dinâmico para a tela
+  const screenTitle = isEditing ? 'Editar Moto' : 'Cadastrar Moto';
+  const buttonTitle = isEditing ? 'Salvar Alterações' : 'Cadastrar Moto';
 
 // Estilos organizados 
 const styles = StyleSheet.create({
@@ -222,10 +203,10 @@ const styles = StyleSheet.create({
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Cabeçalho da tela */}
       <View style={styles.header}>
-        <Text style={styles.title}>Cadastrar Moto</Text>
+        <Text style={styles.title}>{screenTitle}</Text>
       </View>
       
       {/* Conteúdo principal com formulário */}
@@ -253,6 +234,7 @@ const styles = StyleSheet.create({
               placeholderTextColor={colors.neutral.gray}
               autoCapitalize="characters"
               maxLength={8}
+              editable={!isEditing} 
             />
           </View>
           
@@ -337,15 +319,13 @@ const styles = StyleSheet.create({
           {/* Botão de envio do formulário */}
           <TouchableOpacity 
             style={styles.submitButton}
-            onPress={handleCadastro}
+            onPress={handleSave}
           >
-            <Text style={styles.submitButtonText}>Cadastrar Moto</Text>
+            <Text style={styles.submitButtonText}>{buttonTitle}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
-
-
 }
   

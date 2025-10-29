@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMotorcycleStorage } from '@/hooks/useMotorcycleStorage';
 import { useGridStorage } from '@/hooks/useGridStorage';
 import { GridComponent } from '@/components/GridComponent';
@@ -152,7 +151,7 @@ export default function MapaScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Cabeçalho com filtros */}
       <View style={styles.header}>
         <Text style={styles.title}>Mapa do Pátio</Text>
@@ -209,7 +208,7 @@ export default function MapaScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

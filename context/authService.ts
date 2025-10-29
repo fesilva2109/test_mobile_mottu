@@ -1,14 +1,46 @@
-import { API_BASE_URL} from '@/context/config';
 import { User } from '@/types';
 import { handleApiError } from '@/context/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-/** Serviço para autenticação de usuários via API. */
+import api from './api';
+import axios from 'axios';
 
 interface AuthResponse {
   user: User;
   token: string;
 }
+
+/** Normaliza diferentes formatos de resposta da API para { user, token } */
+const normalizeAuthResponse = (data: any): AuthResponse => {
+  if (!data) throw new Error('Resposta de autenticação vazia.');
+
+  // Caso já venha no formato esperado
+  if (data.user && data.token) {
+    return { user: data.user as User, token: data.token };
+  }
+
+  // Alguns backends retornam { id, email, name?, token }
+  if (data.token && (data.id || data.email)) {
+    const user: any = {
+      id: typeof data.id === 'number' ? String(data.id) : data.id ?? `remote_${Date.now()}`,
+      email: data.email ?? '',
+      name: data.name ?? data.email ?? '',
+    };
+    return { user, token: data.token };
+  }
+
+  // Fall back: se o objeto parece ser o user e contém token em outra propriedade
+  if (data.token && typeof data === 'object') {
+    // tenta mapear campos comuns
+    const user: any = {
+      id: data.id ?? data.userId ?? `remote_${Date.now()}`,
+      email: data.email ?? data.username ?? '',
+      name: data.name ?? data.fullName ?? '',
+    };
+    return { user, token: data.token };
+  }
+
+  throw new Error('Formato inesperado da resposta de autenticação.');
+};
 
 /**
  * Valida formato de email
@@ -65,19 +97,11 @@ export const loginUser = async (
       }
     } else {
       // Lógica para a API Real
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw await handleApiError(response, setApiOffline, { 401: 'Email ou senha incorretos.' });
-      }
-
-      return response.json();
+      const response = await api.post('/auth/login', { email, password });
+      return normalizeAuthResponse(response.data);
     }
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) return Promise.reject(new Error('Email ou senha incorretos.'));
     // Centraliza todo o tratamento de erro, incluindo rede
     if (error instanceof Error && !isOffline) {
        return Promise.reject(await handleApiError(error, setApiOffline));
@@ -138,19 +162,11 @@ export const registerUser = async (
       };
     } else {
       // Lógica para a API Real
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) {
-        throw await handleApiError(response, setApiOffline, { 409: 'Este email já está cadastrado.' });
-      }
-
-      return response.json();
+      const response = await api.post('/auth/register', { name, email, password });
+      return normalizeAuthResponse(response.data);
     }
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 409) return Promise.reject(new Error('Este email já está cadastrado.'));
     // Centraliza todo o tratamento de erro, incluindo rede
     if (error instanceof Error && !isOffline) {
       return Promise.reject(await handleApiError(error, setApiOffline));
@@ -170,20 +186,10 @@ export const logoutUser = async (
 ): Promise<void> => {
   try {
     // Lógica para a API Real
-    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      console.warn('Falha ao invalidar sessão no servidor, mas o logout local prosseguirá.');
-    }
+    await api.post('/auth/logout');
   } catch (error) {
-    // Não lança erro para não impedir o logout local, mas registra o erro de rede
-    if (!isOffline) {
+    if (axios.isAxiosError(error)) {
+      console.warn('Falha ao invalidar sessão no servidor, mas o logout local prosseguirá.');
       await handleApiError(error, setApiOffline);
     }
   }

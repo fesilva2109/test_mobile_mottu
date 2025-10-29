@@ -11,7 +11,11 @@ export interface Motorcycle {
   timestampEntrada: number;
   reservada?: boolean;
 }
-
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 export interface GridPosition {
   x: number;
   y: number;
