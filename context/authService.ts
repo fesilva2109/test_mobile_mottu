@@ -3,6 +3,7 @@ import { handleApiError } from '@/context/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 import axios from 'axios';
+import i18n from '../i18n'; // Ajustado para import relativo
 
 interface AuthResponse {
   user: User;
@@ -73,11 +74,11 @@ export const loginUser = async (
   try {
     // Validações básicas antes de fazer a requisição
     if (!email || !password) {
-      throw new Error('Por favor, preencha todos os campos.');
+      throw new Error(i18n.t('common.allFieldsRequired'));
     }
 
     if (!isValidEmail(email)) {
-      throw new Error('Por favor, insira um email válido.');
+      throw new Error(i18n.t('auth.invalidEmail'));
     }
 
     if (isOffline) {
@@ -93,7 +94,7 @@ export const loginUser = async (
           token: `local-token-for-${foundUser.id}`,
         };
       } else {
-        throw new Error('Usuário não encontrado no modo offline.');
+        throw new Error(i18n.t('auth.loginError'));
       }
     } else {
       // Lógica para a API Real
@@ -101,7 +102,7 @@ export const loginUser = async (
       return normalizeAuthResponse(response.data);
     }
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) return Promise.reject(new Error('Email ou senha incorretos.'));
+    if (axios.isAxiosError(error) && error.response?.status === 401) return Promise.reject(new Error(i18n.t('auth.loginError')));
     // Centraliza todo o tratamento de erro, incluindo rede
     if (error instanceof Error && !isOffline) {
        return Promise.reject(await handleApiError(error, setApiOffline));
@@ -126,19 +127,19 @@ export const registerUser = async (
   try {
     // Validações antes da requisição
     if (!name || !email || !password) {
-      throw new Error('Por favor, preencha todos os campos.');
+      throw new Error(i18n.t('common.allFieldsRequired'));
     }
 
     if (name.length < 2) {
-      throw new Error('O nome deve ter pelo menos 2 caracteres.');
+      throw new Error(i18n.t('auth.nameTooShort'));
     }
 
     if (!isValidEmail(email)) {
-      throw new Error('Por favor, insira um email válido.');
+      throw new Error(i18n.t('auth.invalidEmail'));
     }
 
     if (!isPasswordStrong(password)) {
-      throw new Error('A senha deve ter no mínimo 8 caracteres, incluindo maiúscula, minúscula, número e símbolo ($*&@#).');
+      throw new Error(i18n.t('auth.passwordWeak'));
     }
 
     if (isOffline) {
@@ -150,7 +151,7 @@ export const registerUser = async (
       
       // Verifica se o email já existe localmente
       if (users.some((u: User) => u.email === email)) {
-        throw new Error('Este email já está cadastrado localmente.');
+        throw new Error(i18n.t('auth.registerConflict'));
       }
 
       users.push(newUser);
@@ -166,7 +167,7 @@ export const registerUser = async (
       return normalizeAuthResponse(response.data);
     }
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 409) return Promise.reject(new Error('Este email já está cadastrado.'));
+    if (axios.isAxiosError(error) && error.response?.status === 409) return Promise.reject(new Error(i18n.t('auth.registerConflict')));
     // Centraliza todo o tratamento de erro, incluindo rede
     if (error instanceof Error && !isOffline) {
       return Promise.reject(await handleApiError(error, setApiOffline));
@@ -189,7 +190,7 @@ export const logoutUser = async (
     await api.post('/auth/logout');
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.warn('Falha ao invalidar sessão no servidor, mas o logout local prosseguirá.');
+      console.warn(i18n.t('auth.logoutFromServerFail'));
       await handleApiError(error, setApiOffline);
     }
   }

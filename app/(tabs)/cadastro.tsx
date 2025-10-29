@@ -11,19 +11,20 @@ import React from 'react';
 export default function CadastroScreen() {
   // Hooks de navegação e armazenamento
   const router = useRouter();
-  const { addMotorcycle, updateMotorcycle, refreshMotorcycles } = useMotorcycleStorage();
+  const { motorcycles, addMotorcycle, updateMotorcycle, refreshMotorcycles } = useMotorcycleStorage();
   const { addHistoryEvent } = useHistoryStorage();
 
   // Parâmetros vindos da navegação (QR Code ou Edição)
   const params = useLocalSearchParams();
   const isEditing = useMemo(() => !!params.id, [params.id]);
 
-  const { 
+  const {
     id: existingId,
-    placa: paramPlaca, 
-    modelo: paramModelo, 
-    cor: paramCor, 
-    status: paramStatus 
+    placa: paramPlaca,
+    modelo: paramModelo,
+    cor: paramCor,
+    status: paramStatus,
+    posicao: paramPosicao
   } = params;
 
   // Estados controlados do formulário
@@ -36,11 +37,21 @@ export default function CadastroScreen() {
 
   // Preenche os campos automaticamente se vierem da navegação (QR Code ou Edição)
   useEffect(() => {
-    if (paramPlaca) setPlaca(paramPlaca as string);
-    if (paramModelo) setModelo(paramModelo as string);
-    if (paramCor) setCor(paramCor as string);
-    if (paramStatus) setStatus(paramStatus as string);
-  }, [paramPlaca, paramModelo, paramCor, paramStatus]);
+    if (isEditing && existingId) {
+      const existingMoto = motorcycles.find(m => m.id === existingId);
+      if (existingMoto) {
+        setPlaca(existingMoto.placa);
+        setModelo(existingMoto.modelo);
+        setCor(existingMoto.cor);
+        setStatus(existingMoto.status);
+      }
+    } else {
+      if (paramPlaca) setPlaca(paramPlaca as string);
+      if (paramModelo) setModelo(paramModelo as string);
+      if (paramCor) setCor(paramCor as string);
+      if (paramStatus) setStatus(paramStatus as string);
+    }
+  }, [isEditing, existingId, motorcycles, paramPlaca, paramModelo, paramCor, paramStatus]);
 
   // Navega para o scanner de QR Code
   const openQrCodeScanner = () => {
@@ -51,27 +62,37 @@ export default function CadastroScreen() {
   const handleSave = async () => {
     // Validação dos campos obrigatórios
     if (!placa || !modelo || !cor || !status) {
-      Alert.alert('Erro', 'Todos os campos são obrigatórios.');
+      Alert.alert(t('common.error'), t('common.allFieldsRequired'));
       return;
     }
     if (placa.length < 7) {
-      Alert.alert('Erro', 'A placa deve conter no mínimo 7 caracteres.');
+      Alert.alert(t('common.error'), t('registerMoto.plateError'));
       return;
     }
 
     try {
       if (isEditing) {
         // Modo Edição
-        const updatedMoto = { id: existingId as string, placa, modelo, cor, status };
-        await updateMotorcycle(updatedMoto as any); 
-        addHistoryEvent('Moto Atualizada', `Placa: ${placa}`);
-        Alert.alert('Sucesso', `Moto ${placa} atualizada com sucesso!`);
+        const existingMoto = motorcycles.find(m => m.id === existingId);
+        const updatedMoto = {
+          id: existingId as string,
+          placa,
+          modelo,
+          cor,
+          status,
+          timestampEntrada: existingMoto?.timestampEntrada,
+          posicao: existingMoto?.posicao,
+          reservada: existingMoto?.reservada
+        };
+        await updateMotorcycle(updatedMoto as any);
+        addHistoryEvent(t('registerMoto.historyUpdate'), `Placa: ${placa}`);
+        Alert.alert(t('common.success'), t('registerMoto.updateSuccess', { placa }));
       } else {
-        // Modo Cadastro
+        // Modo Cadastro - Remover id e timestampEntrada, deixar para a API gerar
         const newMotoData = { placa, modelo, cor, status };
         await addMotorcycle(newMotoData);
-        addHistoryEvent('Moto Cadastrada', `Placa: ${placa}, Modelo: ${modelo}`);
-        Alert.alert('Sucesso', `Moto ${placa} cadastrada com sucesso!`);
+        addHistoryEvent(t('registerMoto.historyAdd'), `Placa: ${placa}, Modelo: ${modelo}`);
+        Alert.alert(t('common.success'), t('registerMoto.addSuccess', { placa }));
       }
 
       // Atualiza a lista e volta para a tela principal (Home)
@@ -80,15 +101,15 @@ export default function CadastroScreen() {
 
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
-      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a moto.');
+      Alert.alert(t('common.error'), t('registerMoto.addError'));
     }
   };
 
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   // Título dinâmico para a tela
-  const screenTitle = isEditing ? 'Editar Moto' : 'Cadastrar Moto';
-  const buttonTitle = isEditing ? 'Salvar Alterações' : 'Cadastrar Moto';
+  const screenTitle = isEditing ? t('registerMoto.editTitle') : t('registerMoto.screenTitle');
+  const buttonTitle = isEditing ? t('registerMoto.editButtonTitle') : t('registerMoto.buttonTitle');
 
 // Estilos organizados 
 const styles = StyleSheet.create({
@@ -217,20 +238,20 @@ const styles = StyleSheet.create({
           onPress={openQrCodeScanner}
         >
           <QrCode size={24} color={colors.neutral.white} />
-          <Text style={styles.scanButtonText}>Escanear QR Code</Text>
+          <Text style={styles.scanButtonText}>{t('registerMoto.scanQR')}</Text>
         </TouchableOpacity>
         
         <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Informações da Moto</Text>
+          <Text style={styles.formTitle}>{t('registerMoto.motoInfo')}</Text>
           
           {/* Campo Placa */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Placa</Text>
+            <Text style={styles.inputLabel}>{t('registerMoto.plate')}</Text>
             <TextInput
               style={styles.input}
               value={placa}
               onChangeText={setPlaca}
-              placeholder="ABC-1234"
+              placeholder={t('registerMoto.platePlaceholder')}
               placeholderTextColor={colors.neutral.gray}
               autoCapitalize="characters"
               maxLength={8}
@@ -240,7 +261,7 @@ const styles = StyleSheet.create({
           
           {/* Campo Modelo com seleção */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Modelo</Text>
+            <Text style={styles.inputLabel}>{t('registerMoto.model')}</Text>
             <TouchableOpacity 
               style={styles.selectInput}
               onPress={() => setShowModelOptions(!showModelOptions)}
@@ -273,19 +294,19 @@ const styles = StyleSheet.create({
           
           {/* Campo Cor */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Cor</Text>
+            <Text style={styles.inputLabel}>{t('registerMoto.color')}</Text>
             <TextInput
               style={styles.input}
               value={cor}
               onChangeText={setCor}
-              placeholder="Ex: Preta, Vermelha, Azul"
+              placeholder={t('registerMoto.colorPlaceholder')}
               placeholderTextColor={colors.neutral.gray}
             />
           </View>
           
           {/* Campo Status com seleção */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Status</Text>
+            <Text style={styles.inputLabel}>{t('registerMoto.status')}</Text>
             <TouchableOpacity 
               style={styles.selectInput}
               onPress={() => setShowStatusOptions(!showStatusOptions)}

@@ -1,0 +1,108 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Carregando...",
+    "allFieldsRequired": "Todos los campos son obligatorios.",
+    "unexpectedError": "Ocurrió un error inesperado.",
+    "email": "Correo electrónico",
+    "password": "Contraseña"
+  },
+  "auth": {
+    "emailRequired": "El correo electrónico es obligatorio",
+    "passwordRequired": "La contraseña es obligatoria",
+    "invalidEmail": "Por favor, ingrese un correo electrónico válido.",
+    "passwordWeak": "La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo ($*&@#).",
+    "nameTooShort": "El nombre debe tener al menos 2 caracteres.",
+    "loginError": "Correo o contraseña incorrectos.",
+    "registerConflict": "Este correo ya está registrado.",
+    "registerSuccess": "¡Usuario registrado con éxito!",
+    "logoutFromServerFail": "Fallo al invalidar la sesión en el servidor, pero el cierre de sesión local continuará.",
+    "noAccount": "¿No tienes cuenta?",
+    "register": "Registrarse"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "register": "Registrar",
+    "map": "Mapa",
+    "dashboard": "Panel",
+    "history": "Historial"
+  },
+  "home": {
+    "title": "Mottu",
+    "subtitle": "Mapeo Inteligente de Patios",
+    "quickAccess": "Acceso Rápido",
+    "registerMoto": "Registrar Moto",
+    "qrScanner": "Escáner QR",
+    "patioMap": "Mapa del Patio",
+    "organizeMotos": "Organizar motos",
+    "dashboard": "Panel",
+    "metricsAndKpis": "Métricas y KPIs",
+    "history": "Historial",
+    "activityLog": "Registro de actividades",
+    "patioStatus": "Estado del Patio",
+    "availableMotos": "Motos Disponibles",
+    "inMaintenance": "En Mantenimiento",
+    "inQuarantine": "En Cuarentena",
+    "viewFullDashboard": "Ver Panel Completo",
+    "logout": "Salir"
+  },
+  "registerMoto": {
+    "screenTitle": "Registrar Moto",
+    "editTitle": "Editar Moto",
+    "buttonTitle": "Registrar Moto",
+    "editButtonTitle": "Guardar Cambios",
+    "scanQR": "Escanear Código QR",
+    "motoInfo": "Información de la Moto",
+    "plate": "Matrícula",
+    "platePlaceholder": "ABC-1234",
+    "plateError": "La matrícula debe contener al menos 7 caracteres.",
+    "model": "Modelo",
+    "color": "Color",
+    "colorPlaceholder": "Ej: Negra, Roja, Azul",
+    "status": "Estado",
+    "addSuccess": "¡Moto {{placa}} registrada con éxito!",
+    "updateSuccess": "¡Moto {{placa}} actualizada con éxito!",
+    "addError": "Ocurrió un error al registrar la moto.",
+    "historyAdd": "Moto Registrada",
+    "historyUpdate": "Moto Actualizada"
+  },
+  "dashboard": {
+    "title": "Panel del Patio",
+    "subtitle": "Métricas del Patio",
+    "loading": "Cargando datos del panel...",
+    "error": "Error al cargar datos: {{error}}",
+    "totalMotos": "Total de Motos",
+    "readyToRent": "Listas para Alquilar",
+    "avgTime": "Tiempo Promedio",
+    "statusTitle": "Estado de las Motos",
+    "efficiencyTitle": "Eficiencia del Patio",
+    "efficiencyInfo": "{{count}} de {{target}} motos listas para alquilar",
+    "modelDistribution": "Distribución por Modelo"
+  },
+  "map": {
+    "title": "Mapa del Patio",
+    "loading": "Cargando...",
+    "selectedMoto": "Moto seleccionada: {{placa}}",
+    "cancel": "Cancelar",
+    "gridTitle": "Grid del Patio",
+    "waitingTitle": "Motos en Espera ({{count}})",
+    "clearFilters": "Limpiar Filtros",
+    "deleteConfirmTitle": "Confirmar Eliminación",
+    "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar esta moto?",
+    "deleteError": "No se pudo eliminar la moto"
+  },
+  "history": {
+    "title": "Historial de Acciones",
+    "subtitle": "Aquí puedes ver todas las acciones realizadas en la aplicación.",
+    "empty": "Aún no hay acciones registradas.",
+    "clear": "Limpiar Historial"
+  },
+  "errors": {
+    "offline": "Error de conexión. Revisa tu internet e intenta de nuevo.",
+    "unavailable": "El servidor no está disponible. Activando modo offline.",
+    "unexpected": "Ocurrió un error inesperado."
+  }
+}

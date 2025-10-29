@@ -1,5 +1,6 @@
 import { ApiStatusContextType } from "@/context/ApiStatusContext";
 import axios, { AxiosError } from "axios";
+import i18n from "../i18n"; // Ajustado para import relativo
 
 /**
  * Centraliza o tratamento de erros de API, sejam eles de rede ou de status HTTP.
@@ -27,7 +28,7 @@ export async function handleApiError(
     // Erro de rede (sem resposta do servidor)
     if (!axiosError.response) {
       triggerOfflineMode();
-      return new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+      return new Error(i18n.t('errors.offline'));
     }
 
     const { response } = axiosError;
@@ -43,21 +44,21 @@ export async function handleApiError(
     switch (status) {
       case 400: // Bad Request
         // O backend pode retornar uma mensagem específica para validação
-        return new Error(data?.message || 'Dados inválidos. Verifique as informações enviadas.');
+        return new Error(data?.message || i18n.t('registerMoto.addError'));
       case 404:
-        return new Error('O recurso solicitado não foi encontrado.');
+        return new Error(data?.message || i18n.t('errors.unexpected'));
       case 409: // Conflict
         // Exemplo: placa de moto já existente, email já cadastrado.
-        return new Error(data?.message || 'Conflito de dados. O recurso já existe.');
+        return new Error(data?.message || i18n.t('auth.registerConflict'));
       case 500:
-        return new Error(data?.message || 'Erro interno no servidor. Tente novamente mais tarde.');
+        return new Error(data?.message || i18n.t('errors.unexpected'));
       case 502:
       case 503:
       case 504:
         triggerOfflineMode();
-        return new Error('O servidor está indisponível. Ativando modo offline.');
+        return new Error(i18n.t('errors.unavailable'));
       default:
-        return new Error(data?.message || `Ocorreu um erro inesperado (código ${status}).`);
+        return new Error(data?.message || i18n.t('errors.unexpected'));
     }
   }
 
@@ -68,5 +69,5 @@ export async function handleApiError(
   }
 
   // Fallback para erros desconhecidos
-  return new Error('Ocorreu um erro desconhecido.');
+  return new Error(i18n.t('errors.unexpected'));
 }

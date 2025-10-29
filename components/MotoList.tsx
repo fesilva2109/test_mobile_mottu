@@ -7,12 +7,13 @@ import { useTheme } from '@/context/ThemeContext';
 interface MotoListProps {
     motorcycles: Motorcycle[];
     onSelect: (motorcycle: Motorcycle) => void;
+    onEdit?: (motorcycle: Motorcycle) => void;
     onDelete: (id: string) => void;
     selectedMoto?: Motorcycle | null;
 }
 
 // Lista visual de motos, usada em várias telas do app
-export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: MotoListProps) {
+export function MotoList({ motorcycles, onSelect, onEdit, onDelete, selectedMoto }: MotoListProps) {
     const { colors } = useTheme();
 
     const getStyles = (colors: any) => StyleSheet.create({
@@ -52,6 +53,7 @@ export function MotoList({ motorcycles, onSelect, onDelete, selectedMoto }: Moto
                 <MotoCard
                     motorcycle={item}
                     onPress={onSelect}
+                    onEdit={onEdit}
                     onDelete={onDelete}
                     isInWaitingArea
                     isSelected={item.id === selectedMoto?.id}

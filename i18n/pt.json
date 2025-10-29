@@ -1,0 +1,109 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "error": "Erro",
+    "success": "Sucesso",
+    "loading": "Carregando...",
+    "allFieldsRequired": "Todos os campos são obrigatórios.",
+    "unexpectedError": "Ocorreu um erro inesperado.",
+    "email": "Email",
+    "password": "Senha"
+  },
+  "auth": {
+    "emailRequired": "Email é obrigatório",
+    "passwordRequired": "Senha é obrigatória",
+    "invalidEmail": "Por favor, insira um email válido.",
+    "passwordWeak": "A senha deve ter no mínimo 8 caracteres, incluindo maiúscula, minúscula, número e símbolo ($*&@#).",
+    "nameTooShort": "O nome deve ter pelo menos 2 caracteres.",
+    "loginError": "Email ou senha incorretos.",
+    "registerConflict": "Este email já está cadastrado.",
+    "registerSuccess": "Usuário registrado com sucesso!",
+    "logoutFromServerFail": "Falha ao invalidar sessão no servidor, mas o logout local prosseguirá.",
+    "noAccount": "Não tem conta?",
+    "register": "Registrar"
+  },
+  "tabs": {
+    "home": "Início",
+    "register": "Cadastrar",
+    "map": "Mapa",
+    "dashboard": "Dashboard",
+    "history": "Histórico"
+  },
+  "home": {
+    "title": "Mottu",
+    "subtitle": "Mapeamento Inteligente de Pátios",
+    "quickAccess": "Acesso Rápido",
+    "registerMoto": "Cadastrar Moto",
+    "qrScanner": "Scanner QR Code",
+    "patioMap": "Mapa do Pátio",
+    "organizeMotos": "Organizar motos",
+    "dashboard": "Dashboard",
+    "metricsAndKpis": "Métricas e KPIs",
+    "history": "Histórico",
+    "activityLog": "Registro de atividades",
+    "patioStatus": "Status do Pátio",
+    "availableMotos": "Motos Disponíveis",
+    "inMaintenance": "Em Manutenção",
+    "inQuarantine": "Em Quarentena",
+    "viewFullDashboard": "Ver Dashboard Completo",
+    "logout": "Sair"
+  },
+  "dashboard": {
+    "title": "Dashboard do Pátio",
+    "subtitle": "Métricas do Pátio",
+    "loading": "Carregando dados do dashboard...",
+    "error": "Erro ao carregar dados: {{error}}",
+    "totalMotos": "Total de Motos",
+    "readyToRent": "Prontas p/ Aluguel",
+    "avgTime": "Tempo Médio",
+    "statusTitle": "Status das Motos",
+    "efficiencyTitle": "Eficiência do Pátio",
+    "efficiencyInfo": "{{count}} de {{target}} motos prontas para aluguel",
+    "modelDistribution": "Distribuição por Modelo"
+  },
+  "map": {
+    "title": "Mapa do Pátio",
+    "loading": "Carregando...",
+    "selectedMoto": "Moto selecionada: {{placa}}",
+    "cancel": "Cancelar",
+    "gridTitle": "Grid do Pátio",
+    "waitingTitle": "Motos em Espera ({{count}})",
+    "clearFilters": "Limpar Filtros",
+    "deleteConfirmTitle": "Confirmar Exclusão",
+    "deleteConfirmMessage": "Tem certeza que deseja remover esta moto?",
+    "deleteError": "Não foi possível remover a moto"
+  },
+  "history": {
+    "title": "Histórico de Ações",
+    "subtitle": "Aqui você pode ver todas as ações realizadas no aplicativo.",
+    "empty": "Nenhuma ação registrada ainda.",
+    "clear": "Limpar Histórico"
+  },
+  "registerMoto": {
+    "screenTitle": "Registrar Moto",
+    "editTitle": "Editar Moto",
+    "buttonTitle": "Registrar Moto",
+    "editButtonTitle": "Salvar Alterações",
+    "scanQR": "Escanear Código QR",
+    "motoInfo": "Informações da Moto",
+    "plate": "Placa",
+    "platePlaceholder": "ABC-1234",
+    "plateError": "A placa deve conter pelo menos 7 caracteres.",
+    "model": "Modelo",
+    "color": "Cor",
+    "colorPlaceholder": "Ex: Preta, Vermelha, Azul",
+    "status": "Status",
+    "addSuccess": "Moto {{placa}} registrada com sucesso!",
+    "updateSuccess": "Moto {{placa}} atualizada com sucesso!",
+    "addError": "Ocorreu um erro ao registrar a moto.",
+    "historyAdd": "Moto Registrada",
+    "historyUpdate": "Moto Atualizada"
+  },
+  "errors": {
+    "offline": "Erro de conexão. Verifique sua internet e tente novamente.",
+    "unavailable": "O servidor está indisponível. Ativando modo offline.",
+    "unexpected": "Ocorreu um erro inesperado."
+  }
+}
+

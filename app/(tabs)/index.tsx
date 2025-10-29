@@ -12,7 +12,7 @@ export default function HomeScreen() {
   const router = useRouter(); 
   const { logout } = useLogout(); 
   const { motorcycles, refreshMotorcycles } = useMotorcycleStorage(); 
-  const { colors } = useTheme();
+  const { colors, language, setLanguage, t } = useTheme();
 
   // Conta motos por status
   const motosDisponiveis = motorcycles.filter(m => m.status === 'Pronta para aluguel').length;
@@ -32,16 +32,26 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Cabeçalho com título e botão de tema */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Mottu</Text>
-          <Text style={styles.subtitle}>Mapeamento Inteligente de Pátios</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{t('home.title')}</Text>
+          <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
         </View>
-        <ThemeToggle />
+        <View style={styles.headerControls}>
+          <View style={styles.languageSelector}>
+            <TouchableOpacity onPress={() => setLanguage('pt')} style={[styles.langButton, language === 'pt' && styles.langButtonActive]}>
+              <Text style={[styles.langText, language === 'pt' && styles.langTextActive]}>PT</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setLanguage('es')} style={[styles.langButton, language === 'es' && styles.langButtonActive]}>
+              <Text style={[styles.langText, language === 'es' && styles.langTextActive]}>ES</Text>
+            </TouchableOpacity>
+          </View>
+          <ThemeToggle />
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Seção de atalhos para funcionalidades principais */}
-        <Text style={styles.sectionTitle}>Acesso Rápido</Text>
+        <Text style={styles.sectionTitle}>{t('home.quickAccess')}</Text>
 
         <View style={styles.quickAccessGrid}>
           {/* Cadastro de novas motos via QR Code */}
@@ -50,8 +60,8 @@ export default function HomeScreen() {
             onPress={() => router.push('/cadastro')}
           >
             <ScanLine size={36} color={colors.primary.main} />
-            <Text style={styles.cardTitle}>Cadastrar Moto</Text>
-            <Text style={styles.cardDescription}>Scanner QR Code</Text>
+            <Text style={styles.cardTitle}>{t('home.registerMoto')}</Text>
+            <Text style={styles.cardDescription}>{t('home.qrScanner')}</Text>
           </TouchableOpacity>
 
           {/* Mapa visual do pátio */}
@@ -60,8 +70,8 @@ export default function HomeScreen() {
             onPress={() => router.push('/mapa')}
           >
             <Map size={36} color={colors.primary.main} />
-            <Text style={styles.cardTitle}>Mapa do Pátio</Text>
-            <Text style={styles.cardDescription}>Organizar motos</Text>
+            <Text style={styles.cardTitle}>{t('home.patioMap')}</Text>
+            <Text style={styles.cardDescription}>{t('home.organizeMotos')}</Text>
           </TouchableOpacity>
 
           {/* Métricas e estatísticas */}
@@ -70,8 +80,8 @@ export default function HomeScreen() {
             onPress={() => router.push('/dashboard')}
           >
             <BarChart3 size={36} color={colors.primary.main} />
-            <Text style={styles.cardTitle}>Dashboard</Text>
-            <Text style={styles.cardDescription}>Métricas e KPIs</Text>
+            <Text style={styles.cardTitle}>{t('home.dashboard')}</Text>
+            <Text style={styles.cardDescription}>{t('home.metricsAndKpis')}</Text>
           </TouchableOpacity>
 
           {/* Histórico de atividades */}
@@ -80,31 +90,31 @@ export default function HomeScreen() {
             onPress={() => router.push('/historico')}
           >
             <Clock size={36} color={colors.primary.main} />
-            <Text style={styles.cardTitle}>Histórico</Text>
-            <Text style={styles.cardDescription}>Registro de atividades</Text>
+            <Text style={styles.cardTitle}>{t('home.history')}</Text>
+            <Text style={styles.cardDescription}>{t('home.activityLog')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Resumo do status atual do pátio */}
-        <Text style={styles.sectionTitle}>Status do Pátio</Text>
+        <Text style={styles.sectionTitle}>{t('home.patioStatus')}</Text>
 
         <View style={styles.statsContainer}>
           {/* Motos disponíveis para aluguel */}
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{motosDisponiveis}</Text>
-            <Text style={styles.statLabel}>Motos Disponíveis</Text>
+            <Text style={styles.statLabel}>{t('home.availableMotos')}</Text>
           </View>
           
           {/* Motos em manutenção */}
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{motosManutencao}</Text>
-            <Text style={styles.statLabel}>Em Manutenção</Text>
+            <Text style={styles.statLabel}>{t('home.inMaintenance')}</Text>
           </View>
           
           {/* Motos em quarentena */}
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{motosQuarentena}</Text>
-            <Text style={styles.statLabel}>Em Quarentena</Text>
+            <Text style={styles.statLabel}>{t('home.inQuarantine')}</Text>
           </View>
         </View>
 
@@ -113,7 +123,7 @@ export default function HomeScreen() {
           style={styles.dashboardButton}
           onPress={() => router.push('/dashboard')}
         >
-          <Text style={styles.dashboardButtonText}>Ver Dashboard Completo</Text>
+          <Text style={styles.dashboardButtonText}>{t('home.viewFullDashboard')}</Text>
         </TouchableOpacity>
 
         {/* Botão de logout */}
@@ -121,7 +131,7 @@ export default function HomeScreen() {
           style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
           onPress={logout}
         >
-          <Text style={styles.dashboardButtonText}>Logout</Text>
+          <Text style={styles.dashboardButtonText}>{t('home.logout')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -136,9 +146,38 @@ const getStyles = (colors: any) => StyleSheet.create({
   header: {
     padding: 16,
     backgroundColor: colors.primary.main,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     alignItems: 'center',
+    paddingVertical: 20,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  languageSelector: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+  },
+  langButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  langButtonActive: {
+    backgroundColor: colors.neutral.white,
+  },
+  langText: {
+    color: colors.neutral.white,
+    fontWeight: 'bold',
+  },
+  langTextActive: {
+    color: colors.primary.main,
   },
   title: {
     fontSize: 28,

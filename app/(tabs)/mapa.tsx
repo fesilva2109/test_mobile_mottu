@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useMotorcycleStorage } from '@/hooks/useMotorcycleStorage';
 import { useGridStorage } from '@/hooks/useGridStorage';
 import { GridComponent } from '@/components/GridComponent';
@@ -11,7 +12,8 @@ import { useFocusEffect } from 'expo-router';
 import React from 'react';
 
 export default function MapaScreen() {
-  const { colors } = useTheme();
+  const router = useRouter();
+  const { colors, t } = useTheme();
   // Estados para filtros e seleção de motos
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -45,8 +47,9 @@ export default function MapaScreen() {
   // Filtra motos conforme status/modelo selecionados e atualiza listas
   useEffect(() => {
     console.log('MapaScreen: Estado motorcycles mudou. Recalculando waitingMotos.');
+    const placedIds = gridPositions.filter(p => p.occupied && p.motorcycle).map(p => p.motorcycle!.id);
     const onGrid = motorcycles.filter(moto => moto.posicao);
-    const waiting = motorcycles.filter(moto => !moto.posicao);
+    const waiting = motorcycles.filter(moto => !moto.posicao && !placedIds.includes(moto.id));
 
     let filteredWaiting = waiting;
     let filteredOnGrid = onGrid;
@@ -68,7 +71,7 @@ export default function MapaScreen() {
     if (selectedMoto && filteredWaiting.every(m => m.id !== selectedMoto.id)) {
       setSelectedMoto(null);
     }
-  }, [motorcycles, selectedStatus, selectedModel]); 
+  }, [motorcycles, selectedStatus, selectedModel, gridPositions]);
 
   // Posiciona moto selecionada no grid
   const handlePlaceMoto = async (position: { x: number, y: number }) => {
@@ -113,15 +116,15 @@ export default function MapaScreen() {
   };
   const handleDeleteMoto = async (id: string) => {
     Alert.alert(
-      'Confirmar Exclusão',
-      'Tem certeza que deseja remover esta moto?',
+      t('map.deleteConfirmTitle'),
+      t('map.deleteConfirmMessage'),
       [
         {
-          text: 'Cancelar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Remover',
+          text: t('common.save'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -130,7 +133,7 @@ export default function MapaScreen() {
               refreshMotorcycles();
             } catch (error) {
               console.error('Erro ao remover moto:', error);
-              Alert.alert('Erro', 'Não foi possível remover a moto');
+              Alert.alert(t('common.error'), t('map.deleteError'));
             }
           },
         },
@@ -145,7 +148,7 @@ export default function MapaScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary.main} />
-        <Text style={styles.loadingText}>Carregando...</Text>
+        <Text style={styles.loadingText}>{t('map.loading')}</Text>
       </View>
     );
   }
@@ -154,7 +157,7 @@ export default function MapaScreen() {
     <View style={styles.container}>
       {/* Cabeçalho com filtros */}
       <View style={styles.header}>
-        <Text style={styles.title}>Mapa do Pátio</Text>
+        <Text style={styles.title}>{t('map.title')}</Text>
         <FilterMenu
           selectedStatus={selectedStatus}
           selectedModel={selectedModel}
@@ -166,18 +169,18 @@ export default function MapaScreen() {
         {/* Indicador de seleção de moto */}
         {selectedMoto && (
           <View style={styles.selectionIndicator}>
-            <Text style={styles.selectionText}>Moto selecionada: {selectedMoto.placa}</Text>
+            <Text style={styles.selectionText}>{t('map.selectedMoto', { placa: selectedMoto.placa })}</Text>
             <TouchableOpacity
               style={styles.clearSelectionButton}
               onPress={handleClearSelection}
             >
-              <Text style={styles.clearSelectionText}>Cancelar</Text>
+              <Text style={styles.clearSelectionText}>{t('map.cancel')}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {/* Grid visual do pátio */}
-        <Text style={styles.sectionTitle}>Grid do Pátio</Text>
+        <Text style={styles.sectionTitle}>{t('map.gridTitle')}</Text>
         <ScrollView style={styles.gridContainer}>
           <GridComponent
             gridPositions={gridPositions}
@@ -191,18 +194,31 @@ export default function MapaScreen() {
         <View style={styles.waitingSection}>
           <View style={styles.waitingHeader}>
             <Text style={styles.waitingTitle}>
-              Motos em Espera ({waitingMotos.length})
+              {t('map.waitingTitle', { count: waitingMotos.length })}
             </Text>
             <TouchableOpacity onPress={() => {
               setSelectedStatus(null);
               setSelectedModel(null);
             }}>
-              <Text style={styles.clearFilters}>Limpar Filtros</Text>
+              <Text style={styles.clearFilters}>{t('map.clearFilters')}</Text>
             </TouchableOpacity>
           </View>
           <MotoList
             motorcycles={waitingMotos}
             onSelect={(moto) => setSelectedMoto(moto)}
+            onEdit={(moto) => {
+              router.push({
+                pathname: '/cadastro',
+                params: {
+                  id: moto.id,
+                  placa: moto.placa,
+                  modelo: moto.modelo,
+                  cor: moto.cor,
+                  status: moto.status,
+                  posicao: moto.posicao ? JSON.stringify(moto.posicao) : null,
+                },
+              });
+            }}
             onDelete={handleDeleteMoto}
             selectedMoto={selectedMoto}
           />
