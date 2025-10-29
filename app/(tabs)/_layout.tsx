@@ -4,7 +4,7 @@ import { ScanLine, Map, ChartBar as BarChart3, Clock, Home } from 'lucide-react-
 import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   return (
     <Tabs
@@ -26,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Início',
+          title: t('tabs.home'),
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
@@ -35,7 +35,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cadastro"
         options={{
-          title: 'Cadastrar',
+          title: t('tabs.register'),
           tabBarIcon: ({ color, size }) => <ScanLine color={color} size={size} />,
         }}
       />
@@ -44,7 +44,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="mapa"
         options={{
-          title: 'Mapa',
+          title: t('tabs.map'),
           tabBarIcon: ({ color, size }) => <Map color={color} size={size} />,
         }}
       />
@@ -53,7 +53,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: t('tabs.dashboard'),
           tabBarIcon: ({ color, size }) => <BarChart3 color={color} size={size} />,
         }}
       />
@@ -62,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="historico"
         options={{
-          title: 'Histórico',
+          title: t('tabs.history'),
           tabBarIcon: ({ color, size }) => <Clock color={color} size={size} />,
         }}
       />

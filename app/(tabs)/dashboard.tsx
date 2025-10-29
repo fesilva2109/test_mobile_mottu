@@ -11,7 +11,7 @@ import { StatusChart } from '@/components/StatusChart';
 // Apresenta métricas e gráficos sobre as motos do pátio
 export default function DashboardScreen() {
   const { motorcycles, loading, error, refreshMotorcycles } = useMotorcycleStorage();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   // Recarrega os dados das motocicletas sempre que a tela do dashboard é focada
   useFocusEffect(
@@ -94,26 +94,26 @@ export default function DashboardScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Dashboard do Pátio</Text>
-        <Text style={styles.subtitle}>Métricas do Pátio</Text>
+        <Text style={styles.title}>{t('dashboard.title')}</Text>
+        <Text style={styles.subtitle}>{t('dashboard.subtitle')}</Text>
       </View>
       
       <View style={styles.content}>
         <View style={styles.mainMetrics}>
           <DashboardCard 
-            title="Total de Motos"
+            title={t('dashboard.totalMotos')}
             value={metrics.totalMotos.toString()}
             iconName="motorcycle"
             color={colors.primary.main}
           />
           <DashboardCard 
-            title="Prontas p/ Aluguel"
+            title={t('dashboard.readyToRent')}
             value={metrics.motosDisponiveis.toString()}
             iconName="check-circle"
             color={colors.status.ready}
           />
           <DashboardCard 
-            title="Tempo Médio"
+            title={t('dashboard.avgTime')}
             value={`${metrics.tempoMedioPatio.toFixed(1)}h`}
             iconName="clock"
             color={colors.primary.teal}
@@ -121,18 +121,18 @@ export default function DashboardScreen() {
         </View>
         
         <View style={styles.chartContainer}>
-          <Text style={styles.sectionTitle}>Status das Motos</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.statusTitle')}</Text>
           <StatusChart data={metrics.statusCounts} />
         </View>
         
         <View style={styles.efficiencyContainer}>
-          <Text style={styles.sectionTitle}>Eficiência do Pátio</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.efficiencyTitle')}</Text>
           <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View 
                 style={[
                   styles.progressFill,
-                  { width: `${metrics.eficienciaPatio.toFixed(2)}%` },
+                  { width: `${metrics.eficienciaPatio}%` }, // Corrigido para string literal
                   metrics.eficienciaPatio < 50 ? { backgroundColor: colors.status.quarantine } :
                   metrics.eficienciaPatio < 75 ? { backgroundColor: colors.status.maintenance } :
                   { backgroundColor: colors.status.ready }
@@ -142,12 +142,12 @@ export default function DashboardScreen() {
             <Text style={styles.progressText}>{metrics.eficienciaPatio.toFixed(0)}%</Text>
           </View>
           <Text style={styles.efficiencyInfo}>
-            {metrics.motosDisponiveis} de {MOTO_EFFICIENCY_TARGET} motos prontas para aluguel
+            {t('dashboard.efficiencyInfo', { count: metrics.motosDisponiveis, target: MOTO_EFFICIENCY_TARGET })}
           </Text>
         </View>
         
         <View style={styles.modelsContainer}>
-          <Text style={styles.sectionTitle}>Distribuição por Modelo</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.modelDistribution')}</Text>
           {MOTO_MODELS.map(model => (
             <View key={model} style={styles.modelItem}>
               <View style={styles.modelNameContainer}>

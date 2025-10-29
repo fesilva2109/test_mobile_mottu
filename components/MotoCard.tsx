@@ -8,6 +8,7 @@ import { useTheme } from '@/context/ThemeContext';
 interface MotoCardProps {
   motorcycle: Motorcycle;
   onPress?: (motorcycle: Motorcycle) => void;
+  onEdit?: (motorcycle: Motorcycle) => void;
   onDelete?: (id: string) => void;
   isInWaitingArea?: boolean;
   isSelected?: boolean;
@@ -17,6 +18,7 @@ interface MotoCardProps {
 export function MotoCard({
   motorcycle,
   onPress,
+  onEdit,
   onDelete,
   isInWaitingArea = false,
   isSelected = false,
@@ -48,6 +50,12 @@ export function MotoCard({
       shadowOpacity: 0.1,
       shadowRadius: 4,
       flex: 1,
+    },
+    editButton: {
+      marginLeft: 8,
+      padding: 8,
+      backgroundColor: colors.primary.main,
+      borderRadius: 6,
     },
     waitingAreaCard: {
       borderLeftWidth: 4,
@@ -187,15 +195,25 @@ export function MotoCard({
           )}
         </View>
       </TouchableOpacity>
-      {/* Botão de exclusão, se permitido */}
-      {onDelete && (
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => onDelete(motorcycle.id)}
-        >
-          <MaterialIcons name="delete" size={20} color={colors.neutral.white} />
-        </TouchableOpacity>
-      )}
+      {/* Botões de ação */}
+      <View style={{ flexDirection: 'row' }}>
+        {onEdit && (
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => onEdit(motorcycle)}
+          >
+            <MaterialIcons name="edit" size={20} color={colors.neutral.white} />
+          </TouchableOpacity>
+        )}
+        {onDelete && (
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => onDelete(motorcycle.id)}
+          >
+            <MaterialIcons name="delete" size={20} color={colors.neutral.white} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }

@@ -5,12 +5,13 @@ import { Mail, Lock, AlertCircle } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
+import i18n from '../i18n';
 
 // Tela de Login: autenticação simples para acesso ao app
 export default function LoginScreen() {
   const router = useRouter();
   const { login, loading, authError, clearAuthError } = useAuth();
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   // Estados controlados para os campos do formulário
   const [email, setEmail] = useState('');
@@ -41,16 +42,16 @@ export default function LoginScreen() {
 
     // Validação dos campos
     if (!email) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = t('auth.emailRequired');
     } else if (!validateEmail(email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = t('auth.invalidEmail');
     }
 
     if (!password) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = t('auth.passwordRequired');
     }
     else if (!validatePassword(password)) {
-    newErrors.password = 'Senha fraca (mín. 8 caracteres, 1 maiúscula, 1 símbolo)';
+    newErrors.password = t('auth.passwordWeak');
      }
 
     setErrors(newErrors);
@@ -118,7 +119,7 @@ export default function LoginScreen() {
       marginTop: 12,
       paddingHorizontal: 12,
       paddingVertical: 8,
-      backgroundColor: '#ffe6e6',
+      backgroundColor: colors.error?.background || '#ffe6e6',
       borderWidth: 1,
       borderColor: colors.status.quarantine,
       borderRadius: 8,
@@ -178,7 +179,7 @@ export default function LoginScreen() {
             <Mail size={20} color={colors.neutral.gray} />
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder={t('common.email')}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -205,7 +206,7 @@ export default function LoginScreen() {
             <Lock size={20} color={colors.neutral.gray} />
             <TextInput
               style={styles.input}
-              placeholder="Senha"
+              placeholder={t('common.password')}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -240,7 +241,7 @@ export default function LoginScreen() {
 
         {/* Link para registro */}
         <TouchableOpacity style={styles.registerLink} onPress={() => router.push('/register')}>
-          <Text style={styles.registerText}>Não tem conta? <Text style={styles.registerTextBold}>Registrar</Text></Text>
+          <Text style={styles.registerText}>{t('auth.noAccount')} <Text style={styles.registerTextBold}>{t('auth.register')}</Text></Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -29,7 +29,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
     </View>
   );
 
-  const { colors } = useTheme();
+  const { colors, t } = useTheme();
 
   // Estilos organizados para visual limpo e responsivo
   const styles = StyleSheet.create({
@@ -103,10 +103,8 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
     <View style={styles.container}>
       {/* Cabeçalho da tela de histórico */}
       <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Histórico de Ações</Text>
-        <Text style={styles.subTitle}>
-          Aqui você pode ver todas as ações realizadas no aplicativo.
-        </Text>
+        <Text style={styles.sectionTitle}>{t('history.title')}</Text>
+        <Text style={styles.subTitle}>{t('history.subtitle')}</Text>
       </View>
       {/* Exibe loading enquanto carrega histórico */}
       {loadingHistory ? (
@@ -117,14 +115,14 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
           keyExtractor={(item) => item.id}
           renderItem={renderHistoryItem}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Nenhuma ação registrada ainda.</Text>
+            <Text style={styles.emptyText}>{t('history.empty')}</Text>
           }
         />
       )}
       {/* Botão para limpar histórico, aparece apenas se houver eventos */}
       {history.length > 0 && onClearHistory && (
         <TouchableOpacity style={styles.clearButton} onPress={onClearHistory}>
-          <Text style={styles.clearButtonText}>Limpar Histórico</Text>
+          <Text style={styles.clearButtonText}>{t('history.clear')}</Text>
         </TouchableOpacity>
       )}
     </View>

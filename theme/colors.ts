@@ -24,6 +24,10 @@ export const lightColors = {
     priority: '#B71C1C',
     reserved: '#4A56E2',
     waiting: '#7A7A7A',
+  },
+  // Error colors
+  error: {
+    background: '#ffe6e6',
   }
 };
 
@@ -53,6 +57,10 @@ export const darkColors = {
     priority: '#B71C1C',
     reserved: '#4A56E2',
     waiting: '#7A7A7A',
+  },
+  // Error colors
+  error: {
+    background: '#ffe6e6',
   }
 };
 
