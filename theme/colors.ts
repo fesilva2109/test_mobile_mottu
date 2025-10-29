@@ -28,7 +28,9 @@ export const lightColors = {
   // Error colors
   error: {
     background: '#ffe6e6',
-  }
+  },
+  // Status bar style
+  statusBar: 'dark'
 };
 
 export const darkColors = {
