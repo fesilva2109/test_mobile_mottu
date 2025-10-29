@@ -3,7 +3,7 @@ import { handleApiError } from '@/context/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 import axios from 'axios';
-import i18n from '../i18n'; // Ajustado para import relativo
+import i18n from '@/i18n';
 
 interface AuthResponse {
   user: User;

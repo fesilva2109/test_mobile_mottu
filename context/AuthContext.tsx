@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { User } from '@/types';
 import { loginUser, registerUser, logoutUser } from '@/context/authService';
 import { useApiStatus } from '@/context/ApiStatusContext';
+import { useTheme } from '@/context/ThemeContext';
 
 // Define o formato dos dados do contexto de autenticação
 interface AuthContextType {
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const { isOffline, setApiOffline } = useApiStatus();
   const [authError, setAuthError] = useState<string | null>(null);
+  const { reloadPreferences } = useTheme();
 
   useEffect(() => {
     // Carrega dados salvos do usuário ao iniciar o app
@@ -119,6 +121,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       await AsyncStorage.removeItem('@mottu:user');
       await AsyncStorage.removeItem('@mottu:token');
+      // Reseta preferências para valores padrão
+      await AsyncStorage.setItem('@mottu:theme', 'light');
+      await AsyncStorage.setItem('@mottu:language', 'pt');
+      // Força recarregamento das preferências no contexto de tema
+      await reloadPreferences();
       setUser(null);
       setToken(null);
       router.replace('/login');
