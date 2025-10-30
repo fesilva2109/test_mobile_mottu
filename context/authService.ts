@@ -150,13 +150,13 @@ export const registerUser = async (
       const users = storedUsers ? JSON.parse(storedUsers) : [];
       
       // Verifica se o email já existe localmente
-      if (users.some((u: User) => u.email === email)) {
+      const existingUser = users.find((u: User) => u.email === email);
+      if (existingUser) {
         throw new Error(i18n.t('auth.registerConflict'));
       }
 
       users.push(newUser);
       await AsyncStorage.setItem('@mottu:users_local', JSON.stringify(users));
-
       return {
         user: newUser,
         token: `local-token-for-${newUser.id}`,
@@ -187,7 +187,7 @@ export const logoutUser = async (
 ): Promise<void> => {
   try {
     // Lógica para a API Real
-    await api.post('/auth/logout');
+    await api.get('/auth/logout');
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.warn(i18n.t('auth.logoutFromServerFail'));

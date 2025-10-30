@@ -4,9 +4,6 @@ import { Motorcycle, GridPosition } from '@/types';
 
 const GRID_KEY = '@mottu:grid';
 
-/**
- * Hook customizado para gerenciar o estado do grid do pátio no AsyncStorage.
- */
 export const useGridStorage = () => {
   const [gridPositions, setGridPositions] = useState<GridPosition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +33,7 @@ export const useGridStorage = () => {
       }
     } catch (error) {
       console.error('Failed to load grid:', error);
-      const initialGrid = initializeGrid(5, 5); // Fallback grid
+      const initialGrid = initializeGrid(5, 5);
       setGridPositions(initialGrid);
     } finally {
       setLoading(false);

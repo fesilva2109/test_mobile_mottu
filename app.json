@@ -1,22 +1,27 @@
 {
   "expo": {
     "name": "mottu_challenge",
-    "slug": "mottu_challenge",
+    "slug": "gef-mottu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "web": {
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/images/icon.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-web-browser", "expo-notifications"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
+      "expo-notifications"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fesilva2109.gefmottu",
+      "buildNumber": "1"
+    },
     "experiments": {
       "typedRoutes": true
     },
@@ -29,8 +34,23 @@
     },
     "extra": {
       "eas": {
-        "projectId": "64339743069"
+        "projectId": "513490f3-1d7c-466c-bd45-b115e37fe66e"
       }
+    },
+    "owner": "fesilva2109",
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "gef.mottu",
+      "versionCode": 1
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/513490f3-1d7c-466c-bd45-b115e37fe66e"
     }
   }
 }

@@ -9,12 +9,11 @@ import Constants from 'expo-constants';
 const APP_INFO = {
   name: 'Mottu Challenge',
   version: Constants.expoConfig?.version || '1.0.0',
-  commitHash: '999cdaa', // Hash obtido do git log
+  commitHash: 'eed088d', 
   team: [
-    'João Silva',
-    'Maria Santos',
-    'Pedro Oliveira',
-    'Ana Costa'
+    'Felipe Silva Maciel - RM555307',
+    'Eduardo Henrique Strapazzon Nagado - RM558158',
+    'Gustavo Ramires Lazzuri - RM556772'
   ],
   technologies: [
     'React Native',
@@ -154,11 +153,11 @@ export default function SobreScreen() {
   const styles = getStyles(colors);
 
   const handleEmailPress = () => {
-    Linking.openURL('mailto:professor@universidade.edu');
+    Linking.openURL('mailto:felipesilvaa.2109@gmail.com');
   };
 
   const handleGithubPress = () => {
-    Linking.openURL('https://github.com/equipe-mottu/mottu-challenge');
+    Linking.openURL('https://github.com/fesilva2109/test_mobile_mottu.git');
   };
 
   return (

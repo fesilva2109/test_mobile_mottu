@@ -57,7 +57,7 @@ function AppLayout() {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView 
+    <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.primary.main }}
       edges={['top', 'left', 'right']}
     >

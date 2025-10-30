@@ -125,14 +125,6 @@ export default function HomeScreen() {
         >
           <Text style={styles.dashboardButtonText}>{t('home.viewFullDashboard')}</Text>
         </TouchableOpacity>
-
-        {/* Botão de logout */}
-        <TouchableOpacity
-          style={[styles.dashboardButton, { backgroundColor: colors.status.quarantine }]}
-          onPress={logout}
-        >
-          <Text style={styles.dashboardButtonText}>{t('home.logout')}</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );

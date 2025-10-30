@@ -23,18 +23,14 @@
       }
     },
     "production": {
-      "ios": {
-        "resourceClass": "m-medium"
-      },
-      "android": {
-        "resourceClass": "medium"
-      }
+      "distribution": "store",
+      "channel": "production"
     },
     "distribution_firebase": {
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:bundleRelease"
+        "gradleCommand": ":app:assembleRelease"
       },
       "channel": "distribution_firebase"
     }

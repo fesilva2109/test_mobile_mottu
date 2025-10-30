@@ -106,7 +106,7 @@
     "unexpected": "Ocurrió un error inesperado."
   },
   "about": {
-    "title": "Acerca de la App",
+    "title": "Acerca",
     "subtitle": "Información sobre el proyecto Mottu Challenge",
     "appInfo": "Información de la App",
     "appName": "Nombre de la App",
@@ -114,7 +114,7 @@
     "commitHash": "Hash del Commit",
     "team": "Equipo",
     "technologies": "Tecnologías Utilizadas",
-    "contactProfessor": "Contacto con Profesor",
+    "contactProfessor": "Contacto",
     "viewCode": "Ver Código en GitHub"
   },
   "common": {
