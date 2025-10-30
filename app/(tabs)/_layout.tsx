@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { ScanLine, Map, ChartBar as BarChart3, Clock, Home } from 'lucide-react-native';
+import { ScanLine, Map, ChartBar as BarChart3, Home, MoreHorizontal } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
@@ -58,12 +58,12 @@ export default function TabLayout() {
         }}
       />
       
-      {/* Tela do histórico de movimentações */}
+      {/* Tela "Mais" com links para outras seções */}
       <Tabs.Screen
-        name="historico"
+        name="mais"
         options={{
-          title: t('tabs.history'),
-          tabBarIcon: ({ color, size }) => <Clock color={color} size={size} />,
+          title: t('tabs.more'),
+          tabBarIcon: ({ color, size }) => <MoreHorizontal color={color} size={size} />,
         }}
       />
     </Tabs>

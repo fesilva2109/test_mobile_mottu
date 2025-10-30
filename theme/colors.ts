@@ -63,7 +63,9 @@ export const darkColors = {
   // Error colors
   error: {
     background: '#ffe6e6',
-  }
+  },
+  // Status bar style
+  statusBar: 'light'
 };
 
 export type ColorsType = typeof lightColors;

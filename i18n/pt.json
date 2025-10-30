@@ -28,7 +28,8 @@
     "register": "Cadastrar",
     "map": "Mapa",
     "dashboard": "Dashboard",
-    "history": "Histórico"
+    "history": "Histórico",
+    "more": "Mais"
   },
   "home": {
     "title": "Mottu",
@@ -106,7 +107,7 @@
     "unexpected": "Ocorreu um erro inesperado."
   },
   "about": {
-    "title": "Sobre o App",
+    "title": "Sobre",
     "subtitle": "Informações sobre o projeto Mottu Challenge",
     "appInfo": "Informações do App",
     "appName": "Nome do App",
@@ -114,7 +115,7 @@
     "commitHash": "Hash do Commit",
     "team": "Equipe",
     "technologies": "Tecnologias Utilizadas",
-    "contactProfessor": "Contato com Professor",
+    "contactProfessor": "Contato",
     "viewCode": "Ver Código no GitHub"
   },
   "common": {
@@ -130,4 +131,3 @@
     "back": "Voltar"
   }
 }
-
