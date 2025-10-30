@@ -39,7 +39,18 @@
     },
     "owner": "fesilva2109",
     "android": {
-      "package": "com.fesilva2109.gefmottu"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.fesilva2109.gefmottu",
+      "versionCode": 1
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/513490f3-1d7c-466c-bd45-b115e37fe66e"
     }
   }
 }

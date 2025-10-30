@@ -187,7 +187,7 @@ export const logoutUser = async (
 ): Promise<void> => {
   try {
     // Lógica para a API Real
-    await api.post('/auth/logout');
+    await api.get('/auth/logout');
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.warn(i18n.t('auth.logoutFromServerFail'));
