@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "web": {
       "bundler": "metro",
       "output": "single",
@@ -22,6 +17,11 @@
       "expo-web-browser",
       "expo-notifications"
     ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fesilva2109.gefmottu",
+      "buildNumber": "1"
+    },
     "experiments": {
       "typedRoutes": true
     },
@@ -43,7 +43,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.fesilva2109.gefmottu",
+      "package": "gef.mottu",
       "versionCode": 1
     },
     "runtimeVersion": {

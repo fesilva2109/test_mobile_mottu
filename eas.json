@@ -23,12 +23,8 @@
       }
     },
     "production": {
-      "ios": {
-        "resourceClass": "m-medium"
-      },
-      "android": {
-        "resourceClass": "medium"
-      }
+      "distribution": "store",
+      "channel": "production"
     },
     "distribution_firebase": {
       "distribution": "internal",
