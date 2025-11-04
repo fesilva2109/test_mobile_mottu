@@ -8,6 +8,7 @@ import api from './api';
 interface NotificationContextType {
   expoPushToken: string | null;
   sendNotification: (title: string, body: string, data?: any) => Promise<void>;
+  scheduleLocalNotification: (title: string, body: string, data?: any) => Promise<void>;
   registerForPushNotificationsAsync: () => Promise<string | null>;
 }
 
@@ -121,10 +122,26 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const scheduleLocalNotification = async (title: string, body: string, data?: any) => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title,
+          body,
+          data,
+        },
+        trigger: null, // null means schedule it now
+      });
+    } catch (error) {
+      console.error('Error scheduling local notification:', error);
+    }
+  };
+
   return (
     <NotificationContext.Provider value={{
       expoPushToken,
       sendNotification,
+      scheduleLocalNotification,
       registerForPushNotificationsAsync,
     }}>
       {children}

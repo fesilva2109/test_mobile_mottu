@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import useHistoryStorage from '@/hooks/useHistoryStorage';
+import { useRouter } from 'expo-router';
+import { ArrowLeft } from 'lucide-react-native';
 
 // Tipagem para eventos do histórico
 interface HistoryEvent {
@@ -19,6 +21,7 @@ interface HistoryListProps {
 // Componente de histórico de ações do app
 const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
   const { history, loadingHistory } = useHistoryStorage();
+  const router = useRouter();
 
   // Renderiza itens do histórico
   const renderHistoryItem = ({ item }: { item: HistoryEvent }) => (
@@ -39,12 +42,19 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
     },
     header: {
       padding: 16,
+      paddingTop: 40,
       backgroundColor: colors.primary.main,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
     },
     sectionTitle: {
       fontSize: 28,
       fontWeight: 'bold',
       color: colors.neutral.white,
+    },
+    headerContent: {
+      flex: 1,
     },
     subTitle: {
       marginTop: 8,
@@ -103,8 +113,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
     <View style={styles.container}>
       {/* Cabeçalho da tela de histórico */}
       <View style={styles.header}>
-        <Text style={styles.sectionTitle}>{t('history.title')}</Text>
-        <Text style={styles.subTitle}>{t('history.subtitle')}</Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ArrowLeft size={24} color={colors.neutral.white} />
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.sectionTitle}>{t('history.title')}</Text>
+          <Text style={styles.subTitle}>{t('history.subtitle')}</Text>
+        </View>
       </View>
       {/* Exibe loading enquanto carrega histórico */}
       {loadingHistory ? (

@@ -10,7 +10,7 @@ interface AuthResponse {
   token: string;
 }
 
-/** Normaliza diferentes formatos de resposta da API para { user, token } */
+// Normaliza diferentes formatos de resposta da API para { user, token } 
 const normalizeAuthResponse = (data: any): AuthResponse => {
   if (!data) throw new Error('Resposta de autenticação vazia.');
 
@@ -19,7 +19,6 @@ const normalizeAuthResponse = (data: any): AuthResponse => {
     return { user: data.user as User, token: data.token };
   }
 
-  // Alguns backends retornam { id, email, name?, token }
   if (data.token && (data.id || data.email)) {
     const user: any = {
       id: typeof data.id === 'number' ? String(data.id) : data.id ?? `remote_${Date.now()}`,
@@ -43,17 +42,15 @@ const normalizeAuthResponse = (data: any): AuthResponse => {
   throw new Error('Formato inesperado da resposta de autenticação.');
 };
 
-/**
- * Valida formato de email
- */
+//Valida formato de email
+ 
 const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Valida a estrutura do email.
+  const emailRegex = /^[^\s@]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 };
 
-/**
- * Valida força da senha
- */
+//Valida força da senha
 const isPasswordStrong = (password: string): boolean => {
   // Requisito: mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 símbolo.
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/;
@@ -97,7 +94,6 @@ export const loginUser = async (
         throw new Error(i18n.t('auth.loginError'));
       }
     } else {
-      // Lógica para a API Real
       const response = await api.post('/auth/login', { email, password });
       return normalizeAuthResponse(response.data);
     }
@@ -162,7 +158,6 @@ export const registerUser = async (
         token: `local-token-for-${newUser.id}`,
       };
     } else {
-      // Lógica para a API Real
       const response = await api.post('/auth/register', { name, email, password });
       return normalizeAuthResponse(response.data);
     }
