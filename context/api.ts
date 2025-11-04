@@ -9,10 +9,7 @@ const api = axios.create({
   },
 });
 
-/**
- * Interceptor de Requisição:
- * Adiciona o token de autenticação a todas as requisições, se disponível.
- */
+//Adiciona o token de autenticação a todas as requisições, se disponível.
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await AsyncStorage.getItem('@mottu:token');
@@ -26,15 +23,11 @@ api.interceptors.request.use(
   }
 );
 
-/**
- * Interceptor de Resposta:
- * Centraliza o tratamento de erros da API.
- * O `handleApiError` será chamado a partir daqui.
- */
+//Centraliza o tratamento de erros da API chamando o `handleApiError`.
 api.interceptors.response.use(
-  (response: AxiosResponse) => response, // Retorna a resposta em caso de sucesso
+  (response: AxiosResponse) => response, 
   (error: AxiosError) => {
-    return Promise.reject(error); // Rejeita a promise para que o erro seja tratado no `catch` da chamada
+    return Promise.reject(error); 
   }
 );
 
