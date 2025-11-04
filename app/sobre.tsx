@@ -39,7 +39,7 @@ export default function SobreScreen() {
     header: {
       backgroundColor: colors.primary.main,
       padding: 24,
-      paddingTop: 60,
+      paddingTop: 40,
       borderBottomLeftRadius: 24,
       borderBottomRightRadius: 24,
       marginBottom: 24,
@@ -68,7 +68,6 @@ export default function SobreScreen() {
       marginTop: 8,
     },
     content: {
-      flex: 1,
       padding: 24,
     },
     section: {
