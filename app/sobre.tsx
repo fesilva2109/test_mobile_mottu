@@ -12,7 +12,7 @@ const APP_INFO = {
   commitHash: 'eed088d', 
   team: [
     'Felipe Silva Maciel - RM555307',
-    'Eduardo Henrique Strapazzon Nagado - RM558158',
+    'Eduardo Nagado - RM558158',
     'Gustavo Ramires Lazzuri - RM556772'
   ],
   technologies: [

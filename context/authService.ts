@@ -47,7 +47,8 @@ const normalizeAuthResponse = (data: any): AuthResponse => {
  * Valida formato de email
  */
 const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Valida a estrutura do email.
+  const emailRegex = /^[^\s@]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 };
 

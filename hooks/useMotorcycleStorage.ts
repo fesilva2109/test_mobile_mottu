@@ -14,7 +14,7 @@ export const useMotorcycleStorage = () => {
   const { token } = useAuth();
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const { isOffline, setApiOffline } = useApiStatus();
-  const { sendNotification } = useNotifications();
+  const { scheduleLocalNotification } = useNotifications();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -91,8 +91,8 @@ export const useMotorcycleStorage = () => {
         const addedMoto = response.data;
         setMotorcycles((prev) => [...prev, addedMoto]);
 
-        // Send notification for new motorcycle
-        await sendNotification(
+        // Agenda notificação local para exibição imediata
+        await scheduleLocalNotification(
           'Nova Moto Cadastrada',
           `Moto ${addedMoto.placa} foi adicionada ao pátio`,
           { type: 'new_motorcycle', motorcycleId: addedMoto.id }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Mail, Lock, AlertCircle, User } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
@@ -26,7 +26,8 @@ export default function RegisterScreen() {
 
   // Validação básica de email
   const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Valida a estrutura do email, permitindo apenas caracteres válidos no domínio.
+    const emailRegex = /^[^\s@]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
@@ -127,6 +128,12 @@ export default function RegisterScreen() {
       fontSize: 16,
       color: colors.neutral.darkGray,
     },
+    inputHint: {
+      fontSize: 12,
+      color: colors.neutral.gray,
+      marginTop: 6,
+      paddingHorizontal: 4,
+    },
     errorContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -178,134 +185,140 @@ export default function RegisterScreen() {
   const styles = getStyles(colors);
 
   return (
-    <View style={styles.container}>
-      {/* Cabeçalho visual do app */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Mottu</Text>
-        <Text style={styles.subtitle}>Criar Conta</Text>
-      </View>
-
-      {/* Formulário de registro */}
-      <View style={styles.form}>
-        {/* Campo de nome */}
-        <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.name ? styles.inputError : null]}>
-            <User size={20} color={colors.neutral.gray} />
-            <TextInput
-              style={styles.input}
-              placeholder="Nome completo"
-              value={name}
-              onChangeText={(text) => {
-                setName(text);
-                clearAuthError();
-              }}
-              autoCapitalize="words"
-              autoComplete="name"
-              placeholderTextColor={colors.neutral.gray}
-            />
-          </View>
-          {errors.name ? (
-            <View style={styles.errorContainer}>
-              <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.name}</Text>
-            </View>
-          ) : null}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
+        {/* Cabeçalho visual do app */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Mottu</Text>
+          <Text style={styles.subtitle}>Criar Conta</Text>
         </View>
 
-        {/* Campo de email */}
-        <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.email || authError ? styles.inputError : null]}>
-            <Mail size={20} color={colors.neutral.gray} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                clearAuthError();
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              placeholderTextColor={colors.neutral.gray}
-            />
-          </View>
-          {(errors.email || authError) ? (
-            <View style={styles.errorContainer}>
-              <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.email || authError}</Text>
+        {/* Formulário de registro */}
+        <View style={styles.form}>
+          {/* Campo de nome */}
+          <View style={styles.inputGroup}>
+            <View style={[styles.inputContainer, errors.name ? styles.inputError : null]}>
+              <User size={20} color={colors.neutral.gray} />
+              <TextInput
+                style={styles.input}
+                placeholder="Nome completo"
+                value={name}
+                onChangeText={(text) => {
+                  setName(text);
+                  clearAuthError();
+                }}
+                autoCapitalize="words"
+                autoComplete="name"
+                placeholderTextColor={colors.neutral.gray}
+              />
             </View>
-          ) : null}
-        </View>
-
-        {/* Campo de senha */}
-        <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.password ? styles.inputError : null]}>
-            <Lock size={20} color={colors.neutral.gray} />
-            <TextInput
-              style={styles.input}
-              placeholder="Senha"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                clearAuthError();
-              }}
-              secureTextEntry
-              autoComplete="password-new"
-              placeholderTextColor={colors.neutral.gray}
-            />
+            {errors.name ? (
+              <View style={styles.errorContainer}>
+                <AlertCircle size={16} color={colors.status.quarantine} />
+                <Text style={styles.errorText}>{errors.name}</Text>
+              </View>
+            ) : null}
           </View>
-          {errors.password ? (
-            <View style={styles.errorContainer}>
-              <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.password}</Text>
-            </View>
-          ) : null}
-        </View>
 
-        {/* Campo de confirmação de senha */}
-        <View style={styles.inputGroup}>
-          <View style={[styles.inputContainer, errors.confirmPassword ? styles.inputError : null]}>
-            <Lock size={20} color={colors.neutral.gray} />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirmar senha"
-              value={confirmPassword}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                clearAuthError();
-              }}
-              secureTextEntry
-              autoComplete="password-new"
-              placeholderTextColor={colors.neutral.gray}
-            />
+          {/* Campo de email */}
+          <View style={styles.inputGroup}>
+            <View style={[styles.inputContainer, errors.email || authError ? styles.inputError : null]}>
+              <Mail size={20} color={colors.neutral.gray} />
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  clearAuthError();
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                placeholderTextColor={colors.neutral.gray}
+              />
+            </View>
+            {(errors.email || authError) ? (
+              <View style={styles.errorContainer}>
+                <AlertCircle size={16} color={colors.status.quarantine} />
+                <Text style={styles.errorText}>{errors.email || authError}</Text>
+              </View>
+            ) : null}
           </View>
-          {errors.confirmPassword ? (
-            <View style={styles.errorContainer}>
-              <AlertCircle size={16} color={colors.status.quarantine} />
-              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+
+          {/* Campo de senha */}
+          <View style={styles.inputGroup}>
+            <View style={[styles.inputContainer, errors.password ? styles.inputError : null]}>
+              <Lock size={20} color={colors.neutral.gray} />
+              <TextInput
+                style={styles.input}
+                placeholder="Senha"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  clearAuthError();
+                }}
+                secureTextEntry
+                autoComplete="password-new"
+                placeholderTextColor={colors.neutral.gray}
+              />
             </View>
-          ) : null}
+            <Text style={styles.inputHint}>Mín. 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo ($*&@#).</Text>
+            {errors.password ? (
+              <View style={styles.errorContainer}>
+                <AlertCircle size={16} color={colors.status.quarantine} />
+                <Text style={styles.errorText}>{errors.password}</Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Campo de confirmação de senha */}
+          <View style={styles.inputGroup}>
+            <View style={[styles.inputContainer, errors.confirmPassword ? styles.inputError : null]}>
+              <Lock size={20} color={colors.neutral.gray} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirmar senha"
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  clearAuthError();
+                }}
+                secureTextEntry
+                autoComplete="password-new"
+                placeholderTextColor={colors.neutral.gray}
+              />
+            </View>
+            {errors.confirmPassword ? (
+              <View style={styles.errorContainer}>
+                <AlertCircle size={16} color={colors.status.quarantine} />
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* Botão de registro */}
+          <TouchableOpacity
+            style={[styles.registerButton, loading && styles.registerButtonDisabled]}
+            onPress={handleRegister}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color={colors.neutral.white} />
+            ) : (
+              <Text style={styles.registerButtonText}>Registrar</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Link para login */}
+          <TouchableOpacity style={styles.loginLink} onPress={() => router.push('/login')}>
+            <Text style={styles.loginText}>Já tem conta? <Text style={styles.loginTextBold}>Entrar</Text></Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Botão de registro */}
-        <TouchableOpacity
-          style={[styles.registerButton, loading && styles.registerButtonDisabled]}
-          onPress={handleRegister}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color={colors.neutral.white} />
-          ) : (
-            <Text style={styles.registerButtonText}>Registrar</Text>
-          )}
-        </TouchableOpacity>
-
-        {/* Link para login */}
-        <TouchableOpacity style={styles.loginLink} onPress={() => router.push('/login')}>
-          <Text style={styles.loginText}>Já tem conta? <Text style={styles.loginTextBold}>Entrar</Text></Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
