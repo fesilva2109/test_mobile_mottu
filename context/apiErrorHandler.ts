@@ -2,15 +2,6 @@ import { ApiStatusContextType } from "@/context/ApiStatusContext";
 import axios, { AxiosError } from "axios";
 import i18n from "@/i18n";
 
-/**
- * Centraliza o tratamento de erros de API, sejam eles de rede ou de status HTTP.
- 
- * @param error O erro capturado, que pode ser uma `Response` ou um `Error`.
- * @param apiStatusSetter Função para setar o status da API para offline.
- * @param customMessages Mapeamento de códigos de status para mensagens personalizadas.
- * @returns Um objeto `Error` com uma mensagem amigável.
- 
- */
 export async function handleApiError(
   error: unknown,
   apiStatusSetter?: () => void,
@@ -36,6 +27,9 @@ export async function handleApiError(
     const data = response.data;
 
     // Mensagem personalizada para o status code, se existir no `customMessages`
+    if (status === 401 || status === 403) {
+      return new Error(i18n.t('errors.authFailed'));
+    }
     if (customMessages[status]) {
       return new Error(customMessages[status]);
     }

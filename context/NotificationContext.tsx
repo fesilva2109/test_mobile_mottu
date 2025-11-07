@@ -4,6 +4,8 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { useAuth } from './AuthContext';
 import api from './api';
+import { handleApiError } from './apiErrorHandler'; 
+import axios from 'axios'; 
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -14,7 +16,6 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
-// Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -27,14 +28,13 @@ Notifications.setNotificationHandler({
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const { user, token } = useAuth();
+  const { user, token } = useAuth(); 
 
   useEffect(() => {
     registerForPushNotificationsAsync();
   }, []);
 
   useEffect(() => {
-    // Send token to backend when user logs in
     if (user && token && expoPushToken) {
       sendTokenToBackend(expoPushToken);
     }
@@ -88,8 +88,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           platform: Platform.OS,
         });
       }
-    } catch (error) {
-      console.error('Error sending push token to backend:', error);
+    } catch (rawError) {
+      const error = await handleApiError(rawError);
+      if (axios.isAxiosError(rawError) && rawError.response?.status === 403) {
+        console.warn('Authentication failed for push token registration. Logging out...');
+      }
+      console.error('Error sending push token to backend:', error.message);
+    
     }
   };
 
@@ -130,7 +135,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           body,
           data,
         },
-        trigger: null, // null means schedule it now
+        trigger: null,
       });
     } catch (error) {
       console.error('Error scheduling local notification:', error);
