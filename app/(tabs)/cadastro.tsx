@@ -110,7 +110,8 @@ export default function CadastroScreen() {
 
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
-      Alert.alert(t('common.error'), t('registerMoto.addError'));
+      const errorMessage = error instanceof Error ? error.message : t('registerMoto.addError');
+      Alert.alert(t('common.error'), errorMessage);
     }
   };
 

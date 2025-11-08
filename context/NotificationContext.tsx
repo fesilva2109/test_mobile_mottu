@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { useAuth } from './AuthContext';
 import api from './api';
 
@@ -14,7 +15,6 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
-// Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -34,7 +34,6 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // Send token to backend when user logs in
     if (user && token && expoPushToken) {
       sendTokenToBackend(expoPushToken);
     }
@@ -42,6 +41,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const registerForPushNotificationsAsync = async (): Promise<string | null> => {
     let token: string | null = null;
+
+    if (Constants.appOwnership === 'expo') {
+      console.warn('As notificações push não são suportadas no Expo Go. Pule o registro.');
+      return null;
+    }
 
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -130,7 +134,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           body,
           data,
         },
-        trigger: null, // null means schedule it now
+        trigger: null, 
       });
     } catch (error) {
       console.error('Error scheduling local notification:', error);

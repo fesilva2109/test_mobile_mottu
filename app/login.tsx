@@ -27,12 +27,6 @@ export default function LoginScreen() {
     return emailRegex.test(email);
   };
 
-  // Validação de senha forte (mínimo 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 símbolo)
-  const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/;
-    return passwordRegex.test(password);
-  };
-
   // Função chamada ao pressionar "Entrar"
   const handleLogin = async () => {
     const newErrors = {
@@ -49,9 +43,6 @@ export default function LoginScreen() {
 
     if (!password) {
       newErrors.password = t('auth.passwordRequired');
-    }
-    else if (!validatePassword(password)) {
-    newErrors.password = t('auth.passwordWeak');
      }
 
     setErrors(newErrors);
@@ -247,5 +238,3 @@ export default function LoginScreen() {
     </View>
   );
 }
-
-

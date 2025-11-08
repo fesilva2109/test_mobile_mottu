@@ -172,7 +172,7 @@ export default function SobreScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* App Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('about.appInfo')}</Text>

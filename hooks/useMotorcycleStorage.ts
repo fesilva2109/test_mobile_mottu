@@ -6,6 +6,7 @@ import { useApiStatus } from '@/context/ApiStatusContext';
 import { useNotifications } from '@/context/NotificationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/context/api';
+import i18n from '@/i18n';
 
 const LOCAL_MOTOS_KEY = '@mottu:motorcycles_local';
 // Hook customizado para gerenciar o CRUD de motocicletas via API.
@@ -101,9 +102,11 @@ export const useMotorcycleStorage = () => {
         return addedMoto;
       }
     } catch (error) {
-      const apiError = await handleApiError(error, setApiOffline);
+      const apiError = await handleApiError(error, setApiOffline, {
+        409: i18n.t('registerMoto.plateConflict'),
+      });
       console.error('Falha ao adicionar motocicleta:', apiError.message);
-      throw apiError; // Lança o erro tratado
+      throw apiError;
     }
   };
 
