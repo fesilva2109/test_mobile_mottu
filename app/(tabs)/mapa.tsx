@@ -124,7 +124,7 @@ export default function MapaScreen() {
           style: 'cancel',
         },
         {
-          text: t('common.save'),
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {

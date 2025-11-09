@@ -37,7 +37,8 @@ export default function CadastroScreen() {
 
   // Preenche os campos automaticamente se vierem da navegação (QR Code ou Edição)
   useEffect(() => {
-    if (isEditing && existingId) {
+    // Se for modo de edição, busca a moto na lista e preenche
+    if (params.id && isEditing) {
       const existingMoto = motorcycles.find(m => m.id === existingId);
       if (existingMoto) {
         setPlaca(existingMoto.placa);
@@ -45,13 +46,13 @@ export default function CadastroScreen() {
         setCor(existingMoto.cor);
         setStatus(existingMoto.status);
       }
-    } else {
-      if (paramPlaca) setPlaca(paramPlaca as string);
-      if (paramModelo) setModelo(paramModelo as string);
-      if (paramCor) setCor(paramCor as string);
-      if (paramStatus) setStatus(paramStatus as string);
+    } else if (params.placa) { // Se não for edição, mas tiver placa (veio do QR Code)
+      setPlaca(params.placa as string);
+      setModelo((params.modelo as string) || MOTO_MODELS[0]);
+      setCor((params.cor as string) || '');
+      setStatus((params.status as string) || MOTO_STATUSES[0]);
     }
-  }, [isEditing, existingId, motorcycles, paramPlaca, paramModelo, paramCor, paramStatus]);
+  }, [params, motorcycles, isEditing]);
 
   // Navega para o scanner de QR Code
   const openQrCodeScanner = () => {
@@ -110,7 +111,8 @@ export default function CadastroScreen() {
 
     } catch (error) {
       console.error('Erro ao cadastrar moto:', error);
-      Alert.alert(t('common.error'), t('registerMoto.addError'));
+      const errorMessage = error instanceof Error ? error.message : t('registerMoto.addError');
+      Alert.alert(t('common.error'), errorMessage);
     }
   };
 

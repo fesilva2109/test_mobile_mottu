@@ -52,6 +52,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
       fontSize: 28,
       fontWeight: 'bold',
       color: colors.neutral.white,
+      paddingVertical: 4, // Adicionado para evitar corte de texto
     },
     headerContent: {
       flex: 1,
@@ -132,6 +133,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ onClearHistory }) => {
           ListEmptyComponent={
             <Text style={styles.emptyText}>{t('history.empty')}</Text>
           }
+          contentContainerStyle={{ paddingBottom: 40 }} // Adicionado para garantir rolagem completa
         />
       )}
       {/* Botão para limpar histórico, aparece apenas se houver eventos */}

@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 
 // Informações do app
 const APP_INFO = {
-  name: 'Mottu Challenge',
+  name: 'GEF - Mottu Challenge',
   version: Constants.expoConfig?.version || '1.0.0',
   commitHash: 'eed088d', 
   team: [
@@ -172,7 +172,7 @@ export default function SobreScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* App Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('about.appInfo')}</Text>

@@ -6,6 +6,7 @@ import { useApiStatus } from '@/context/ApiStatusContext';
 import { useNotifications } from '@/context/NotificationContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '@/context/api';
+import i18n from '@/i18n';
 
 const LOCAL_MOTOS_KEY = '@mottu:motorcycles_local';
 // Hook customizado para gerenciar o CRUD de motocicletas via API.
@@ -88,22 +89,29 @@ export const useMotorcycleStorage = () => {
         return newLocalMoto;
       } else {
         const response = await api.post('/motorcycles', newMotoData);
-        const addedMoto = response.data;
-        setMotorcycles((prev) => [...prev, addedMoto]);
+        const motoFromApi = response.data;
+
+        const completeMoto = {
+          ...motoFromApi,
+          ...newMotoData, 
+        };
+
+        setMotorcycles((prev) => [...prev, completeMoto]);
 
         // Agenda notificação local para exibição imediata
         await scheduleLocalNotification(
           'Nova Moto Cadastrada',
-          `Moto ${addedMoto.placa} foi adicionada ao pátio`,
-          { type: 'new_motorcycle', motorcycleId: addedMoto.id }
+          `Moto ${completeMoto.placa} foi adicionada ao pátio`,
+          { type: 'new_motorcycle', motorcycleId: completeMoto.id }
         );
-
-        return addedMoto;
+        return completeMoto;
       }
     } catch (error) {
-      const apiError = await handleApiError(error, setApiOffline);
+      const apiError = await handleApiError(error, setApiOffline, {
+        409: i18n.t('registerMoto.plateConflict'),
+      });
       console.error('Falha ao adicionar motocicleta:', apiError.message);
-      throw apiError; // Lança o erro tratado
+      throw apiError;
     }
   };
 

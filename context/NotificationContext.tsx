@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useContext } from
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { useAuth } from './AuthContext';
 import api from './api';
 import { handleApiError } from './apiErrorHandler'; 
@@ -42,6 +43,11 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const registerForPushNotificationsAsync = async (): Promise<string | null> => {
     let token: string | null = null;
+
+    if (Constants.appOwnership === 'expo') {
+      console.warn('As notificações push não são suportadas no Expo Go. Pule o registro.');
+      return null;
+    }
 
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -135,6 +141,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           body,
           data,
         },
+        trigger: null, 
         trigger: null,
       });
     } catch (error) {

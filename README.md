@@ -54,8 +54,7 @@ npm install
 
 3. **Configure a URL da API:**
 Verifique se as constantes `API_BASE` estão apontando para seu backend Java nos arquivos:
-- `context/AuthContext.tsx`
-- `hooks/useStorage.ts`
+- `context/api.ts` (ou `context/config.ts` se a URL estiver lá)
 
 4. **Inicie o projeto:**
 ```bash

@@ -7,8 +7,10 @@
     "loading": "Carregando...",
     "allFieldsRequired": "Todos os campos são obrigatórios.",
     "unexpectedError": "Ocorreu um erro inesperado.",
-    "email": "Email",
-    "password": "Senha"
+    "email": "E-mail",
+    "password": "Senha",
+    "back": "Voltar",
+    "delete": "Remover"
   },
   "auth": {
     "emailRequired": "Email é obrigatório",
@@ -97,6 +99,7 @@
     "status": "Status",
     "addSuccess": "Moto {{placa}} registrada com sucesso!",
     "updateSuccess": "Moto {{placa}} atualizada com sucesso!",
+    "plateConflict": "A placa informada já está cadastrada.",
     "addError": "Ocorreu um erro ao registrar a moto.",
     "historyAdd": "Moto Registrada",
     "historyUpdate": "Moto Atualizada"
@@ -117,17 +120,5 @@
     "technologies": "Tecnologias Utilizadas",
     "contactProfessor": "Contato",
     "viewCode": "Ver Código no GitHub"
-  },
-  "common": {
-    "save": "Salvar",
-    "cancel": "Cancelar",
-    "error": "Erro",
-    "success": "Sucesso",
-    "loading": "Carregando...",
-    "allFieldsRequired": "Todos os campos são obrigatórios.",
-    "unexpectedError": "Ocorreu um erro inesperado.",
-    "email": "Email",
-    "password": "Senha",
-    "back": "Voltar"
   }
 }

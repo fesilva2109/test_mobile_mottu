@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mottu_challenge",
+    "name": "GEF - Mottu Challenge",
     "slug": "gef-mottu",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,8 +29,7 @@
       "icon": "./assets/images/icon.png",
       "color": "#05AF31",
       "iosDisplayInForeground": true,
-      "androidMode": "default",
-      "androidCollapsedTitle": "Mottu Challenge"
+      "androidMode": "default"
     },
     "extra": {
       "eas": {

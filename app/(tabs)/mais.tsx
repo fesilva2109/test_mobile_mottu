@@ -65,6 +65,7 @@ const getStyles = (colors: any) => StyleSheet.create({
     fontWeight: 'bold',
     color: colors.neutral.white,
     textAlign: 'center',
+    paddingVertical: 4, // Adicionado para evitar corte de texto
   },
   content: {
     padding: 16,
