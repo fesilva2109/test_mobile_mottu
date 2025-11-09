@@ -19,11 +19,10 @@ const APP_INFO = {
     'React Native',
     'Expo',
     'TypeScript',
-    'Firebase',
     'AsyncStorage',
     'Expo Router',
-    'React Native Maps',
-    'Expo Notifications'
+    'Expo Camera',
+    'Lucide Icons'
   ]
 };
 

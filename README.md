@@ -4,9 +4,9 @@ Aplicativo mobile para gerenciamento inteligente de pátios de motocicletas da M
 
 ## 👥 Integrantes
 
-- **Felipe Silva Maciel** - RM555307  
-- **Eduardo Henrique Strapazzon Nagado** - RM558158  
-- **Gustavo Ramires Lazzuri** - RM556772  
+- **[Felipe Silva Maciel](https://github.com/fesilva2109)** - RM555307  
+- **[Eduardo Henrique Strapazzon Nagado](https://github.com/EduNagado)** - RM558158  
+- **[Gustavo Ramires Lazzuri](https://github.com/guLazzuri)** - RM556772  
 
 ## 📱 Sobre o Projeto
 
