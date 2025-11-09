@@ -68,37 +68,64 @@ npx expo start
 ## 🏗️ Estrutura do Projeto
 
 ```
-mottu_mobile_app/
-├── app/
-│   ├── (tabs)/
-│   │   ├── _layout.tsx
-│   │   ├── cadastro.tsx
-│   │   ├── dashboard.tsx
-│   │   ├── index.tsx
-│   │   └── mapa.tsx
-│   ├── _layout.tsx
-│   ├── login.tsx
-│   └── register.tsx
-├── components/
-│   ├── DashboardCard.tsx
-│   ├── FilterMenu.tsx
-│   ├── GridComponent.tsx
-│   ├── MotoCard.tsx
-│   ├── MotoList.tsx
-│   ├── OfflineBanner.tsx
-│   ├── StatusChart.tsx
-│   └── ThemeToggle.tsx
+test_mobile_mottu/
+│
+├── app/ 
+│   ├── (tabs)/ 
+│   │   ├── _layout.tsx         # Define o layout das abas.
+│   │   ├── index.tsx           # Tela principal (Home) do app.
+│   │   ├── cadastro.tsx        # Tela para cadastrar ou editar motocicletas.
+│   │   ├── dashboard.tsx       # Tela com gráficos e métricas do pátio.
+│   │   └── mapa.tsx            # Tela com a visualização do mapa do pátio.
+│   │
+│   ├── _layout.tsx             # Layout raiz da aplicação. Envolve todas as telas com os provedores de contexto.
+│   ├── login.tsx               # Tela de Login para autenticação do usuário.
+│   ├── register.tsx            # Tela de Registro para novos usuários.
+│   ├── historico.tsx           # Tela que exibe o histórico de ações realizadas no app.
+│   ├── sobre.tsx               # Tela "Sobre", com informações do app, equipe e tecnologias.
+│   └── +not-found.tsx          # Tela de erro 404, exibida quando uma rota não é encontrada.
+│
+├── assets/
+│   └── images/
+│       └── icon.png            # Ícone principal do aplicativo.
+│
+├── components/ 
+│   ├── DashboardCard.tsx       # Card para exibir uma métrica no dashboard.
+│   ├── FilterMenu.tsx          # Menu de filtros para o mapa.
+│   ├── GridComponent.tsx       # Componente que renderiza o grid do pátio.
+│   ├── MotoCard.tsx            # Card para exibir informações de uma moto.
+│   ├── MotoList.tsx            # Lista de motocicletas.
+│   ├── OfflineBanner.tsx       # Banner que informa o usuário quando o app está offline.
+│   ├── StatusChart.tsx         # Gráfico de pizza para o status das motos.
+│   └── ThemeToggle.tsx         # Botão para alternar entre tema claro e escuro.
+│
 ├── context/
-│   ├── ApiStatusContext.tsx
-│   ├── apiErrorHandler.ts
-│   ├── AuthContext.tsx
-│   ├── authService.ts
-│   ├── context/ThemeContext.tsx
-│   └── config.ts
-├── hooks/
-│   └── useMotorcycleStorage.ts
-└── types/  
-    └── index.ts
+│   ├── AuthContext.tsx         # Gerencia o estado de autenticação.
+│   ├── authService.ts          # Contém a lógica para fazer as chamadas de API de autenticação.
+│   ├── ApiStatusContext.tsx    # Gerencia o estado da conexão com a API.
+│   ├── apiErrorHandler.ts      # Função utilitária para tratar erros de API de forma centralizada.
+│   ├── ThemeContext.tsx        # Gerencia o tema da aplicação.
+│   ├── NotificationContext.tsx # Gerencia o envio e recebimento de notificações.
+│   └── api.ts                  # Configuração da instância do Axios para chamadas à API.
+│
+├── hooks/ 
+│   ├── useMotorcycleStorage.ts # Hook para gerenciar o CRUD de motocicletas.
+│   └── useFrameworkReady.ts    # Hook para garantir que as fontes e outros recursos estejam carregados.
+│
+├── i18n/
+│   ├── index.ts                # Configuração inicial do i18next.
+│   ├── pt.json                 # Traduções para o Português.
+│   └── es.json                 # Traduções para o Espanhol.
+│
+├── types/
+│   └── index.ts                # Tipos globais da aplicação (User, Motorcycle, etc.).
+│
+├── .gitignore                  # Arquivo que especifica arquivos e pastas a serem ignorados pelo Git.
+├── app.json                    # Arquivo de configuração principal do Expo.
+├── eas.json                    # Arquivo de configuração do Expo Application Services (EAS) para builds.
+├── package.json                # Define os metadados do projeto e as dependências.
+├── README.md                   # Documentação principal do projeto.
+└── tsconfig.json               # Arquivo de configuração do TypeScript.
 
 ```
 
@@ -128,6 +155,7 @@ mottu_mobile_app/
   "status": "Pronta para aluguel"
 }
 ```
+![Imagem do WhatsApp de 2025-11-03 à(s) 22 05 06_b0db6cf2](https://github.com/user-attachments/assets/909ba808-4554-47a5-9719-081d5df4692f)
 
 ## 📊 Status das Motos
 
