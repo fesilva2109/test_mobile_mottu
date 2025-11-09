@@ -5,6 +5,8 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { useAuth } from './AuthContext';
 import api from './api';
+import { handleApiError } from './apiErrorHandler'; 
+import axios from 'axios'; 
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -27,7 +29,7 @@ Notifications.setNotificationHandler({
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const { user, token } = useAuth();
+  const { user, token } = useAuth(); 
 
   useEffect(() => {
     registerForPushNotificationsAsync();
@@ -92,8 +94,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           platform: Platform.OS,
         });
       }
-    } catch (error) {
-      console.error('Error sending push token to backend:', error);
+    } catch (rawError) {
+      const error = await handleApiError(rawError);
+      if (axios.isAxiosError(rawError) && rawError.response?.status === 403) {
+        console.warn('Authentication failed for push token registration. Logging out...');
+      }
+      console.error('Error sending push token to backend:', error.message);
+    
     }
   };
 
@@ -135,6 +142,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
           data,
         },
         trigger: null, 
+        trigger: null,
       });
     } catch (error) {
       console.error('Error scheduling local notification:', error);

@@ -57,11 +57,8 @@ const isPasswordStrong = (password: string): boolean => {
   return passwordRegex.test(password);
 };
 
-/**
- * Autentica um usuário via API.
- * @param email O email do usuário.
- * @param password A senha do usuário.
- */
+//Autentica um usuário via API.
+
 export const loginUser = async (
   email: string, 
   password: string,
@@ -107,12 +104,8 @@ export const loginUser = async (
   }
 };
 
-/**
- * Registra um novo usuário via API.
- * @param name O nome do usuário.
- * @param email O email do usuário.
- * @param password A senha do usuário.
- */
+//Registra um novo usuário via API.
+
 export const registerUser = async (
   name: string, 
   email: string, 
@@ -171,17 +164,14 @@ export const registerUser = async (
   }
 };
 
-/**
- * Encerra a sessão do usuário no servidor.
- * @param token O token de autenticação.
- */
+//Encerra a sessão do usuário no servidor.
+ 
 export const logoutUser = async (
   token: string,
   isOffline: boolean,
   setApiOffline: () => void
 ): Promise<void> => {
   try {
-    // Lógica para a API Real
     await api.get('/auth/logout');
   } catch (error) {
     if (axios.isAxiosError(error)) {

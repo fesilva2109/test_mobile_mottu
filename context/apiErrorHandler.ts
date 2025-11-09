@@ -26,6 +26,13 @@ export async function handleApiError(
     const status = response.status;
     const data = response.data;
 
+    // Mensagem personalizada para o status code, se existir no `customMessages`
+    if (status === 401 || status === 403) {
+      return new Error(i18n.t('errors.authFailed'));
+    }
+    if (customMessages[status]) {
+      return new Error(customMessages[status]);
+    }
 
     // Traduzindo exceções específicas do backend Java
     switch (status) {
