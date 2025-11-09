@@ -9,7 +9,7 @@ import Constants from 'expo-constants';
 const APP_INFO = {
   name: 'GEF - Mottu Challenge',
   version: Constants.expoConfig?.version || '1.0.0',
-  commitHash: '2409305', 
+  commitHash: '26982df', 
   team: [
     'Felipe Silva Maciel - RM555307',
     'Eduardo Nagado - RM558158',
