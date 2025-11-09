@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { GridPosition, Motorcycle } from '@/types';
 import { useTheme } from '@/context/ThemeContext';
+import { getStatusColor } from '@/theme/colors';
 
 interface GridComponentProps {
     gridPositions: GridPosition[];
@@ -13,7 +14,7 @@ interface GridComponentProps {
 // Componente visual do grid do pátio para posicionamento das motos
 export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, selectedMoto }: GridComponentProps) {
     const { colors } = useTheme();
-
+    
     const getStyles = (colors: any) => StyleSheet.create({
         container: {
             padding: 16,
@@ -136,25 +137,6 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
 
     const styles = getStyles(colors);
 
-    const getStatusColor = (status: string): string => {
-        switch (status) {
-            case 'Pronta para aluguel':
-                return colors.status.ready;
-            case 'Em manutenção':
-                return colors.status.maintenance;
-            case 'Em quarentena':
-                return colors.status.quarantine;
-            case 'Alta prioridade':
-                return colors.status.priority;
-            case 'Reservada':
-                return colors.status.reserved;
-            case 'Aguardando vistoria':
-                return colors.status.waiting;
-            default:
-                return colors.status.waiting;
-        }
-    };
-
     // Estado para moto selecionada no grid (para remoção)
     const [gridSelectedMoto, setGridSelectedMoto] = useState<Motorcycle | null>(null);
     // Estado para célula selecionada (destaca visualmente)
@@ -227,7 +209,7 @@ export function GridComponent({ gridPositions, onPlaceMoto, onRemoveFromGrid, se
                                 <View
                                     style={[
                                         styles.statusIndicator,
-                                        { backgroundColor: getStatusColor(position.motorcycle.status) }
+                                        { backgroundColor: getStatusColor(position.motorcycle.status, colors) }
                                     ]}
                                 />
                             </View>

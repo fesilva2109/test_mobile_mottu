@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 
 // Informações do app
 const APP_INFO = {
-  name: 'Mottu Challenge',
+  name: 'GEF - Mottu Challenge',
   version: Constants.expoConfig?.version || '1.0.0',
   commitHash: 'eed088d', 
   team: [

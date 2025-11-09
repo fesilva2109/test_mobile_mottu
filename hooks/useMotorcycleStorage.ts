@@ -89,17 +89,22 @@ export const useMotorcycleStorage = () => {
         return newLocalMoto;
       } else {
         const response = await api.post('/motorcycles', newMotoData);
-        const addedMoto = response.data;
-        setMotorcycles((prev) => [...prev, addedMoto]);
+        const motoFromApi = response.data;
+
+        const completeMoto = {
+          ...motoFromApi,
+          ...newMotoData, 
+        };
+
+        setMotorcycles((prev) => [...prev, completeMoto]);
 
         // Agenda notificação local para exibição imediata
         await scheduleLocalNotification(
           'Nova Moto Cadastrada',
-          `Moto ${addedMoto.placa} foi adicionada ao pátio`,
-          { type: 'new_motorcycle', motorcycleId: addedMoto.id }
+          `Moto ${completeMoto.placa} foi adicionada ao pátio`,
+          { type: 'new_motorcycle', motorcycleId: completeMoto.id }
         );
-
-        return addedMoto;
+        return completeMoto;
       }
     } catch (error) {
       const apiError = await handleApiError(error, setApiOffline, {

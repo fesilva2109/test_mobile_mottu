@@ -182,7 +182,7 @@ export function MotoCard({
 
         {/* Rodapé: status e alerta de tempo no pátio */}
         <View style={styles.footer}>
-          <View style={[styles.statusContainer, { backgroundColor: statusColor }]}>
+          <View style={[styles.statusContainer, { backgroundColor: getStatusColor(motorcycle.status, colors) }]}>
             <Text style={styles.status}>{motorcycle.status}</Text>
           </View>
           {/* Alerta visual para motos antigas no pátio */}
